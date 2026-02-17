@@ -1,4 +1,4 @@
 
-##Team Members
+## Team Members
 
-*Katie Garcia 
+* Katie Garcia 
