@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Indian Creek Cycle Rentals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="navbar">
+  <div class="logo">Indian Creek Cycle Rentals</div>
+
+  <nav class="center-nav">
+    <a href="admin.html" class="active">Admin</a>
+    <a href="index.html">Public Site</a>
+  </nav>
+
+  <div class="right-nav">
+    <span class="admin-badge">Admin Panel</span>
+    <button id="darkModeBtn" aria-label="Toggle dark mode">🌙</button>
+  </div>
+</header>
+
+<section class="page-title">
+  <h1>Admin Dashboard</h1>
+  <p>Manage bikes, rentals, and availability.</p>
+</section>
+
+<section class="about-content">
+  <p>
+    Use this dashboard to update inventory, set availability, and review reservations.
+    (Hook these buttons up to your backend/API later.)
+  </p>
+</section>
+
+<section class="features">
+  <h2>Quick Actions</h2>
+
+  <div class="feature-box">
+    <div class="card">
+      <h3>Bikes</h3>
+      <p>Add, edit, or remove bikes.</p>
+      <a class="btn" href="#bikes">Manage Bikes</a>
+    </div>
+
+    <div class="card">
+      <h3>Rentals</h3>
+      <p>View upcoming and active rentals.</p>
+      <a class="btn" href="#rentals">View Rentals</a>
+    </div>
+
+    <div class="card">
+      <h3>Availability</h3>
+      <p>Mark bikes available / unavailable.</p>
+      <a class="btn" href="#availability">Update Availability</a>
+    </div>
+  </div>
+</section>
+
+<!-- Admin Sections -->
+<section class="admin-section" id="bikes">
+  <h2>Bike Inventory</h2>
+
+  <div class="admin-actions">
+    <button class="btn" type="button">+ Add New Bike</button>
+    <button class="btn" type="button">Edit Selected</button>
+    <button class="btn danger" type="button">Delete Selected</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Bike ID</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Price/Day</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Placeholder rows — replace with dynamic data -->
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>101</td>
+          <td>Adult</td>
+          <td>M</td>
+          <td>$25</td>
+          <td>Available</td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>202</td>
+          <td>Kids</td>
+          <td>S</td>
+          <td>$15</td>
+          <td>Unavailable</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-section" id="rentals">
+  <h2>Reservations / Rentals</h2>
+
+  <div class="admin-actions">
+    <button class="btn" type="button">Refresh</button>
+    <button class="btn" type="button">Mark Returned</button>
+    <button class="btn" type="button">Cancel Rental</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Rental ID</th>
+          <th>Name</th>
+          <th>Bike ID</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Placeholder rows — replace with dynamic data -->
+        <tr>
+          <td>R-5001</td>
+          <td>Alex Smith</td>
+          <td>101</td>
+          <td>2026-03-02</td>
+          <td>2026-03-03</td>
+          <td>Active</td>
+        </tr>
+        <tr>
+          <td>R-5002</td>
+          <td>Jamie Lee</td>
+          <td>202</td>
+          <td>2026-03-05</td>
+          <td>2026-03-06</td>
+          <td>Upcoming</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-section" id="availability">
+  <h2>Availability Controls</h2>
+
+  <div class="admin-actions">
+    <label class="inline">
+      Bike ID:
+      <input type="text" placeholder="e.g., 101" />
+    </label>
+
+    <label class="inline">
+      Status:
+      <select>
+        <option>Available</option>
+        <option>Unavailable</option>
+        <option>Maintenance</option>
+      </select>
+    </label>
+
+    <button class="btn" type="button">Update</button>
+  </div>
+
+  <p class="hint">
+    Tip: Hook this up to your backend later (POST/PUT request) to update inventory status.
+  </p>
+</section>
+
+<footer>
+  <p>© 2026 Indian Creek Cycle Rentals — Admin</p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
