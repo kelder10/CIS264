@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kids Bikes - Indian Creek Cycle Rentals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">Indian Creek Cycle Rentals</div>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="adults.html">Adults</a>
+        <a href="kids.html">Kids</a>
+        <button id="darkModeBtn">🌙</button>
+    </nav>
+</header>
+
+<section class="page-title">
+    <h1>Kids Bikes</h1>
+    <p>Safe and fun bikes for young riders</p>
+</section>
+
+<!-- FILTER SECTION -->
+<section class="filters">
+    <select id="kidsFilter">
+        <option value="all">All Sizes</option>
+        <option value="small">Small (4-6 yrs)</option>
+        <option value="medium">Medium (7-10 yrs)</option>
+        <option value="large">Large (11-14 yrs)</option>
+    </select>
+
+    <select>
+        <option>Duration</option>
+        <option>1 Hour</option>
+        <option>Half Day</option>
+        <option>Full Day</option>
+    </select>
+</section>
+
+<!-- BIKE CARDS -->
+<section class="bike-grid">
+
+    <div class="bike-card" data-size="small">
+        <div class="bike-image"></div>
+        <h3>Small Kids Bike</h3>
+        <p>$15 / hour</p>
+        <a href="reservation.html">
+    <button class="reserve-btn">Reserve</button>
+</a>
+    </div>
+
+    <div class="bike-card" data-size="medium">
+        <div class="bike-image"></div>
+        <h3>Medium Kids Bike</h3>
+        <p>$18 / hour</p>
+        <button class="reserve-btn">Reserve</button>
+    </div>
+
+    <div class="bike-card" data-size="large">
+        <div class="bike-image"></div>
+        <h3>Large Kids Bike</h3>
+        <p>$20 / hour</p>
+        <button class="reserve-btn">Reserve</button>
+    </div>
+
+</section>
+
+<footer>
+    <p>© 2026 Indian Creek Cycle Rentals</p>
+</footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
