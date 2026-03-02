@@ -1,1 +1,9 @@
 .DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Python cache
+__pycache__/
+*.py[cod]
