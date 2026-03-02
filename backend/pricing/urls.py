@@ -1,8 +1,10 @@
 from django.urls import path
+from .views import admin_page
 from .views import PricingQuoteView
 from . import api_views
 
 urlpatterns = [
+    path("admin-page/", admin_page, name="admin-page"),
     
     path("quote/", PricingQuoteView.as_view(), name="pricing-quote"),
  
