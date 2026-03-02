@@ -7,23 +7,30 @@
 
 /* BODY */
 body {
+    margin: 0;
     font-family: Arial, sans-serif;
     color: white;
 
-    background-image: url("media/trail.jpg");
+    background: 
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url("media/trail.jpg");
+
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
 }
- 
+
 /* NAVBAR */
 .navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: black;
+
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+
     color: white;
-    padding: 20px 40px;
+    padding: 12px 40px;   /* 👈 reduced height */
     position: relative;
 }
 
@@ -34,33 +41,50 @@ body {
     transform: translateX(-50%);
 }
 
-.center-nav a {
-    color: white;
-    text-decoration: none;
-    margin: 0 15px;
-}
-
-.center-nav a:hover {
-    color: #00b894;
-}
-
-/* Right Side */
+/* Right Navigation */
 .right-nav {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
+/* NAV LINKS AS ORANGE PILLS (CENTER + RIGHT) */
+.center-nav a,
 .right-nav a {
-    color: white;
+    background-color: #f39c12;   /* orange */
+    color: black;
+    padding: 8px 14px;
+    border-radius: 20px;
     text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s ease;
+    display: inline-block;
+    margin: 0 6px; /* replaces the old margin on center links */
 }
 
+/* Hover effect */
+.center-nav a:hover,
 .right-nav a:hover {
-    color: #00b894;
+    background-color: #e67e22;
+    color: white;
 }
 
- 
+/* DARK MODE BUTTON (match orange pills) */
+#darkModeBtn {
+    background-color: #f39c12;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+#darkModeBtn:hover {
+    background-color: #e67e22;
+    color: white;
+}
 
 /* HERO */
 .hero {
@@ -69,7 +93,6 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    background: transparent;
     padding: 20px;
 }
 
@@ -97,6 +120,8 @@ body {
     cursor: pointer;
     transition: 0.3s ease;
     font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .primary-btn {
@@ -116,6 +141,12 @@ body {
 
 .secondary-btn:hover {
     background-color: #e0e0e0;
+}
+
+/* Remove underline from buttons wrapped in links */
+.buttons a {
+    text-decoration: none;
+    display: inline-block;
 }
 
 /* FEATURES */
@@ -138,57 +169,7 @@ body {
     border-radius: 10px;
     width: 200px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-}
-
-/* FOOTER */
-footer {
-    background-color: black;
-    color: white;
-    text-align: center;
-    padding: 15px;
-}
-
-@media (max-width: 768px) {
-
-    .navbar {
-        flex-direction: column;
-    }
-
-    .feature-box {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .hero h1 {
-        font-size: 28px;
-    }
-
-}
-
-.dark-mode {
-    background-color: #121212;
-    color: white;
-}
-
-.dark-mode .card {
-    background-color: #1e1e1e;
-    color: white;
-}
-
-.dark-mode .hero {
-    background-color: #000;
-}.dark-mode {
-    background-color: #121212;
-    color: white;
-}
-
-.dark-mode .card {
-    background-color: #1e1e1e;
-    color: white;
-}
-
-.dark-mode .hero {
-    background-color: #000;
+    color: black;
 }
 
 /* PAGE TITLE */
@@ -227,11 +208,12 @@ footer {
     border-radius: 10px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     text-align: center;
+    color: black;
 }
 
 .bike-image {
     height: 150px;
-    background-color: #ccc; /* placeholder for image */
+    background-color: #ccc;
     margin-bottom: 15px;
     border-radius: 8px;
 }
@@ -249,24 +231,138 @@ footer {
     opacity: 0.85;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: white;
-
-    background: 
-        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-        url("media/trail.jpg");
-
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-
+/* ABOUT PAGE */
 .about-content {
     max-width: 700px;
     margin: 40px auto;
     text-align: center;
     line-height: 1.6;
     padding: 0 20px;
+}
+
+
+
+/* DARK MODE */
+.dark-mode {
+    background-color: #121212;
+    color: white;
+}
+
+.dark-mode .card,
+.dark-mode .bike-card {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+.dark-mode .hero {
+    background-color: #000;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 20px;
+    }
+
+    .center-nav {
+        position: static;
+        transform: none;
+    }
+
+    .feature-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .hero h1 {
+        font-size: 28px;
+    }
+}
+
+/* HERO BUTTONS – match navbar orange pills */
+.hero .primary-btn,
+.hero .secondary-btn {
+    background-color: #f39c12;   /* orange */
+    color: black;
+    border-radius: 20px;
+    padding: 12px 26px;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+/* Hover effect */
+.hero .primary-btn:hover,
+.hero .secondary-btn:hover {
+    background-color: #e67e22;
+    color: white;
+}
+
+/* LOGO IMAGE */
+.logo {
+    display: flex;
+    align-items: center;
+    margin-left: -50px;
+}
+
+.logo img {
+    height: 70px;          /* controls logo size */
+    width: auto;           /* keeps proportions */
+    display: block;
+    transform: scale(4); /* ✅ makes it visibly bigger even if image has empty space */
+    transform-origin: left center;
+}
+
+/* FOOTER – styled like header */
+.site-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+
+    color: white;
+    padding: 15px 20px;
+}
+
+/* Footer text */
+.site-footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Footer Admin link – same orange pill style */
+.site-footer a {
+    background-color: #f39c12;
+    color: black;
+    padding: 6px 12px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s ease;
+}
+
+/* Hover effect */
+.site-footer a:hover {
+    background-color: #e67e22;
+    color: white;
+}
+
+/* ADMIN ICON (header) */
+.admin-icon {
+    background: transparent;
+    color: #f39c12;
+    font-size: 20px;
+    padding: 6px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.admin-icon:hover {
+    color: white;
 }
