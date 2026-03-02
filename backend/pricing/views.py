@@ -4,10 +4,13 @@ from rest_framework import status
 
 import json
 from django.utils.dateparse import parse_datetime
-
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 from .services import calculate_total_cost
 
-
+@login_required
+def admin_page(request):
+    return render(request, "pricing/admin.html")
 class PricingQuoteView(APIView):
     """
     MVP: quote endpoint.

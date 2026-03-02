@@ -56,9 +56,12 @@ python -m pip install -r requirements.txt
 Apply migrations to create the database tables:
 
 ```
-python manage.py makemigrations pricing
+
+python manage.py makemigrations 
 python manage.py migrate
 python manage.py showmigrations pricing #confirming prices
+python manage.py showmigrations payments #confirming payments
+
 ```
 
 If you pull new updates later and migrations were added, run this command again.
