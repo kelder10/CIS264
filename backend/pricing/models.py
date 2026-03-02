@@ -104,7 +104,7 @@ class Accessory(models.Model):
 
     class Meta:
         db_table = "accessories"
-
+        verbose_name_plural = "Accessories"
     def __str__(self):
         return f"{self.name} (${self.price})"
 

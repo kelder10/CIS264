@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Bike, Reservation, User, BikeType, RentalLocation, Trail
+from .models import Bike, Reservation, User, BikeType, RentalLocation, Trail, Accessory, PromoCode
 
 
 @admin.register(Bike)
@@ -40,7 +40,9 @@ class ReservationAdmin(admin.ModelAdmin):
     ordering = ("-start_date",)
 
 
-# Optional: register lookup tables so you can manage them too
+
 admin.site.register(BikeType)
 admin.site.register(RentalLocation)
 admin.site.register(Trail)
+admin.site.register(Accessory)
+admin.site.register(PromoCode)
