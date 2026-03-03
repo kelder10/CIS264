@@ -26,7 +26,7 @@ class Payment(models.Model):
     
     # Added the choices back into the mapped columns
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending", db_column="status")
-    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default="Mock", db_column="method")
+    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default="Mock", db_column="paymentmethod")
     
     payment_date = models.DateTimeField(null=True, blank=True, db_column="paymentdate")
     created_at = models.DateTimeField(auto_now_add=True, db_column="createdat")
