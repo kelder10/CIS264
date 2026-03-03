@@ -15,16 +15,30 @@ class Payment(models.Model):
         ("Online", "Online"),
     ]
 
-    # We store ReservationID as an integer for now so you can work
-    # even if reservations app/model isn't added yet.
-    reservation_id = models.IntegerField(unique=True)
+    # --- NEW CODE STARTS HERE ---
+    
+    # 1. Primary Key mapping (Fixes the Admin panel "id" crash)
+    id = models.AutoField(primary_key=True, db_column="paymentid") 
 
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
-    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default="Mock")
-    payment_date = models.DateTimeField(null=True, blank=True)
+    # 2. Field mappings with db_column to match your PostgreSQL table
+    reservation_id = models.IntegerField(unique=True, db_column="reservationid")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, db_column="amount")
+    
+    # Added the choices back into the mapped columns
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending", db_column="status")
+    method = models.CharField(max_length=20, choices=METHOD_CHOICES, default="Mock", db_column="paymentmethod")
+    
+    payment_date = models.DateTimeField(null=True, blank=True, db_column="paymentdate")
+    created_at = models.DateTimeField(auto_now_add=True, db_column="createdat")
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        # 3. Ensures Django uses your existing 'payments' table
+        db_table = "payments" 
 
     def __str__(self):
-        return f"Payment(reservation_id={self.reservation_id}, status={self.status})"
+        return f"Payment(id={self.id}, reservation={self.reservation_id}, status={self.status})"
+    
+    
+    
+    
+    
