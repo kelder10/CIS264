@@ -337,7 +337,7 @@ body {
 
 /* Footer Admin link – same orange pill style */
 .site-footer a {
-    background-color: #f39c12;
+    /*background-color: #f39c12;*/
     color: black;
     padding: 6px 12px;
     border-radius: 20px;
@@ -620,7 +620,187 @@ body {
   background: rgba(255,255,255,0.10) !important;
   border-color: rgba(255,255,255,0.35) !important;
 }
+/* trail info */
 
+                   /* FAQ SECTION */
+
+.faq-section {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.faq-section h2 {
+    font-size: 42px;
+    margin-bottom: 35px;
+}
+
+/* grid layout */
+.faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+}
+
+/* cards */
+.faq-card {
+    background: rgba(255,255,255,0.95);
+    color: #111;
+    padding: 26px 22px;
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+}
+
+.faq-card strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.faq-card p {
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.faq-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 24px;
+}
+
+.faq-card {
+    width: 320px;
+    background: rgba(255,255,255,0.95);
+    color: #111;
+    padding: 26px 22px;
+    border-radius: 16px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+/* WAVER SECTION */
+
+.waiver-section {
+    max-width: 850px;
+    margin: 70px auto;
+    padding: 36px 28px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.55);
+    border-radius: 18px;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.waiver-section h2 {
+    font-size: 38px;
+    margin-bottom: 14px;
+    color: white;
+}
+
+.waiver-section p {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 22px;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.waiver-section .primary-btn {
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.waiver-alert {
+    max-width: 900px;
+    margin: 20px auto 40px;
+    padding: 4px 4px;
+    text-align: center;
+    /*background: rgba(243, 156, 18, 0.92);*/
+    color: white;
+    border-radius: 4px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.18);
+    font-weight: 600;
+    
+}
+
+.waiver-alert p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.5;
+}
+
+.waiver-alert strong {
+    font-weight: 800;
+}
+/* waver page*/
+
+.waiver-page {
+    max-width: 950px;
+    margin: 60px auto;
+    padding: 20px;
+}
+
+.waiver-box {
+    background: rgba(255, 255, 255, 0.96);
+    color: #111;
+    padding: 36px 30px;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.waiver-box h2 {
+    text-align: center;
+    font-size: 30px;
+    margin-bottom: 24px;
+}
+
+.waiver-box p {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.waiver-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.waiver-form label {
+    font-weight: bold;
+    color: #111;
+}
+
+.waiver-form input[type="text"],
+.waiver-form input[type="email"],
+.waiver-form input[type="date"] {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: normal;
+    margin-top: 8px;
+}
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: normal;
+    margin-top: 10px;
+}
 /* container */
 .dropdown {
   position: relative;

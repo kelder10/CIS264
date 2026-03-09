@@ -1,1 +1,14 @@
 .DS_Store
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Local DB
+backend/db.sqlite3
+*.sqlite3

@@ -101,10 +101,10 @@ http://127.0.0.1:8000/
 API endpoints:
 
 - /admin/
-- /api/pricing/quote/
+- /api/pricing/quote/ 
 - /api/pricing/bikes
-- /api/pricing/bikes/1
-- /api/payments/pay/
+- /api/pricing/bikes/1 
+- /api/payments/pay/ 
 
 
 
@@ -141,7 +141,36 @@ curl -X POST http://127.0.0.1:8000/api/pricing/quote/ \
         "start_date": "2026-03-10",
         "end_date": "2026-03-12"
       }'
+OTHER CURL: 
 
+##Testing payment:
+
+curl -X POST http://127.0.0.1:8000/api/payments/pay/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reservation_id": 1,
+    "amount": 60.00,
+    "payment_method": "card"
+  }'
+
+##Testing price 
+
+curl -X POST http://127.0.0.1:8000/api/pricing/quote/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "hourly_rate": 15,
+    "start_date": "2026-03-02T10:00:00",
+    "end_date": "2026-03-02T14:00:00",
+    "promo_code": "SUMMER2026"  
+  }' | python3 -m json.tool
+
+
+## testing payment with curl
+
+curl -i -X POST http://127.0.0.1:8000/api/payments/pay/ \
+  -H "Content-Type: application/json" \
+  -d '{"reservation_id":2,"amount":"60.00","payment_method":"cash"}'
+  
 ## Windows Setup
 
 Activate the virtual environment using:
