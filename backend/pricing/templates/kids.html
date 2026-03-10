@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kids Bikes - Indian Creek Cycle Rentals</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <a href="index.html">
+          <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+        </a>
+      </div>
+    <nav class="center-nav">
+        <a href="index.html">Home</a>
+        <a href="adults.html">Adults</a>
+        <a href="kids.html">Kids</a>
+        <a href="accessories.html">Accessories</a>
+        <a href="trail_info.html">Waiver and Safety</a>
+    </nav>
+
+    <div class="right-nav">
+        <a href="about.html">About Us</a>
+        <a href="cart.html">Cart</a>
+        <button id="darkModeBtn">🌙</button>
+        
+    </div>
+</header>
+
+<section class="page-title">
+    <h1>Kids Bikes</h1>
+    <p>Safe and fun bikes for young riders</p>
+</section>
+
+<!-- FILTER SECTION -->
+<section class="filters">
+    <select id="kidsFilter">
+        <option value="all">All Sizes</option>
+        <option value="small">Small (4-6 yrs)</option>
+        <option value="medium">Medium (7-10 yrs)</option>
+        <option value="large">Large (11-14 yrs)</option>
+    </select>
+
+    <select>
+        <option>Duration</option>
+        <option>1 Hour</option>
+        <option>Half Day</option>
+        <option>Full Day</option>
+    </select>
+</section>
+
+<!-- BIKE CARDS -->
+<section class="bike-grid">
+
+    <div class="bike-card" data-size="small">
+        <div class="bike-image"></div>
+        <h3>Small Kids Bike</h3>
+        <p>$15 / hour</p>
+        <a href="reservation.html">
+    <button class="reserve-btn">Reserve</button>
+</a>
+    </div>
+
+    <div class="bike-card" data-size="medium">
+        <div class="bike-image"></div>
+        <h3>Medium Kids Bike</h3>
+        <p>$18 / hour</p>
+        <button class="reserve-btn">Reserve</button>
+    </div>
+
+    <div class="bike-card" data-size="large">
+        <div class="bike-image"></div>
+        <h3>Large Kids Bike</h3>
+        <p>$20 / hour</p>
+        <button class="reserve-btn">Reserve</button>
+    </div>
+
+</section>
+
+<footer class="site-footer">
+    <p>© 2026 Indian Creek Cycle Rentals</p>
+    <a href="admin.html">Admin</a>
+  </footer>
+
+<script src="script.js"></script>
+
+</body>
+</html>
