@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Bike Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body class ="admin-page">
+
+<header class="navbar">
+  <div class="logo">
+    <a href="index.html">
+      <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+    </a>
+  </div>
+
+  <nav class="center-nav">
+    <a href="index.html">Public Site</a>
+  </nav>
+
+  <div class="right-nav">
+    <div class="dropdown">
+    <span class="admin-badge">Admin Panel</span>
+    <div class="dropdown-content">
+    <a href="admin.html"> Admin Dashboard</a>
+    <a href="reservations.html">View Reservations/Rentals</a>
+    <a href="availability.html">Update Availability</a>
+    <a href="index.html">Home</a>
+  </div>
+    </div>
+</header>
+
+<section class="page-title">
+  <h1>Bike Inventory</h1>
+  <p>Add, edit, or remove bikes in the system. (Static UI for now.)</p>
+</section>
+
+
+<section class="admin-section" id="bike-inventory">
+  <h2>Inventory Table</h2>
+
+  <div class="admin-actions">
+    <button class="btn" type="button">+ Add New Bike</button>
+    <button class="btn" type="button">Edit Selected</button>
+    <button class="btn danger" type="button">Delete Selected</button>
+  </div>
+
+  <div class="table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Select</th>
+          <th>Bike ID</th>
+          <th>Type</th>
+          <th>Size</th>
+          <th>Price/Day</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Placeholder rows — replace with dynamic data -->
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>101</td>
+          <td>Adult</td>
+          <td>M</td>
+          <td>$25</td>
+          <td>Available</td>
+        </tr>
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>202</td>
+          <td>Kids</td>
+          <td>S</td>
+          <td>$15</td>
+          <td>Unavailable</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+
+<footer class="site-footer">
+  <p>© 2026 Indian Creek Cycle Rentals</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
