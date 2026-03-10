@@ -16,7 +16,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 LOGIN_URL = "/accounts/login/" #added to force login
-LOGIN_REDIRECT_URL = "/pricing/admin-page/"   # or wherever you want after login
+LOGIN_REDIRECT_URL = "/admin-page/"  
+#LOGIN_REDIRECT_URL = "/pricing/admin/"   
+#LOGIN_REDIRECT_URL = "/admin/"   
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 # Quick-start development settings - unsuitable for production

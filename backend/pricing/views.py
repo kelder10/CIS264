@@ -7,10 +7,13 @@ from django.utils.dateparse import parse_datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from .services import calculate_total_cost
+from django.shortcuts import render
 
+def home(request):
+    return render(request, "index.html")
 @login_required
 def admin_page(request):
-    return render(request, "pricing/admin.html")
+    return render(request, "admin.html")
 class PricingQuoteView(APIView):
     """
     MVP: quote endpoint.
