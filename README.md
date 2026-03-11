@@ -1,3 +1,11 @@
+Project Updates & New Features
+    • Integrated Static Tags & URLs: Updated all templates to use {% load static %} and {% url %} tags. This ensures that the images, CSS, and navigation links the team created work consistently across everyone’s local servers.
+    • Enhanced Search & Weather Logic: Refined the search bar on the bike pages to filter trails by zip code and prepped the backend to pull localized weather data for those specific areas to help riders plan.
+    • Refined Cart Logic: Updated the cart's math to handle the difference between rentals and purchases. It now correctly applies the hourly rate to bikes while keeping a flat price for items meant to be kept.
+    • Polished Cart UI: Used conditional tags to streamline the interface, so the "Duration" label only shows up for rentals. This keeps the layout clean and specific to each item type.
+    • Standardized Price Formatting: Applied a global :.2f format to the total calculations so that all prices display with professional currency formatting (e.g., $15.00 instead of $15.0).
+    • Synchronized Database IDs: Updated the forms to use accessory_id, ensuring the "Add to Cart" buttons connect with our Accessory database models.
+    • Management Security: Strengthened the access control on admin and inventory views by ensuring all sensitive pages redirect unauthenticated users to the login screen.
 
 ## Team Members
 
