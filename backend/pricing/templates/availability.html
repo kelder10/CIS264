@@ -1,32 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Admin Dashboard - Availability Controls</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
-<body class ="admin-page">
+<body class="admin-page">
 
 <header class="navbar">
   <div class="logo">
-    <a href="index.html">
-      <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+    <a href="{% url 'home' %}">
+        <img src="{% static 'media/logo.png' %}" alt="Indian Creek Cycle Rentals logo">
     </a>
   </div>
 
   <nav class="center-nav">
-    <a class="btn" href="index.html">Public Site</a>
+    <a class="btn" href="{% url 'home' %}">Public Site</a>
   </nav>
 
   <div class="right-nav">
     <div class="dropdown">
     <span class="admin-badge">Admin Panel</span>
     <div class="dropdown-content">
-    <a href="admin.html">Dashboard</a>
-    <a href="bike_inventory.html">Manage Bikes</a>
-    <a href="reservations.html">View Reservations/Rentals</a>
-    <a href="index.html">Home</a>
+    <a href="{% url 'admin-page' %}">Dashboard</a>
+    <a href="{% url 'bike-inventory' %}">Manage Bikes</a>
+    <a href="{% url 'reservations' %}">View Reservations/Rentals</a>
   </div>
     </div>
 </header>
@@ -35,8 +35,6 @@
   <h1>Availability Controls</h1>
   <p>Mark bikes available, unavailable, or in maintenance.</p>
 </section>
-
-
 
 <section class="admin-section" id="availability">
   <h2>Update Bike Status</h2>
@@ -58,13 +56,16 @@
 
     <button class="btn" type="button">Update</button>
   </div>
-
 </section>
 
 <footer class="site-footer">
   <p>© 2026 Indian Creek Cycle Rentals</p>
+  <form action="{% url 'logout' %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" style="background:none; border:none; color:#007bff; text-decoration:underline; cursor:pointer; font-family:inherit; padding:0;">Logout</button>
+  </form>
 </footer>
 
-<script src="script.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

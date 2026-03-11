@@ -6,3 +6,4 @@ urlpatterns = [
     path("", include("pricing.urls")),
     path("api/payments/", include("payments.urls")),
 ]
+

@@ -11,15 +11,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-LOGIN_URL = "/accounts/login/" #added to force login
-LOGIN_REDIRECT_URL = "/admin-page/"  
-#LOGIN_REDIRECT_URL = "/pricing/admin/"   
-#LOGIN_REDIRECT_URL = "/admin/"   
-LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -44,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pricing',
     'payments',
-    
-    'rest_framework' #added 
+    'rest_framework',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -59,6 +54,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
 
 TEMPLATES = [
     {
@@ -74,6 +70,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -125,8 +123,22 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# This tells Django to look in your specific backend/static folder
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
         "rest_framework.renderers.JSONRenderer",
     ],
 }
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'admin-page'
+LOGOUT_REDIRECT_URL = 'home'
+

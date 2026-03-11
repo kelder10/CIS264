@@ -1,103 +1,121 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Accessories - Indian Creek Cycle Rentals</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
+<script>
+    let isScrolling;
+    document.addEventListener('mousemove', (e) => {
+        clearInterval(isScrolling);
+        const bottomThreshold = window.innerHeight * 0.85;
+        const topThreshold = window.innerHeight * 0.15;
+        if (e.clientY > bottomThreshold) {
+            isScrolling = setInterval(() => { window.scrollBy(0, 5); }, 10);
+        } else if (e.clientY < topThreshold) {
+            isScrolling = setInterval(() => { window.scrollBy(0, -5); }, 10);
+        }
+    });
+    document.addEventListener('mouseleave', () => clearInterval(isScrolling));
+</script>
+
 <body>
 
-<!-- NAVBAR -->
 <header class="navbar">
     <div class="logo">
-        <a href="index.html">
-          <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+        <a href="{% url 'home' %}">
+          <img src="{% static 'media/logo.png' %}" alt="Indian Creek Cycle Rentals logo">
         </a>
-      </div>
+    </div>
 
     <nav class="center-nav">
-        <a href="index.html">Home</a>
-        <a href="adults.html">Adults</a>
-        <a href="kids.html">Kids</a>
-        <a href="accessories.html">Accessories</a>
-        <a href="trail_info.html">Waiver and Safety</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'adults' %}">Adults</a>
+        <a href="{% url 'kids' %}">Kids</a>
+        <a href="{% url 'accessories' %}">Accessories</a>
+        <a href="{% url 'trail-info' %}">Waiver and Safety</a>
     </nav>
 
     <div class="right-nav">
-        <a href="about.html">About Us</a>
-        <a href="cart.html">Cart</a>
+        <a href="{% url 'about' %}">About Us</a>
+        <a href="{% url 'cart' %}">Cart ({{ request.session.cart|length|default:0 }})</a>
         <button id="darkModeBtn">🌙</button>
-        
+        <a href="{% url 'admin-page' %}" class="admin-icon" title="Admin Login">⚙️</a>
     </div>
 </header>
 
-<!-- PAGE TITLE -->
 <section class="page-title">
     <h1>Accessories</h1>
     <p>Add optional gear to make your ride safer and more comfortable</p>
 </section>
 
-<!-- FILTERS -->
-<section class="filters">
-    <select>
-        <option>All Accessories</option>
-        <option>Safety</option>
-        <option>Comfort</option>
-        <option>Kids</option>
-    </select>
-
-    <select>
-        <option>Duration</option>
-        <option>1 Hour</option>
-        <option>Half Day</option>
-        <option>Full Day</option>
-    </select>
+<section class="page-title" style="margin-top: 40px; text-align: center;">
+    <h2 style="color: #eee;">Equipment Add-ons (Returnable)</h2>
+    <p style="font-size: 0.9em; color: #eee; font-style: italic;">Included with your rental period.</p>
 </section>
 
-<!-- ACCESSORIES GRID -->
 <section class="bike-grid">
-
+    {% for item in equipment_addons %}
     <div class="bike-card">
-        <div class="bike-image"></div>
-        <h3>Helmet</h3>
-        <p>Protective helmet for all riders</p>
-        <p><strong>$5 / rental</strong></p>
-        <button class="reserve-btn">Add to Reservation</button>
+        <form action="{% url 'add_to_cart' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="item_type" value="accessory"> 
+            <input type="hidden" name="item_id" value="{{ item.accessory_id }}">
+            
+            <div class="bike-image" style="background-image: url('{% static 'media/' %}{{ item.name|lower|cut:' ' }}.jpg'); background-size: cover; height: 180px;"></div>
+            
+            <div style="padding: 15px;">
+                <h3>{{ item.name }}</h3>
+                <p>{{ item.description }}</p>
+                <p><strong>${{ item.price }} / rental</strong></p>
+                <button type="submit" class="reserve-btn">+ Add to Trip</button>
+            </div>
+        </form>
     </div>
-
-    <div class="bike-card">
-        <div class="bike-image"></div>
-        <h3>Bike Lock</h3>
-        <p>Secure your bike when you stop</p>
-        <p><strong>$3 / rental</strong></p>
-        <button class="reserve-btn">Add to Reservation</button>
-    </div>
-
-    <div class="bike-card">
-        <div class="bike-image"></div>
-        <h3>Front Basket</h3>
-        <p>Carry small items during your ride</p>
-        <p><strong>$4 / rental</strong></p>
-        <button class="reserve-btn">Add to Reservation</button>
-    </div>
-
-    <div class="bike-card">
-        <div class="bike-image"></div>
-        <h3>Kids Seat</h3>
-        <p>Safe seat for young children</p>
-        <p><strong>$7 / rental</strong></p>
-        <button class="reserve-btn">Add to Reservation</button>
-    </div>
-
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center;">No equipment add-ons currently available.</p>
+    {% endfor %}
 </section>
 
-<!-- FOOTER -->
+<hr style="width: 80%; margin: 40px auto; border: 0; border-top: 1px solid #eee;">
+
+<section class="page-title" style="text-align: center;">
+    <h2 style="color: #eee;">Trail Essentials (Yours to Keep)</h2>
+    <p style="font-size: 0.9em; color: #eee; font-style: italic;">Purchase to keep.</p>
+</section>
+
+<section class="bike-grid">
+    {% for item in trail_essentials %}
+    <div class="bike-card">
+        <form action="{% url 'add_to_cart' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="item_type" value="accessory">
+            <input type="hidden" name="item_id" value="{{ item.accessory_id }}">
+            
+            <div class="bike-image" style="background-image: url('{% static 'media/' %}{{ item.name|lower|cut:' ' }}.jpg'); background-size: cover; height: 180px;"></div>
+            
+            <div style="padding: 15px;">
+                <h3>{{ item.name }}</h3>
+                <p>{{ item.description }}</p>
+                <p><strong>${{ item.price }}</strong></p>
+                <button type="submit" class="reserve-btn">+ Add to Trip</button>
+            </div>
+        </form>
+    </div>
+    {% empty %}
+        <p style="grid-column: 1 / -1; text-align: center;">No trail essentials currently available.</p>
+    {% endfor %}
+</section>
+
 <footer class="site-footer">
     <p>© 2026 Indian Creek Cycle Rentals</p>
-    <a href="admin.html">Admin</a>
-  </footer>
+    <a href="{% url 'admin-page' %}">Admin</a>
+</footer>
 
-<script src="script.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

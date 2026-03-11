@@ -37,13 +37,19 @@ class RentalLocation(models.Model):
 class BikeType(models.Model):
     type_id = models.AutoField(primary_key=True, db_column="typeid")
     type_name = models.CharField(max_length=50, db_column="typename")
+    
+    # --- YOUR ADDITION ---
+    CATEGORY_CHOICES = [('Adult', 'Adult'), ('Kids', 'Kids')]
+    category = models.CharField(max_length=10, choices=CATEGORY_CHOICES, default='Adult')
+    # ---------------------
+
     description = models.TextField(null=True, blank=True, db_column="description")
 
     class Meta:
         db_table = "biketypes"
 
     def __str__(self):
-        return self.type_name
+        return f"{self.type_name} ({self.category})"
 
 
 class Trail(models.Model):
@@ -52,27 +58,35 @@ class Trail(models.Model):
     distance = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True, db_column="distance")
     difficulty = models.CharField(max_length=20, null=True, blank=True, db_column="difficulty")
     description = models.TextField(null=True, blank=True, db_column="description")
+    zip_code = models.CharField(max_length=10, null=True, blank=True, db_column="zipcode")
 
     class Meta:
         db_table = "trails"
 
     def __str__(self):
         return self.name
-
+    
 
 class Bike(models.Model):
     bike_id = models.AutoField(primary_key=True, db_column="bikeid")
+    # Added 'name' to give bikes identity (e.g. "Red Cruiser")
+    name = models.CharField(max_length=100, db_column="name", default="Standard Bike")
+    
     type = models.ForeignKey(BikeType, on_delete=models.PROTECT, db_column="typeid")
     location = models.ForeignKey(RentalLocation, on_delete=models.PROTECT, db_column="locationid")
     size = models.CharField(max_length=20, null=True, blank=True, db_column="size")
     hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, db_column="hourlyrate")
     status = models.CharField(max_length=20, default="Available", db_column="status")
+    
+    # --- ADDITION ---
+    is_available = models.BooleanField(default=True, db_column="available")
+    # ---------------------
 
     class Meta:
         db_table = "bikes"
 
     def __str__(self):
-        return f"Bike {self.bike_id} - {self.type} - {self.status}"
+        return f"{self.name} ({self.size})"
 
 
 class Reservation(models.Model):
@@ -121,3 +135,5 @@ class PromoCode(models.Model):
 
     def __str__(self):
         return self.code
+    
+    
