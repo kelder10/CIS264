@@ -1,32 +1,32 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Admin Dashboard - Bike Inventory</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="admin.css" />
+  <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 </head>
-<body class ="admin-page">
+<body class="admin-page">
 
 <header class="navbar">
   <div class="logo">
-    <a href="index.html">
-      <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+    <a href="{% url 'home' %}">
+        <img src="{% static 'media/logo.png' %}" alt="Indian Creek Cycle Rentals logo">
     </a>
   </div>
 
   <nav class="center-nav">
-    <a href="index.html">Public Site</a>
+    <a href="{% url 'home' %}">Public Site</a>
   </nav>
 
   <div class="right-nav">
     <div class="dropdown">
     <span class="admin-badge">Admin Panel</span>
     <div class="dropdown-content">
-    <a href="admin.html"> Admin Dashboard</a>
-    <a href="reservations.html">View Reservations/Rentals</a>
-    <a href="availability.html">Update Availability</a>
-    <a href="index.html">Home</a>
+    <a href="{% url 'admin-page' %}">Admin Dashboard</a>
+    <a href="{% url 'reservations' %}">View Reservations/Rentals</a>
+    <a href="{% url 'availability' %}">Update Availability</a>
   </div>
     </div>
 </header>
@@ -35,7 +35,6 @@
   <h1>Bike Inventory</h1>
   <p>Add, edit, or remove bikes in the system. (Static UI for now.)</p>
 </section>
-
 
 <section class="admin-section" id="bike-inventory">
   <h2>Inventory Table</h2>
@@ -59,7 +58,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Placeholder rows — replace with dynamic data -->
         <tr>
           <td><input type="checkbox" /></td>
           <td>101</td>
@@ -79,13 +77,16 @@
       </tbody>
     </table>
   </div>
-
 </section>
 
 <footer class="site-footer">
   <p>© 2026 Indian Creek Cycle Rentals</p>
+  <form action="{% url 'logout' %}" method="post" style="display:inline;">
+      {% csrf_token %}
+      <button type="submit" style="background:none; border:none; color:#007bff; text-decoration:underline; cursor:pointer; font-family:inherit; padding:0;">Logout</button>
+  </form>
 </footer>
 
-<script src="script.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

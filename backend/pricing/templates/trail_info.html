@@ -1,30 +1,50 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Trail Info + Safety + FAQs - Indian Creek Cycle Rentals</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
+<script>
+    let isScrolling;
+    document.addEventListener('mousemove', (e) => {
+        clearInterval(isScrolling);
+        const bottomThreshold = window.innerHeight * 0.85;
+        const topThreshold = window.innerHeight * 0.15;
+        if (e.clientY > bottomThreshold) {
+            isScrolling = setInterval(() => { window.scrollBy(0, 5); }, 10);
+        } else if (e.clientY < topThreshold) {
+            isScrolling = setInterval(() => { window.scrollBy(0, -5); }, 10);
+        }
+    });
+    document.addEventListener('mouseleave', () => clearInterval(isScrolling));
+</script>
+
 <body>
 
 <header class="navbar">
     <div class="logo">
-        <a href="index.html">
-          <img src="media/logo.png" alt="Indian Creek Cycle Rentals logo">
+        <a href="{% url 'home' %}">
+          <img src="{% static 'media/logo.png' %}" alt="Indian Creek Cycle Rentals logo">
         </a>
       </div>
 
     <nav class="center-nav">
-        <a href="index.html">Home</a>
-        <a href="adults.html">Adults</a>
-        <a href="kids.html">Kids</a>
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'adults' %}">Adults</a>
+        <a href="{% url 'kids' %}">Kids</a>
+        <a href="{% url 'accessories' %}">Accessories</a>
+        <a href="{% url 'trail-info' %}">Trail Info</a>
     </nav>
 
     <div class="right-nav">
-        <a href="about.html">About Us</a>
-        <a href="trail.html">Trail Info</a>
+        <a href="{% url 'about' %}">About Us</a>
+        <a href="{% url 'cart' %}">Cart ({{ request.session.cart|length|default:0 }})</a>
         <button id="darkModeBtn">🌙</button>
+        <a href="{% url 'admin-page' %}" class="admin-icon" title="Admin Login">⚙️</a>
     </div>
 </header>
 
@@ -32,10 +52,11 @@
     <h1>Trail Info, Safety Guidelines + FAQs</h1>
     <p>Know before you go—ride smart and enjoy the Indian Creek Trail</p>
 </section>
-<section class="waiver-alert">
-    <p> A signed <a href="waiver.html">waiver</a> is required before any rental begins.</p>
+
+<section class="waiver-alert" style="text-align: center; padding: 10px; background: #fff3cd; color: #856404;">
+    <p>A signed <a href="{% url 'waiver' %}" style="font-weight: bold; text-decoration: underline;">waiver</a> is required before any rental begins.</p>
 </section>
-<!-- TRAIL INFO -->
+
 <section class="about-content">
     <h2>Trail Info</h2>
     <p>
@@ -59,10 +80,8 @@
     </div>
 </section>
 
-<!-- SAFETY GUIDELINES -->
 <section class="features">
     <h2>Safety Guidelines</h2>
-
     <div class="feature-box">
         <div class="card">Wear a helmet (recommended for all riders)</div>
         <div class="card">Ride on the right, pass on the left</div>
@@ -71,68 +90,45 @@
         <div class="card">Keep a safe speed in crowded areas</div>
         <div class="card">Use lights/reflectors if riding near dusk</div>
     </div>
-
-    <section class="about-content">
-        <p>
-            Please be respectful of others on the trail. Slow down around pedestrians, give extra space
-            to kids and pets, and avoid sudden stops in the middle of the path.
-        </p>
-    </section>
 </section>
-<!-- WAIVER NOTICE -->
-<section class="waiver-section">
+
+<section class="waiver-section" style="text-align: center; padding: 40px 20px;">
     <h2>Waiver Required</h2>
     <p>
         All riders must review and sign a liability waiver before renting a bike.
         Riders under 18 must have a parent or guardian sign for them.
     </p>
-    <a href="waiver.html" class="primary-btn">Read & Sign Waiver</a>
+    <a href="{% url 'waiver' %}" class="primary-btn" style="padding: 15px 30px; text-decoration: none; display: inline-block;">Read & Sign Waiver</a>
 </section>
-<!-- FAQS -->
-<section class="faq-section">
-    <h2>FAQs</h2>
 
-    <div class="faq-grid">
-
-        <div class="faq-card">
+<section class="faq-section" style="padding: 40px 20px; max-width: 1000px; margin: 0 auto;">
+    <h2 style="text-align: center;">FAQs</h2>
+    <div class="faq-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+        <div class="faq-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
             <strong>Do I need a helmet?</strong>
             <p>Helmets are strongly recommended for all riders, especially kids.</p>
         </div>
-
-        <div class="faq-card">
+        <div class="faq-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
             <strong>Can I ride with kids?</strong>
             <p>Yes—just keep speeds comfortable and stay to the right. Kids should ride with an adult.</p>
         </div>
-
-        <div class="faq-card">
+        <div class="faq-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
             <strong>What if the weather is bad?</strong>
             <p>If conditions are unsafe (ice, storms, heavy rain), we recommend rescheduling your ride.</p>
         </div>
-
-        <div class="faq-card">
-            <strong>Can I bring my dog?</strong>
-            <p>Dogs are welcome on most trails when leashed. Please keep them close to the right side.</p>
-        </div>
-
-        <div class="faq-card">
-            <strong>What should I do if something goes wrong?</strong>
-            <p>Move off the trail, check for injuries, and contact us if your rental needs assistance.</p>
-        </div>
-
-        <div class="faq-card">
+        <div class="faq-card" style="padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
             <strong>Can I stop for breaks?</strong>
             <p>Absolutely—just pull completely off the trail so others can pass safely.</p>
         </div>
-
     </div> 
 </section>
-<!--why won't my changes save!!-->
+
 <footer class="site-footer">
     <p>© 2026 Indian Creek Cycle Rentals</p>
-    <a href="admin.html">Admin</a>
+    <a href="{% url 'admin-page' %}">Admin</a>
 </footer>
 
-<script src="script.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
 
 </body>
 </html>
