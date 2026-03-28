@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Reservation - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Cancel Reservation</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'my_reservations' %}">My Reservations</a>
+            <span>/</span>
+            <span>Cancel</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="cancel-form-card">
+            <div class="cancel-warning">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <h2>Are you sure you want to cancel?</h2>
+            </div>
+            
+            <div class="reservation-summary">
+                <h3>Reservation Details</h3>
+                <p><strong>Reservation #:</strong> {{ reservation.id }}</p>
+                <p><strong>Bike:</strong> {{ reservation.bike.name }}</p>
+                <p><strong>Dates:</strong> {{ reservation.rental_date|date:"M d, Y" }} - {{ reservation.return_date|date:"M d, Y" }}</p>
+                <p><strong>Total:</strong> ${{ reservation.total_price }}</p>
+            </div>
+            
+            <form method="post" class="cancel-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.reason.id_for_label }}">Reason for Cancellation (Optional)</label>
+                    {{ form.reason }}
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-check">
+                        {{ form.confirm }}
+                        <span class="form-check-label">I confirm that I want to cancel this reservation. *</span>
+                    </label>
+                    {% if form.confirm.errors %}
+                    <span class="form-error">{{ form.confirm.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-danger btn-lg">Cancel Reservation</button>
+                    <a href="{% url 'reservation_detail' pk=reservation.id %}" class="btn btn-outline">Keep Reservation</a>
+                </div>
+            </form>
+            
+            <div class="cancel-note">
+                <p><strong>Note:</strong> Cancellations made less than 24 hours before the pickup date may be subject to a cancellation fee.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

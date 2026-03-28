@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Bike Size Guide - Indian Creek Cycles{% endblock %}
+{% block meta_description %}Find the perfect bike size for your height and age. Our comprehensive bike sizing guide helps you choose the right fit.{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Bike Size Guide</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'bike_list' %}">Bikes</a>
+            <span>/</span>
+            <span>Size Guide</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Introduction -->
+<section class="section-sm section-alt">
+    <div class="container">
+        <div class="guide-intro">
+            <h2 class="section-title">Find Your Perfect Fit</h2>
+            <p class="guide-text">Choosing the right bike size is essential for comfort, safety, and enjoyment. Use this guide to find the best size based on your height and age.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Size Chart -->
+<section class="section">
+    <div class="container">
+        <div class="size-chart">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Wheel Size</th>
+                        <th>Rider Height</th>
+                        <th>Age Range</th>
+                        <th>Best For</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for size in sizes %}
+                    <tr>
+                        <td>
+                            <span class="size-badge">{{ size.size_inches }}"</span>
+                        </td>
+                        <td>{{ size.recommended_height }}</td>
+                        <td>{{ size.recommended_age|default:"All ages" }}</td>
+                        <td>{{ size.description }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- How to Measure -->
+<section class="section section-alt">
+    <div class="container">
+        <h2 class="section-title">How to Measure</h2>
+        
+        <div class="measure-guide">
+            <div class="measure-step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Measure Your Height</h4>
+                    <p>Stand against a wall without shoes. Mark the top of your head and measure from the floor to the mark.</p>
+                </div>
+            </div>
+            
+            <div class="measure-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Check Inseam (Optional)</h4>
+                    <p>Measure from your crotch to the floor. This helps determine standover height clearance.</p>
+                </div>
+            </div>
+            
+            <div class="measure-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Match to Size Chart</h4>
+                    <p>Find your height in the chart above to determine the recommended wheel size.</p>
+                </div>
+            </div>
+            
+            <div class="measure-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Test Ride if Possible</h4>
+                    <p>The best way to ensure a good fit is to test ride the bike before renting.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tips Section -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Sizing Tips</h2>
+        
+        <div class="tips-list">
+            <div class="tip-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <p><strong>When in doubt, go smaller.</strong> It's easier to adjust a slightly smaller bike than one that's too large.</p>
+            </div>
+            
+            <div class="tip-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <p><strong>Consider growth for kids.</strong> Kids grow quickly. A slightly larger bike with room to grow can last longer.</p>
+            </div>
+            
+            <div class="tip-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <p><strong>Standover height matters.</strong> You should be able to stand over the bike with both feet flat on the ground.</p>
+            </div>
+            
+            <div class="tip-item">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <p><strong>Reach should be comfortable.</strong> You shouldn't feel stretched out or cramped when holding the handlebars.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Find Your Bike?</h2>
+            <p class="cta-text">Browse our selection and find the perfect bike for your next adventure!</p>
+            <div class="cta-buttons">
+                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse All Bikes</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline btn-lg">Need Help?</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

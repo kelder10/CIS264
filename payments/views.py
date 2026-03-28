@@ -1,0 +1,148 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.utils import timezone
+from django.db import transaction
+from django.conf import settings
+
+from reservations.models import Reservation, PromoCode
+from .models import Payment
+from .forms import PaymentForm, SimulatedPaymentForm
+
+
+@login_required
+def payment(request, reservation_id):
+    """Payment processing view."""
+    reservation = get_object_or_404(
+        Reservation.objects.select_related('bike', 'user'),
+        id=reservation_id,
+        user=request.user
+    )
+    
+    # Check if already paid
+    if reservation.status == 'paid':
+        messages.info(request, 'This reservation has already been paid.')
+        return redirect('reservation_confirmation', pk=reservation.id)
+    
+    # Check if waiver is signed
+    if not reservation.waiver_signed:
+        messages.warning(request, 'Please sign the waiver before proceeding to payment.')
+        return redirect('waiver', reservation_id=reservation.id)
+    
+    # Get accessories
+    accessories = reservation.reservation_accessories.select_related('accessory').all()
+    
+    if request.method == 'POST':
+        form = SimulatedPaymentForm(request.POST)
+        if form.is_valid():
+            with transaction.atomic():
+                payment_method = form.cleaned_data['payment_method']
+                promo_code_str = form.cleaned_data.get('promo_code', '')
+                
+                # Calculate discount
+                discount_amount = 0
+                if promo_code_str:
+                    try:
+                        promo = PromoCode.objects.get(code=promo_code_str)
+                        discount_amount = promo.calculate_discount(reservation.subtotal)
+                        promo.current_uses += 1
+                        promo.save()
+                    except PromoCode.DoesNotExist:
+                        pass
+                
+                # Create payment record
+                payment = Payment.objects.create(
+                    reservation=reservation,
+                    subtotal=reservation.subtotal,
+                    tax_amount=reservation.tax_amount,
+                    discount_amount=discount_amount,
+                    total_amount=reservation.total_price - discount_amount,
+                    payment_method=payment_method,
+                    status='completed',  # Simulate successful payment
+                    card_last_four='4242',  # Demo last four
+                    card_brand='Visa',
+                    promo_code=promo_code_str,
+                    processed_at=timezone.now(),
+                    notes='Simulated payment for demonstration purposes.'
+                )
+                
+                # Update reservation status
+                reservation.status = 'paid'
+                reservation.save()
+                
+                messages.success(
+                    request,
+                    f'Payment successful! Your reservation is confirmed. Transaction ID: {payment.transaction_id}'
+                )
+                return redirect('reservation_confirmation', pk=reservation.id)
+    else:
+        form = SimulatedPaymentForm()
+    
+    context = {
+        'form': form,
+        'reservation': reservation,
+        'accessories': accessories,
+        'bike': reservation.bike,
+    }
+    return render(request, 'payments/payment.html', context)
+
+
+@login_required
+def payment_confirmation(request, payment_id):
+    """Payment confirmation/receipt view."""
+    payment = get_object_or_404(
+        Payment.objects.select_related('reservation', 'reservation__bike', 'reservation__user'),
+        id=payment_id
+    )
+    
+    # Ensure user owns this payment
+    if payment.reservation.user != request.user:
+        messages.error(request, 'You do not have permission to view this payment.')
+        return redirect('home')
+    
+    context = {
+        'payment': payment,
+        'reservation': payment.reservation,
+    }
+    return render(request, 'payments/payment_confirmation.html', context)
+
+
+@login_required
+def payment_history(request):
+    """View payment history."""
+    payments = Payment.objects.filter(
+        reservation__user=request.user
+    ).select_related('reservation', 'reservation__bike').order_by('-created_at')
+    
+    context = {
+        'payments': payments,
+    }
+    return render(request, 'payments/payment_history.html', context)
+
+
+@login_required
+def apply_promo_code(request, reservation_id):
+    """Apply promo code to reservation."""
+    reservation = get_object_or_404(
+        Reservation,
+        id=reservation_id,
+        user=request.user
+    )
+    
+    if request.method == 'POST':
+        code = request.POST.get('promo_code', '').upper()
+        
+        try:
+            promo = PromoCode.objects.get(code=code, is_active=True)
+            if promo.is_valid():
+                discount = promo.calculate_discount(reservation.subtotal)
+                messages.success(
+                    request,
+                    f'Promo code applied! You saved ${discount:.2f}.'
+                )
+            else:
+                messages.error(request, 'This promo code has expired or reached its limit.')
+        except PromoCode.DoesNotExist:
+            messages.error(request, 'Invalid promo code.')
+    
+    return redirect('payment', reservation_id=reservation_id)

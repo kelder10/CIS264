@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Edit Profile</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'profile' %}">My Profile</a>
+            <span>/</span>
+            <span>Edit</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="form-card">
+            <form method="post" class="profile-form">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3 class="form-section-title">Personal Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.first_name.id_for_label }}">First Name *</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.last_name.id_for_label }}">Last Name *</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Email *</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+                        {{ form.date_of_birth }}
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="form-section-title">Address</h3>
+                    <div class="form-group">
+                        <label for="{{ form.address.id_for_label }}">Street Address</label>
+                        {{ form.address }}
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.city.id_for_label }}">City</label>
+                            {{ form.city }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.state.id_for_label }}">State</label>
+                            {{ form.state }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.zip_code.id_for_label }}">ZIP Code</label>
+                            {{ form.zip_code }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="form-section-title">Emergency Contact</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.emergency_contact_name.id_for_label }}">Contact Name</label>
+                            {{ form.emergency_contact_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.emergency_contact_phone.id_for_label }}">Contact Phone</label>
+                            {{ form.emergency_contact_phone }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3 class="form-section-title">Preferences</h3>
+                    <div class="form-group">
+                        <label class="form-check">
+                            {{ form.is_newsletter_subscribed }}
+                            <span class="form-check-label">Subscribe to our newsletter for updates and special offers</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - Indian Creek Cycles{% endblock %}
+{% block meta_description %}Get in touch with Indian Creek Cycles. Contact us for bike rentals, trail information, or any questions about our services.{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Contact Us</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <span>Contact</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="section">
+    <div class="container">
+        <div class="contact-grid">
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h2 class="section-title">Send Us a Message</h2>
+                <p class="section-subtitle">Have a question or want to make an inquiry? Fill out the form below and we'll get back to you within 24 hours.</p>
+                
+                <form method="post" class="contact-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Full Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                            <span class="form-error">{{ form.name.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.email.id_for_label }}">Email Address *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <span class="form-error">{{ form.email.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                            {{ form.phone }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.inquiry_type.id_for_label }}">Inquiry Type</label>
+                            {{ form.inquiry_type }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.planned_date.id_for_label }}">Planned Rental Date</label>
+                            {{ form.planned_date }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.group_size.id_for_label }}">Group Size</label>
+                            {{ form.group_size }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.message.id_for_label }}">Message *</label>
+                        {{ form.message }}
+                        {% if form.message.errors %}
+                        <span class="form-error">{{ form.message.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                        Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Contact Info -->
+            <div class="contact-info-section">
+                <h3 class="contact-info-title">Get in Touch</h3>
+                
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Location</h4>
+                        <p>123 Creek Road<br>Nature Valley, NC 28711</p>
+                    </div>
+                </div>
+                
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
+                        </svg>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Phone</h4>
+                        <p><a href="tel:+15551232453">(555) 123-BIKE</a></p>
+                        <p class="contact-note">Mon-Sat: 8am - 6pm</p>
+                    </div>
+                </div>
+                
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Email</h4>
+                        <p><a href="mailto:info@indiancreekcycles.com">info@indiancreekcycles.com</a></p>
+                    </div>
+                </div>
+                
+                <div class="contact-info-item">
+                    <div class="contact-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div class="contact-details">
+                        <h4>Hours</h4>
+                        <p>Monday - Saturday: 8:00 AM - 6:00 PM</p>
+                        <p>Sunday: 9:00 AM - 5:00 PM</p>
+                    </div>
+                </div>
+                
+                <div class="contact-map">
+                    <div class="map-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                        <p>Interactive Map Coming Soon</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+        </div>
+        
+        <div class="faq-list">
+            <div class="faq-item">
+                <h4 class="faq-question">What do I need to bring to rent a bike?</h4>
+                <p class="faq-answer">You'll need a valid ID and a credit card for the security deposit. We provide helmets with all rentals, but you're welcome to bring your own.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4 class="faq-question">Can I reserve a bike in advance?</h4>
+                <p class="faq-answer">Yes! We recommend booking online at least 24 hours in advance, especially on weekends and holidays. You can reserve through our website or by calling us.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4 class="faq-question">What if it rains on my rental day?</h4>
+                <p class="faq-answer">We understand that weather can be unpredictable. You can reschedule your rental up to 2 hours before your pickup time at no extra charge.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4 class="faq-question">Do you offer group discounts?</h4>
+                <p class="faq-answer">Yes! We offer discounts for groups of 4 or more. Contact us for special rates for corporate events, school groups, or large family outings.</p>
+            </div>
+            
+            <div class="faq-item">
+                <h4 class="faq-question">Are your bikes suitable for beginners?</h4>
+                <p class="faq-answer">Absolutely! We have bikes for all skill levels. Our staff will help you choose the right bike and can recommend beginner-friendly trails.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Book Your Ride?</h2>
+            <p class="cta-text">Browse our selection of premium bikes and reserve yours today!</p>
+            <div class="cta-buttons">
+                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse Bikes</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

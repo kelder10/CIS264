@@ -1,11 +1,6 @@
-Project Updates & New Features
-    • Integrated Static Tags & URLs: Updated all templates to use {% load static %} and {% url %} tags. This ensures that the images, CSS, and navigation links the team created work consistently across everyone’s local servers.
-    • Enhanced Search & Weather Logic: Refined the search bar on the bike pages to filter trails by zip code and prepped the backend to pull localized weather data for those specific areas to help riders plan.
-    • Refined Cart Logic: Updated the cart's math to handle the difference between rentals and purchases. It now correctly applies the hourly rate to bikes while keeping a flat price for items meant to be kept.
-    • Polished Cart UI: Used conditional tags to streamline the interface, so the "Duration" label only shows up for rentals. This keeps the layout clean and specific to each item type.
-    • Standardized Price Formatting: Applied a global :.2f format to the total calculations so that all prices display with professional currency formatting (e.g., $15.00 instead of $15.0).
-    • Synchronized Database IDs: Updated the forms to use accessory_id, ensuring the "Add to Cart" buttons connect with our Accessory database models.
-    • Management Security: Strengthened the access control on admin and inventory views by ensuring all sensitive pages redirect unauthenticated users to the login screen.
+# Indian Creek Cycles - Django Bike Rental Platform
+
+A complete, production-ready Django web application for a bike rental business. Features include bike inventory management, online reservations, waiver signing, simulated payments, customer reviews, and weather integration.
 
 ## Team Members
 
@@ -15,192 +10,298 @@ Project Updates & New Features
 
 * Abdel Mahouel
 
-* Walid Mouhab
+* Walid Mouhab 
+  
+## Features
 
-----------------
-# Indian Creek Cycles – Django Backend
+### Customer Features
+- **Browse Bikes** - View available bikes by category (Adult, Kids, Mountain)
+- **Bike Details** - See specifications, pricing, and compatible accessories
+- **Online Reservations** - Book bikes with date selection and accessory add-ons
+- **Waiver Signing** - Digital waiver acceptance before rental
+- **Simulated Payments** - Complete reservation with demo payment processing
+- **Weather Widget** - Check weather by ZIP code for ride planning
+- **Trail Information** - Browse local trails with difficulty ratings
+- **Customer Reviews** - Submit and read reviews
+- **User Accounts** - Registration, login, profile management
 
-This project is a Django backend application built with Django and Django REST Framework.
+### Admin Features
+- **Bike Management** - Add, edit, and manage bike inventory
+- **Reservation Management** - View and manage all reservations
+- **Waiver Records** - Track signed waivers
+- **Payment Records** - View simulated payment transactions
+- **Review Moderation** - Approve and feature customer reviews
+- **Contact Inquiries** - Manage customer inquiries
 
----
+## Technology Stack
 
-## Requirements
+- **Backend**: Django 4.2+
+- **Database**: SQLite (default, can be changed to PostgreSQL)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Styling**: Custom CSS with CSS Variables
+- **Fonts**: Playfair Display (headings), Inter (body)
+- **Icons**: SVG icons
 
-- Python 3.10+
-- pip
-
----
-
-## Project Setup (macOS / Linux)
-
-1. Navigate to the project root (the folder containing `manage.py`):
+## Project Structure
 
 ```
-cd path/to/project
+indian_creek_cycles/
+├── config/                 # Django project configuration
+│   ├── settings.py        # Project settings
+│   ├── urls.py            # Root URL configuration
+│   └── wsgi.py            # WSGI application
+├── core/                   # Core app (homepage, about, contact, trails, weather)
+│   ├── models.py          # ContactInquiry, Trail, SiteSetting models
+│   ├── views.py           # Home, about, trails, contact, weather API views
+│   ├── forms.py           # ContactForm, WeatherZipForm
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── accounts/               # User accounts app
+│   ├── models.py          # Custom User model
+│   ├── views.py           # Registration, login, profile views
+│   ├── forms.py           # UserRegistrationForm, UserProfileForm
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── bikes/                  # Bike inventory app
+│   ├── models.py          # BikeCategory, BikeSize, Bike, Accessory models
+│   ├── views.py           # Bike listing, detail, category views
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── reservations/           # Reservations app
+│   ├── models.py          # Reservation, Waiver, PromoCode models
+│   ├── views.py           # Reservation creation, waiver, cancellation views
+│   ├── forms.py           # ReservationForm, WaiverForm
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── payments/               # Payments app
+│   ├── models.py          # Payment, PaymentMethod models
+│   ├── views.py           # Payment processing views
+│   ├── forms.py           # PaymentForm
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── reviews/                # Reviews app
+│   ├── models.py          # Review, ReviewImage, ReviewHelpfulVote models
+│   ├── views.py           # Review listing, submission views
+│   ├── forms.py           # ReviewForm
+│   ├── urls.py            # URL patterns
+│   └── admin.py           # Admin configuration
+├── templates/              # Django templates
+│   ├── base.html          # Base template
+│   ├── core/              # Core app templates
+│   ├── accounts/          # Accounts app templates
+│   ├── bikes/             # Bikes app templates
+│   ├── reservations/      # Reservations app templates
+│   ├── payments/          # Payments app templates
+│   └── reviews/           # Reviews app templates
+├── static/                 # Static files
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript files
+│   ├── images/            # Images
+│   └── video/             # Video files
+├── media/                  # User-uploaded files
+├── manage.py               # Django management script
+├── requirements.txt        # Python dependencies
+└── .env.example           # Environment variables template
 ```
 
-2. Create a virtual environment:
+## Installation & Setup
 
-```
+### Prerequisites
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Step 1: Create Virtual Environment
+
+```bash
+# Windows
+python -m venv .venv
+.\.venv\Scripts\activate
+
+# macOS/Linux
 python3 -m venv .venv
-```
-
-3. Activate the virtual environment:
-
-```
 source .venv/bin/activate
 ```
 
-4. Install project dependencies:
+### Step 2: Install Dependencies
 
+```bash
+pip install -r requirements.txt
 ```
-python -m pip install -r requirements.txt
+
+### Step 3: Configure Environment Variables
+
+```bash
+# Copy the example environment file
+cp .env.example .env
+
+# Edit .env with your settings (optional for demo)
+# The default settings will work for local development
 ```
 
----
+### Step 4: Run Database Migrations
 
-## Database Setup (First Run)
-
-Apply migrations to create the database tables:
-
-```
-python manage.py makemigrations pricing
+```bash
 python manage.py migrate
-python manage.py showmigrations pricing #confirming prices
 ```
 
-If you pull new updates later and migrations were added, run this command again.
+### Step 5: Seed Database with Sample Data
 
-
-
-
-
-
-Create an admin user:
-
-```
-python manage.py createsuperuser
-Username: 'admin'
-Email address: '  '
-Password: 'password'
-
+```bash
+python manage.py seed
 ```
 
----
+This creates:
+- Admin user (username: `admin`, password: `admin123`)
+- Sample users (password: `demo123`)
+- Bike categories and sizes
+- Sample bikes (11 bikes across categories)
+- Accessories (helmets, locks, baskets, etc.)
+- Sample trails (5 trails)
+- Promo codes (WELCOME20, FAMILY10, WEEKEND15)
+- Sample reviews (6 reviews)
 
-## Running the Development Server
+### Step 6: Run Development Server
 
-Start the server:
-
-```
+```bash
 python manage.py runserver
 ```
 
-Open your browser and go to:
+The application will be available at: **http://127.0.0.1:8000/**
 
+### Step 7: Access Admin Panel (Optional)
+
+Navigate to: **http://127.0.0.1:8000/admin/**
+
+Login with:
+- Username: `admin`
+- Password: `admin123`
+
+## Default Users
+
+| Username | Password | Role |
+|----------|----------|------|
+| admin | admin123 | Superuser/Admin |
+| john_doe | demo123 | Regular user |
+| jane_smith | demo123 | Regular user |
+| mike_johnson | demo123 | Regular user |
+| sarah_williams | demo123 | Regular user |
+
+## URL Routes
+
+### Public Pages
+- `/` - Homepage
+- `/about/` - About page
+- `/trails/` - Trails listing
+- `/contact/` - Contact form
+- `/bikes/` - Bike listing
+- `/bikes/adults/` - Adult bikes
+- `/bikes/kids/` - Kids bikes
+- `/bikes/mountain/` - Mountain bikes
+- `/bikes/sizes/` - Bike size guide
+- `/bikes/<slug>/` - Bike detail page
+- `/reviews/` - Reviews listing
+
+### Account Pages
+- `/accounts/login/` - Login
+- `/accounts/register/` - Registration
+- `/accounts/logout/` - Logout
+- `/accounts/profile/` - User profile
+- `/accounts/profile/edit/` - Edit profile
+
+### Reservation Pages (Login Required)
+- `/reservations/create/<bike_slug>/` - Create reservation
+- `/reservations/waiver/<reservation_id>/` - Sign waiver
+- `/reservations/my-reservations/` - My reservations
+- `/reservations/detail/<pk>/` - Reservation detail
+- `/reservations/cancel/<pk>/` - Cancel reservation
+- `/reservations/confirmation/<pk>/` - Reservation confirmation
+
+### Payment Pages (Login Required)
+- `/payments/process/<reservation_id>/` - Process payment
+- `/payments/confirmation/<payment_id>/` - Payment confirmation
+- `/payments/history/` - Payment history
+
+### API Endpoints
+- `/api/weather/?zip_code=<zip>` - Get weather data
+- `/reservations/check-availability/?bike_id=<id>&date=<date>` - Check bike availability
+
+## Weather API Configuration
+
+The weather feature works in two modes:
+
+### Demo Mode (Default)
+Without an API key, the weather endpoint returns mock data for demonstration purposes.
+
+### Live Mode (With OpenWeather API)
+1. Sign up for a free API key at [OpenWeatherMap](https://openweathermap.org/api)
+2. Add the key to your `.env` file:
+   ```
+   OPENWEATHER_API_KEY=your-api-key-here
+   ```
+3. Restart the server
+
+## Customization
+
+### Adding a Homepage Video
+
+1. Place your video file in `static/video/`
+2. Name it `family-biking.mp4` (or update the reference in `templates/core/home.html`)
+3. The video should be:
+   - MP4 format
+   - Optimized for web (compressed)
+   - Family-friendly cycling content
+
+### Changing Colors
+
+Edit CSS variables in `static/css/main.css`:
+
+```css
+:root {
+    --color-primary: #1a472a;      /* Dark green */
+    --color-primary-dark: #0d2916; /* Darker green */
+    --color-accent: #c9a227;       /* Gold */
+    /* ... other variables */
+}
 ```
-http://127.0.0.1:8000/
 
-```
+### Adding New Bike Categories
 
-API endpoints:
+1. Log in to the admin panel
+2. Go to "Bike Categories"
+3. Click "Add Bike Category"
+4. Fill in name, slug, and description
 
-- /admin/
-- /api/pricing/quote/
-- /api/pricing/bikes
-- /api/pricing/bikes/1
-- /api/payments/pay/
+## Deployment
 
+For production deployment:
 
+1. Set `DEBUG=False` in `.env`
+2. Generate a new `SECRET_KEY`
+3. Configure allowed hosts
+4. Set up a production database (PostgreSQL recommended)
+5. Collect static files:
+   ```bash
+   python manage.py collectstatic
+   ```
+6. Use a production WSGI server (Gunicorn, uWSGI)
+7. Configure a reverse proxy (Nginx, Apache)
 
-## API Endpoints
+## Testing
 
-These endpoints are API endpoints. If you visit them in a browser, the browser sends a **GET** request.
-Some endpoints are **POST-only**, so you may see: `{"detail":"Method \"GET\" not allowed."}` — that is expected.
-
-### Pricing
-- POST `/api/pricing/quote/` (calculate a pricing quote)
-- GET `/api/pricing/bikes/` (list bikes) *(requires database table + data)*
-- PUT `/api/pricing/bikes/<bike_id>/` (update a bike)
-
-### Payments
-- POST `/api/payments/pay/` (pay for a reservation)
----
-
-## Testing POST endpoints (example)
-
-Use `curl` (or Postman/Insomnia) to send a POST request.
-
-open an ADDITIONAL terminal (leave the previous one running while trying this)
-
-Example:
+Run Django tests:
 
 ```bash
-curl -X POST http://127.0.0.1:8000/api/pricing/quote/ \
-  -H "Content-Type: application/json" \
-  -d '{Note: Replace the JSON body with the fields the endpoint expects.}'
-  Example: 
-  -d '{
-        "bike_id": 1,
-        "hourly_rate": 30, 
-        "start_date": "2026-03-10",
-        "end_date": "2026-03-12"
-      }'
-
-      OTHER CURL: 
-
-##Testing payment:
-
-curl -X POST http://127.0.0.1:8000/api/payments/pay/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "reservation_id": 1,
-    "amount": 60.00,
-    "payment_method": "card"
-  }'
-
-##Testing price 
-
-curl -X POST http://127.0.0.1:8000/api/pricing/quote/ \
-  -H "Content-Type: application/json" \
-  -d '{
-    "hourly_rate": 15,
-    "start_date": "2026-03-02T10:00:00",
-    "end_date": "2026-03-02T14:00:00",
-    "promo_code": "SUMMER2026"  
-  }' | python3 -m json.tool
-
-
-## testing payment with curl
-
-curl -i -X POST http://127.0.0.1:8000/api/payments/pay/ \
-  -H "Content-Type: application/json" \
-  -d '{"reservation_id":2,"amount":"60.00","payment_method":"cash"}'
-
-## Windows Setup
-
-Activate the virtual environment using:
-
-```
-.venv\Scripts\activate
+python manage.py test
 ```
 
-Then follow the same install and run steps above.
+## License
+
+This project is created for educational purposes.
+
+## Support
+
+For issues or questions, please refer to the Django documentation or contact the project maintainer.
 
 ---
 
-## Tech Stack
-
-- Django
-- Django REST Framework
-- SQLite (default development database)
-
----
-
-## Updating Dependencies
-
-If new Python packages are added, update the requirements file:
-
-```
-python -m pip freeze > requirements.txt
-```
+**Made with ❤️ for bike lovers**

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservation Confirmed - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="confirmation-section">
+    <div class="container">
+        <div class="confirmation-card">
+            <div class="confirmation-icon success">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            
+            <h1 class="confirmation-title">Reservation Confirmed!</h1>
+            <p class="confirmation-message">Thank you for your reservation. We've sent a confirmation email with all the details.</p>
+            
+            <div class="confirmation-details">
+                <div class="detail-row">
+                    <span class="detail-label">Reservation Number</span>
+                    <span class="detail-value">#{{ reservation.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Bike</span>
+                    <span class="detail-value">{{ reservation.bike.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Pickup Date</span>
+                    <span class="detail-value">{{ reservation.rental_date|date:"l, F d, Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Return Date</span>
+                    <span class="detail-value">{{ reservation.return_date|date:"l, F d, Y" }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Total Paid</span>
+                    <span class="detail-value">${{ reservation.total_price }}</span>
+                </div>
+                {% if payment %}
+                <div class="detail-row">
+                    <span class="detail-label">Transaction ID</span>
+                    <span class="detail-value">{{ payment.transaction_id }}</span>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="confirmation-next">
+                <h3>What's Next?</h3>
+                <ul class="next-steps">
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Arrive at our location 15 minutes before your pickup time
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Bring a valid ID and your confirmation email
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        We'll fit you to your bike and provide a helmet
+                    </li>
+                    <li>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Enjoy your ride!
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="confirmation-actions">
+                <a href="{% url 'reservation_detail' pk=reservation.id %}" class="btn btn-primary btn-lg">View Reservation</a>
+                <a href="{% url 'bike_list' %}" class="btn btn-outline btn-lg">Browse More Bikes</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
