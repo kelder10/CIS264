@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Write a Review - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Write a Review</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'reviews' %}">Reviews</a>
+            <span>/</span>
+            <span>Write a Review</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="review-form-card">
+            <form method="post" class="review-form" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-section">
+                    <h3 class="form-section-title">Your Rating</h3>
+                    <div class="rating-select">
+                        {% for value, label in form.rating.field.choices %}
+                        <label class="rating-option">
+                            <input type="radio" name="rating" value="{{ value }}" {% if forloop.first %}checked{% endif %}>
+                            <span class="rating-star">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                </svg>
+                            </span>
+                            <span class="rating-label">{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% if form.rating.errors %}
+                    <span class="form-error">{{ form.rating.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Review Title *</label>
+                    {{ form.title }}
+                    {% if form.title.errors %}
+                    <span class="form-error">{{ form.title.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.content.id_for_label }}">Your Review *</label>
+                    {{ form.content }}
+                    {% if form.content.errors %}
+                    <span class="form-error">{{ form.content.errors.0 }}</span>
+                    {% endif %}
+                    <span class="form-help">Share details about your experience. What did you like? What could be improved?</span>
+                </div>
+                
+                <div class="form-notice">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <p>Your review will be visible after approval. We appreciate your honest feedback!</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-lg">Submit Review</button>
+                    <a href="{% url 'reviews' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Rating selection visual feedback
+    document.querySelectorAll('.rating-option input').forEach(input => {
+        input.addEventListener('change', function() {
+            document.querySelectorAll('.rating-option').forEach((option, index) => {
+                const star = option.querySelector('svg');
+                if (index < this.value) {
+                    star.style.fill = 'currentColor';
+                } else {
+                    star.style.fill = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

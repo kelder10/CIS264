@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us - Indian Creek Cycles{% endblock %}
+{% block meta_description %}Learn about Indian Creek Cycles, your trusted source for premium bike rentals. Our story, mission, and commitment to quality.{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">About Indian Creek Cycles</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <span>About</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-content">
+                <h2 class="section-title">Our Story</h2>
+                <p class="about-text">Indian Creek Cycles began in 2010 with a simple mission: to share the joy of cycling with everyone. What started as a small bike repair shop has grown into the region's premier bike rental destination.</p>
+                <p class="about-text">Founded by lifelong cycling enthusiasts Mike and Sarah Thompson, our business was born from a passion for two-wheeled adventure and a desire to make quality bikes accessible to all.</p>
+                <p class="about-text">Over the years, we've helped thousands of families, couples, and solo adventurers discover the beauty of our local trails and create memories that last a lifetime.</p>
+            </div>
+            <div class="about-image">
+                <div class="about-image-placeholder">
+                    <svg width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Values Section -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Our Mission & Values</h2>
+        </div>
+        
+        <div class="values-grid">
+            <div class="value-card">
+                <div class="value-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                    </svg>
+                </div>
+                <h3 class="value-title">Passion for Cycling</h3>
+                <p class="value-description">We believe cycling is more than transportation—it's a way to connect with nature, stay healthy, and create lasting memories with loved ones.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <h3 class="value-title">Quality & Safety</h3>
+                <p class="value-description">Every bike in our fleet is meticulously maintained and safety-checked before each rental. Your safety is our top priority.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                </div>
+                <h3 class="value-title">Family Friendly</h3>
+                <p class="value-description">We welcome riders of all ages and skill levels. From training wheels to high-end mountain bikes, we have something for everyone.</p>
+            </div>
+            
+            <div class="value-card">
+                <div class="value-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <h3 class="value-title">Environmental Stewardship</h3>
+                <p class="value-description">We're committed to preserving the natural beauty of our trails. We practice and promote responsible, eco-friendly cycling.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Meet Our Team</h2>
+            <p class="section-subtitle">The passionate people behind Indian Creek Cycles</p>
+        </div>
+        
+        <div class="team-grid">
+            <div class="team-card">
+                <div class="team-avatar">MT</div>
+                <h3 class="team-name">Mike Thompson</h3>
+                <p class="team-role">Founder & Head Mechanic</p>
+                <p class="team-bio">With 20+ years of cycling experience, Mike ensures every bike is in perfect condition.</p>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-avatar">ST</div>
+                <h3 class="team-name">Sarah Thompson</h3>
+                <p class="team-role">Co-Founder & Operations</p>
+                <p class="team-bio">Sarah manages day-to-day operations and creates memorable customer experiences.</p>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-avatar">JD</div>
+                <h3 class="team-name">Jake Davis</h3>
+                <p class="team-role">Trail Guide</p>
+                <p class="team-bio">Jake knows every trail in the area and loves sharing his favorite routes.</p>
+            </div>
+            
+            <div class="team-card">
+                <div class="team-avatar">EM</div>
+                <h3 class="team-name">Emily Martinez</h3>
+                <p class="team-role">Customer Service</p>
+                <p class="team-bio">Emily helps customers find the perfect bike and plan their adventures.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-number">10+</span>
+                <span class="stat-label">Years in Business</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">50+</span>
+                <span class="stat-label">Bikes in Fleet</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">10K+</span>
+                <span class="stat-label">Happy Customers</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">15+</span>
+                <span class="stat-label">Local Trails</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Ride With Us?</h2>
+            <p class="cta-text">Experience the Indian Creek Cycles difference. Book your bike today and start your adventure!</p>
+            <div class="cta-buttons">
+                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse Bikes</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline btn-lg">Get in Touch</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Reservation #{{ reservation.id }} - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Reservation Details</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'my_reservations' %}">My Reservations</a>
+            <span>/</span>
+            <span>#{{ reservation.id }}</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="reservation-detail-grid">
+            <!-- Main Info -->
+            <div class="reservation-main">
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <div>
+                            <h2 class="detail-title">Reservation #{{ reservation.id }}</h2>
+                            <p class="detail-date">Created on {{ reservation.created_at|date:"F d, Y" }}</p>
+                        </div>
+                        <span class="status-badge status-{{ reservation.status }}">{{ reservation.get_status_display }}</span>
+                    </div>
+                    
+                    <div class="detail-bike">
+                        {% if reservation.bike.image %}
+                        <img src="{{ reservation.bike.image.url }}" alt="{{ reservation.bike.name }}">
+                        {% else %}
+                        <div class="detail-bike-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="5.5" cy="17.5" r="3.5"/>
+                                <circle cx="18.5" cy="17.5" r="3.5"/>
+                                <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        <div class="detail-bike-info">
+                            <h3>{{ reservation.bike.name }}</h3>
+                            <p>{{ reservation.bike.category.name }}</p>
+                            <a href="{% url 'bike_detail' slug=reservation.bike.slug %}" class="btn btn-text btn-sm">View Bike</a>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-dates">
+                        <div class="date-item">
+                            <span class="date-label">Pickup Date</span>
+                            <span class="date-value">{{ reservation.rental_date|date:"l, F d, Y" }}</span>
+                        </div>
+                        <div class="date-item">
+                            <span class="date-label">Return Date</span>
+                            <span class="date-value">{{ reservation.return_date|date:"l, F d, Y" }}</span>
+                        </div>
+                        <div class="date-item">
+                            <span class="date-label">Duration</span>
+                            <span class="date-value">{{ reservation.duration_display }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if reservation.special_requests %}
+                    <div class="detail-requests">
+                        <h4>Special Requests</h4>
+                        <p>{{ reservation.special_requests }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Accessories -->
+                {% if accessories %}
+                <div class="detail-card">
+                    <h3 class="card-title">Accessories</h3>
+                    <div class="accessory-list">
+                        {% for acc in accessories %}
+                        <div class="accessory-item">
+                            <span class="accessory-name">{{ acc.quantity }}x {{ acc.accessory.name }}</span>
+                            <span class="accessory-price">${{ acc.calculate_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="reservation-sidebar">
+                <!-- Price Breakdown -->
+                <div class="detail-card">
+                    <h3 class="card-title">Price Breakdown</h3>
+                    <div class="price-breakdown">
+                        <div class="price-row">
+                            <span>Bike Rental</span>
+                            <span>${{ reservation.bike_price }}</span>
+                        </div>
+                        {% if reservation.accessories_price > 0 %}
+                        <div class="price-row">
+                            <span>Accessories</span>
+                            <span>${{ reservation.accessories_price }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="price-row">
+                            <span>Subtotal</span>
+                            <span>${{ reservation.subtotal }}</span>
+                        </div>
+                        <div class="price-row">
+                            <span>Tax (7%)</span>
+                            <span>${{ reservation.tax_amount }}</span>
+                        </div>
+                        <div class="price-row total">
+                            <span>Total</span>
+                            <span>${{ reservation.total_price }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="detail-card">
+                    <h3 class="card-title">Actions</h3>
+                    <div class="action-buttons">
+                        {% if reservation.is_active %}
+                        <a href="{% url 'cancel_reservation' pk=reservation.id %}" class="btn btn-outline btn-block btn-danger">Cancel Reservation</a>
+                        {% endif %}
+                        <a href="{% url 'my_reservations' %}" class="btn btn-outline btn-block">View All Reservations</a>
+                    </div>
+                </div>
+                
+                <!-- Waiver Status -->
+                <div class="detail-card">
+                    <h3 class="card-title">Waiver Status</h3>
+                    <div class="waiver-status">
+                        {% if reservation.waiver_signed %}
+                        <div class="status-indicator success">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            <span>Waiver Signed</span>
+                        </div>
+                        <p class="status-date">Signed on {{ reservation.waiver_signed_at|date:"F d, Y" }}</p>
+                        {% else %}
+                        <div class="status-indicator pending">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                            <span>Waiver Not Signed</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

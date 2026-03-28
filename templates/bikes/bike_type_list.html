@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }} - Indian Creek Cycles{% endblock %}
+{% block meta_description %}{{ description }}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">{{ title }}</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'bike_list' %}">Bikes</a>
+            <span>/</span>
+            <span>{{ title }}</span>
+        </nav>
+    </div>
+</section>
+
+<!-- Description -->
+<section class="section-sm section-alt">
+    <div class="container">
+        <p class="lead-text">{{ description }}</p>
+    </div>
+</section>
+
+<!-- Bikes Grid -->
+<section class="section">
+    <div class="container">
+        <div class="bike-grid">
+            {% for bike in bikes %}
+            <div class="bike-card">
+                <div class="bike-image">
+                    {% if bike.image %}
+                    <img src="{{ bike.image.url }}" alt="{{ bike.name }}">
+                    {% else %}
+                    <div class="bike-image-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="5.5" cy="17.5" r="3.5"/>
+                            <circle cx="18.5" cy="17.5" r="3.5"/>
+                            <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                    {% if bike.size %}
+                    <span class="bike-badge">{{ bike.size.size_inches }}"</span>
+                    {% endif %}
+                </div>
+                <div class="bike-content">
+                    <h3 class="bike-name">{{ bike.name }}</h3>
+                    <p class="bike-description">{{ bike.description|truncatewords:15 }}</p>
+                    <div class="bike-footer">
+                        <span class="bike-price">${{ bike.price_per_day }}<small>/day</small></span>
+                        <a href="{% url 'bike_detail' slug=bike.slug %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state-full">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="5.5" cy="17.5" r="3.5"/>
+                    <circle cx="18.5" cy="17.5" r="3.5"/>
+                    <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                </svg>
+                <h3>No bikes available</h3>
+                <p>Check back soon for new additions to our fleet!</p>
+                <a href="{% url 'bike_list' %}" class="btn btn-primary">Browse All Bikes</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Size Guide CTA -->
+<section class="section section-alt">
+    <div class="container">
+        <div class="cta-card">
+            <div class="cta-card-content">
+                <h3>Need Help Choosing?</h3>
+                <p>Check out our bike size guide to find the perfect fit.</p>
+            </div>
+            <a href="{% url 'bike_sizes' %}" class="btn btn-outline">View Size Guide</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Indian Creek Cycles - Premium Bike Rentals{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Background Image -->
+<section class="hero" style="background-image: url('{% static "images/hero/family-biking-hero.jpg" %}');">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="container">
+            <h1 class="hero-title">Adventure Awaits on Two Wheels</h1>
+            <p class="hero-subtitle">Rent Your Perfect Ride Today</p>
+            <p class="hero-description">Premium bikes for the whole family. Explore scenic trails, enjoy quality time together, and create lasting memories.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse Our Bikes</a>
+                <a href="{% url 'bike_list' %}?category=tandem-bikes" class="btn btn-outline btn-lg">Try a Tandem</a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-scroll">
+        <span>Scroll to explore</span>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- Weather Section - Check Before You Ride -->
+<section class="weather-section">
+    <div class="container">
+        <div class="weather-card">
+            <div class="weather-header">
+                <div class="weather-icon-main">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/>
+                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                    </svg>
+                </div>
+                <div class="weather-header-text">
+                    <h2 class="weather-title">Check the Weather Before Your Ride</h2>
+                    <p class="weather-subtitle">Plan your perfect outdoor adventure with current conditions</p>
+                </div>
+            </div>
+            <form class="weather-form" id="weather-form" onsubmit="return checkWeather(event);">
+                <div class="weather-input-group">
+                    <input type="text" id="weather-zip" class="form-control" placeholder="Enter your ZIP code" maxlength="10" required>
+                    <button type="submit" class="btn btn-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        Check Weather
+                    </button>
+                </div>
+            </form>
+            <div class="weather-links">
+                <p>Or check weather directly:</p>
+                <a href="https://weather.com" target="_blank" rel="noopener" class="weather-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                    Weather.com
+                </a>
+                <a href="https://www.weather.gov" target="_blank" rel="noopener" class="weather-link">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/>
+                    </svg>
+                    Weather.gov
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Bikes Section -->
+<section class="featured-bikes section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Featured Bikes</h2>
+            <p class="section-subtitle">Handpicked selections for your next adventure</p>
+        </div>
+        
+        <div class="bike-grid">
+            {% for bike in featured_bikes %}
+            <div class="bike-card">
+                <div class="bike-image">
+                    {% if bike.image %}
+                    <img src="{{ bike.image.url }}" alt="{{ bike.name }}">
+                    {% else %}
+                    <div class="bike-image-placeholder">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="5.5" cy="17.5" r="3.5"/>
+                            <circle cx="18.5" cy="17.5" r="3.5"/>
+                            <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                    <div class="bike-badges">
+                        <span class="bike-badge">{{ bike.category.name }}</span>
+                        {% if bike.size %}
+                        <span class="bike-badge badge-secondary">{{ bike.size.size_inches }}"</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="bike-content">
+                    <h3 class="bike-name">{{ bike.name }}</h3>
+                    <p class="bike-description">{{ bike.description|truncatewords:15 }}</p>
+                    <div class="bike-footer">
+                        <span class="bike-price">${{ bike.price_per_day }}<small>/day</small></span>
+                        <a href="{% url 'bike_detail' slug=bike.slug %}" class="btn btn-primary btn-sm">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>No bikes available at the moment. Please check back soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-cta">
+            <a href="{% url 'bike_list' %}" class="btn btn-outline btn-lg">View All Bikes</a>
+        </div>
+    </div>
+</section>
+
+<!-- Browse by Category Section -->
+<section class="categories-section section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Browse by Category</h2>
+            <p class="section-subtitle">Find the perfect bike for your needs</p>
+        </div>
+        
+        <div class="category-grid">
+            <a href="{% url 'adult_bikes' %}" class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="5.5" cy="17.5" r="3.5"/>
+                        <circle cx="18.5" cy="17.5" r="3.5"/>
+                        <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                    </svg>
+                </div>
+                <h3 class="category-name">Adult Bikes</h3>
+                <p class="category-description">Premium bikes for adult riders of all skill levels</p>
+                <span class="category-count">{{ adult_count|default:"10+" }} bikes</span>
+            </a>
+            
+            <a href="{% url 'kids_bikes' %}" class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="5.5" cy="17.5" r="3.5"/>
+                        <circle cx="18.5" cy="17.5" r="3.5"/>
+                        <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                    </svg>
+                </div>
+                <h3 class="category-name">Kids Bikes</h3>
+                <p class="category-description">Safe and fun bikes for young riders</p>
+                <span class="category-count">{{ kids_count|default:"8+" }} bikes</span>
+            </a>
+            
+            <a href="{% url 'mountain_bikes' %}" class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M8 16l2-2-2-2"/>
+                        <path d="M12 12l2 2 2-2"/>
+                        <circle cx="5.5" cy="17.5" r="3.5"/>
+                        <circle cx="18.5" cy="17.5" r="3.5"/>
+                        <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                    </svg>
+                </div>
+                <h3 class="category-name">Mountain Bikes</h3>
+                <p class="category-description">Rugged bikes built for off-road adventures</p>
+                <span class="category-count">{{ mountain_count|default:"7+" }} bikes</span>
+            </a>
+            
+            <a href="{% url 'bike_category' slug='tandem-bikes' %}" class="category-card">
+                <div class="category-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="5.5" cy="17.5" r="3.5"/>
+                        <circle cx="12" cy="17.5" r="3.5"/>
+                        <circle cx="18.5" cy="17.5" r="3.5"/>
+                        <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                    </svg>
+                </div>
+                <h3 class="category-name">Tandem Bikes</h3>
+                <p class="category-description">Two-seat bikes for couples and families</p>
+                <span class="category-count">{{ tandem_count|default:"5+" }} bikes</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Trail Highlights Section -->
+<section class="trails-section section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Explore Our Trails</h2>
+            <p class="section-subtitle">Discover scenic routes for every skill level</p>
+        </div>
+        
+        <div class="trail-grid">
+            {% for trail in featured_trails %}
+            <div class="trail-card">
+                <div class="trail-image">
+                    {% if trail.image %}
+                    <img src="{{ trail.image.url }}" alt="{{ trail.name }}">
+                    {% else %}
+                    <div class="trail-image-placeholder">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
+                            <circle cx="12" cy="10" r="3"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+                    <span class="trail-difficulty difficulty-{{ trail.difficulty }}">{{ trail.get_difficulty_display }}</span>
+                </div>
+                <div class="trail-content">
+                    <h3 class="trail-name">{{ trail.name }}</h3>
+                    <p class="trail-description">{{ trail.description|truncatewords:20 }}</p>
+                    <div class="trail-meta">
+                        <span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            {{ trail.length_miles }} miles
+                        </span>
+                        <span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M12 6v6l4 2"/>
+                            </svg>
+                            {{ trail.estimated_time }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Trail information coming soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="section-cta">
+            <a href="{% url 'trails' %}" class="btn btn-outline btn-lg">View All Trails</a>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Carousel Section -->
+<section class="reviews-section section section-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">What Our Customers Say</h2>
+            <p class="section-subtitle">Real experiences from real riders</p>
+        </div>
+        
+        <div class="reviews-carousel" id="reviews-carousel">
+            <div class="reviews-track">
+                {% for review in featured_reviews %}
+                <div class="review-card">
+                    <div class="review-rating">
+                        {% for i in review.rating_stars %}
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        {% endfor %}
+                    </div>
+                    <h4 class="review-title">{{ review.title }}</h4>
+                    <p class="review-content">"{{ review.content|truncatewords:30 }}"</p>
+                    <div class="review-author">
+                        <div class="author-avatar">{{ review.user.get_initials }}</div>
+                        <div class="author-info">
+                            <span class="author-name">{{ review.user.get_full_name }}</span>
+                            {% if review.bike %}
+                            <span class="author-bike">Rented: {{ review.bike.name }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="review-card">
+                    <p class="review-content">No reviews yet. Be the first to share your experience!</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="carousel-btn carousel-prev" id="carousel-prev" aria-label="Previous review">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <div class="carousel-dots" id="carousel-dots"></div>
+                <button class="carousel-btn carousel-next" id="carousel-next" aria-label="Next review">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="section-cta">
+            <a href="{% url 'reviews' %}" class="btn btn-outline btn-lg">Read All Reviews</a>
+            <a href="{% url 'submit_review' %}" class="btn btn-primary btn-lg">Write a Review</a>
+        </div>
+    </div>
+</section>
+
+<!-- About Preview Section -->
+<section class="about-preview section">
+    <div class="container">
+        <div class="about-grid">
+            <div class="about-content">
+                <h2 class="section-title">Your Adventure Starts Here</h2>
+                <p class="about-text">Indian Creek Cycles has been providing premium bike rentals for families, enthusiasts, and adventure seekers for over a decade. Our mission is to make cycling accessible and enjoyable for everyone.</p>
+                <p class="about-text">With over 30 bikes in our fleet, from kids' balance bikes to high-end mountain bikes and tandem bikes for couples, we have the perfect ride for your next adventure.</p>
+                <ul class="about-features">
+                    <li>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        30+ premium, well-maintained bikes
+                    </li>
+                    <li>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        10 scenic trails for all skill levels
+                    </li>
+                    <li>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Family-friendly service
+                    </li>
+                    <li>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                            <polyline points="22 4 12 14.01 9 11.01"/>
+                        </svg>
+                        Competitive pricing
+                    </li>
+                </ul>
+                <a href="{% url 'about' %}" class="btn btn-primary">Learn More About Us</a>
+            </div>
+            <div class="about-image">
+                <div class="about-image-wrapper">
+                    <img src="{% static 'images/hero/family-biking-hero.jpg' %}" alt="Family biking adventure">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Start Your Adventure?</h2>
+            <p class="cta-text">Browse our selection of premium bikes and book your ride today! Whether you're planning a family outing or a solo trail adventure, we have the perfect bike for you.</p>
+            <div class="cta-buttons">
+                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse Bikes</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline btn-lg">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Reviews Carousel
+    document.addEventListener('DOMContentLoaded', function() {
+        const track = document.querySelector('.reviews-track');
+        const cards = document.querySelectorAll('.review-card');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+        const dotsContainer = document.getElementById('carousel-dots');
+        
+        if (cards.length > 1) {
+            let currentIndex = 0;
+            
+            // Create dots
+            cards.forEach((_, i) => {
+                const dot = document.createElement('button');
+                dot.classList.add('carousel-dot');
+                dot.setAttribute('aria-label', `Go to review ${i + 1}`);
+                if (i === 0) dot.classList.add('active');
+                dot.addEventListener('click', () => goToSlide(i));
+                dotsContainer.appendChild(dot);
+            });
+            
+            const dots = document.querySelectorAll('.carousel-dot');
+            
+            function goToSlide(index) {
+                currentIndex = index;
+                track.style.transform = `translateX(-${index * 100}%)`;
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+            
+            function nextSlide() {
+                goToSlide((currentIndex + 1) % cards.length);
+            }
+            
+            function prevSlide() {
+                goToSlide((currentIndex - 1 + cards.length) % cards.length);
+            }
+            
+            prevBtn.addEventListener('click', prevSlide);
+            nextBtn.addEventListener('click', nextSlide);
+            
+            // Auto-advance
+            setInterval(nextSlide, 6000);
+        } else {
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+    });
+    
+    // Weather Check Function
+    function checkWeather(event) {
+        event.preventDefault();
+        const zipCode = document.getElementById('weather-zip').value.trim();
+        
+        if (!zipCode) {
+            alert('Please enter a ZIP code');
+            return false;
+        }
+        
+        // Open weather.com with the ZIP code
+        const weatherUrl = `https://weather.com/weather/today/l/${zipCode}`;
+        window.open(weatherUrl, '_blank');
+        
+        return false;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block title %}Reserve {{ bike.name }} - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Reserve Your Bike</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <a href="{% url 'bike_list' %}">Bikes</a>
+            <span>/</span>
+            <a href="{% url 'bike_detail' slug=bike.slug %}">{{ bike.name }}</a>
+            <span>/</span>
+            <span>Reserve</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="reservation-grid">
+            <!-- Reservation Form -->
+            <div class="reservation-form-section">
+                <h2 class="section-title-sm">Reservation Details</h2>
+                
+                <form method="post" class="reservation-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="{{ form.rental_date.id_for_label }}">Pickup Date *</label>
+                            {{ form.rental_date }}
+                            {% if form.rental_date.errors %}
+                            <span class="form-error">{{ form.rental_date.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.return_date.id_for_label }}">Return Date *</label>
+                            {{ form.return_date }}
+                            {% if form.return_date.errors %}
+                            <span class="form-error">{{ form.return_date.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.rental_type.id_for_label }}">Rental Type</label>
+                        {{ form.rental_type }}
+                    </div>
+                    
+                    {% if form.accessories.field.queryset.exists %}
+                    <div class="form-group">
+                        <label>Add Accessories</label>
+                        <div class="accessory-checkboxes">
+                            {% for accessory in form.accessories %}
+                            <label class="accessory-checkbox">
+                                {{ accessory.tag }}
+                                <span class="accessory-name">{{ accessory.choice_label }}</span>
+                                <span class="accessory-price">+{{ accessory.data.price_per_day }}/day</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.special_requests.id_for_label }}">Special Requests</label>
+                        {{ form.special_requests }}
+                    </div>
+                    
+                    <div class="form-notice">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                        <p>You will need to sign a waiver before completing your reservation.</p>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        Continue to Waiver
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Bike Summary -->
+            <div class="reservation-summary">
+                <div class="summary-card">
+                    <h3 class="summary-title">Bike Summary</h3>
+                    
+                    <div class="summary-bike">
+                        {% if bike.image %}
+                        <img src="{{ bike.image.url }}" alt="{{ bike.name }}">
+                        {% else %}
+                        <div class="summary-bike-placeholder">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="5.5" cy="17.5" r="3.5"/>
+                                <circle cx="18.5" cy="17.5" r="3.5"/>
+                                <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                            </svg>
+                        </div>
+                        {% endif %}
+                        <div class="summary-bike-info">
+                            <h4>{{ bike.name }}</h4>
+                            <p>{{ bike.category.name }}</p>
+                            {% if bike.size %}
+                            <p>{{ bike.size.size_inches }}" - Fits {{ bike.size.recommended_height }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="summary-pricing">
+                        <div class="price-row">
+                            <span>Daily Rate</span>
+                            <span>${{ bike.price_per_day }}</span>
+                        </div>
+                        {% if bike.price_per_hour %}
+                        <div class="price-row">
+                            <span>Hourly Rate</span>
+                            <span>${{ bike.price_per_hour }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="summary-note">
+                        <p>Taxes and any accessories will be calculated at checkout.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Set minimum date to today
+    document.addEventListener('DOMContentLoaded', function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('{{ form.rental_date.id_for_label }}').min = today;
+        document.getElementById('{{ form.return_date.id_for_label }}').min = today;
+        
+        // Update return date min when pickup date changes
+        document.getElementById('{{ form.rental_date.id_for_label }}').addEventListener('change', function() {
+            document.getElementById('{{ form.return_date.id_for_label }}').min = this.value;
+        });
+    });
+</script>
+{% endblock %}

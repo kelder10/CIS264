@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <h1 class="page-title">Complete Payment</h1>
+        <nav class="breadcrumb">
+            <a href="{% url 'home' %}">Home</a>
+            <span>/</span>
+            <span>Payment</span>
+        </nav>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="payment-grid">
+            <!-- Payment Form -->
+            <div class="payment-form-section">
+                <div class="payment-notice">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <p><strong>Demo Mode:</strong> This is a simulated payment for demonstration purposes. No real charges will be made.</p>
+                </div>
+                
+                <form method="post" class="payment-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">Payment Method</h3>
+                        <div class="payment-methods">
+                            {% for value, label in form.payment_method.field.choices %}
+                            <label class="payment-method-option">
+                                <input type="radio" name="payment_method" value="{{ value }}" {% if forloop.first %}checked{% endif %}>
+                                <span class="payment-method-label">{{ label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="form-section-title">Promo Code</h3>
+                        <div class="form-group">
+                            {{ form.promo_code }}
+                            <span class="form-help">Enter a promo code to get a discount on your rental.</span>
+                            {% if form.promo_code.errors %}
+                            <span class="form-error">{{ form.promo_code.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="payment-security">
+                        <div class="security-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                            <span>Secure checkout</span>
+                        </div>
+                        <div class="security-item">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                            <span>Your data is protected</span>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        Complete Payment - Demo Mode
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div class="summary-card">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="summary-item">
+                        <div class="summary-bike">
+                            {% if bike.image %}
+                            <img src="{{ bike.image.url }}" alt="{{ bike.name }}">
+                            {% else %}
+                            <div class="summary-bike-placeholder">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <circle cx="5.5" cy="17.5" r="3.5"/>
+                                    <circle cx="18.5" cy="17.5" r="3.5"/>
+                                    <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
+                                </svg>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h4>{{ bike.name }}</h4>
+                                <p>{{ reservation.rental_date|date:"M d" }} - {{ reservation.return_date|date:"M d, Y" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if accessories %}
+                    <div class="summary-accessories">
+                        <h5>Accessories</h5>
+                        {% for acc in accessories %}
+                        <div class="accessory-line">
+                            <span>{{ acc.quantity }}x {{ acc.accessory.name }}</span>
+                            <span>${{ acc.calculate_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="summary-totals">
+                        <div class="total-row">
+                            <span>Subtotal</span>
+                            <span>${{ reservation.subtotal }}</span>
+                        </div>
+                        <div class="total-row">
+                            <span>Tax (7%)</span>
+                            <span>${{ reservation.tax_amount }}</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span>Total</span>
+                            <span>${{ reservation.total_price }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
