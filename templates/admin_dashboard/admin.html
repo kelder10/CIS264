@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Admin Dashboard | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Admin dashboard for Indian Creek Cycles{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        padding: 2rem 0 4rem;
+        background: linear-gradient(180deg, #f6f8fb 0%, #eef3f7 100%);
+        min-height: 80vh;
+    }
+
+    .admin-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .admin-title-wrap h1 {
+        margin: 0 0 .35rem;
+        font-size: 2rem;
+        line-height: 1.1;
+    }
+
+    .admin-title-wrap p {
+        margin: 0;
+        color: #5f6b7a;
+    }
+
+    .admin-badge {
+        background: #16324f;
+        color: #fff;
+        padding: .7rem 1rem;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: .95rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 18px;
+        padding: 1.25rem;
+        box-shadow: 0 10px 30px rgba(19, 39, 64, 0.08);
+        border: 1px solid #e5ebf1;
+    }
+
+    .stat-label {
+        color: #5f6b7a;
+        font-size: .95rem;
+        margin-bottom: .5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #16324f;
+        margin-bottom: .35rem;
+    }
+
+    .stat-meta {
+        font-size: .9rem;
+        color: #7b8794;
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 1.3fr .9fr;
+        gap: 1.25rem;
+    }
+
+    .panel {
+        background: #fff;
+        border-radius: 18px;
+        padding: 1.25rem;
+        box-shadow: 0 10px 30px rgba(19, 39, 64, 0.08);
+        border: 1px solid #e5ebf1;
+    }
+
+    .panel h2 {
+        margin: 0 0 1rem;
+        font-size: 1.2rem;
+        color: #16324f;
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: .85rem;
+    }
+
+    .quick-link {
+        display: block;
+        text-decoration: none;
+        background: #f7fafc;
+        border: 1px solid #dbe5ee;
+        color: #16324f;
+        padding: 1rem;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: .2s ease;
+    }
+
+    .quick-link:hover {
+        transform: translateY(-2px);
+        background: #edf4fb;
+    }
+
+    .quick-link small {
+        display: block;
+        margin-top: .35rem;
+        color: #64748b;
+        font-weight: 400;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    table.admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        text-align: left;
+        padding: .9rem .75rem;
+        border-bottom: 1px solid #e8eef4;
+        vertical-align: top;
+    }
+
+    .admin-table th {
+        font-size: .9rem;
+        color: #5f6b7a;
+        font-weight: 600;
+    }
+
+    .admin-table td {
+        font-size: .96rem;
+        color: #1f2937;
+    }
+
+    .status-pill {
+        display: inline-block;
+        padding: .35rem .7rem;
+        border-radius: 999px;
+        font-size: .82rem;
+        font-weight: 600;
+        text-transform: capitalize;
+    }
+
+    .status-pending { background: #fff3cd; color: #8a6d1d; }
+    .status-confirmed { background: #dbeafe; color: #1d4ed8; }
+    .status-paid { background: #dcfce7; color: #166534; }
+    .status-completed { background: #e9d5ff; color: #6b21a8; }
+    .status-cancelled { background: #fee2e2; color: #b91c1c; }
+
+    .list-stack {
+        display: grid;
+        gap: .85rem;
+    }
+
+    .list-item {
+        border: 1px solid #e5ebf1;
+        border-radius: 14px;
+        padding: .95rem 1rem;
+        background: #fbfdff;
+    }
+
+    .list-item strong {
+        color: #16324f;
+    }
+
+    .muted {
+        color: #64748b;
+        font-size: .92rem;
+    }
+
+    .empty-state {
+        color: #64748b;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .quick-links {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-title-wrap h1 {
+            font-size: 1.6rem;
+        }
+
+        .stat-value {
+            font-size: 1.7rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-header">
+            <div class="admin-title-wrap">
+                <h1>Admin Dashboard</h1>
+                <p>Manage bikes, reservations, payments, and customer activity.</p>
+            </div>
+            <div class="admin-badge">
+                Signed in as {{ request.user.get_full_name|default:request.user.username }}
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Bikes</div>
+                <div class="stat-value">{{ total_bikes }}</div>
+                <div class="stat-meta">{{ available_bikes }} available · {{ maintenance_bikes }} in maintenance</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Reservations</div>
+                <div class="stat-value">{{ total_reservations }}</div>
+                <div class="stat-meta">{{ active_reservations }} active right now</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Payments</div>
+                <div class="stat-value">{{ total_payments }}</div>
+                <div class="stat-meta">{{ completed_payments }} completed payments</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Reviews Pending</div>
+                <div class="stat-value">{{ pending_reviews }}</div>
+                <div class="stat-meta">{{ total_reviews }} total reviews submitted</div>
+            </div>
+        </div>
+
+        <div class="admin-grid">
+            <div class="panel">
+                <h2>Recent Reservations</h2>
+
+                {% if recent_reservations %}
+                <div class="table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Bike</th>
+                                <th>Dates</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in recent_reservations %}
+                            <tr>
+                                <td>#{{ reservation.id }}</td>
+                                <td>{{ reservation.user.get_full_name|default:reservation.user.username }}</td>
+                                <td>{{ reservation.bike.name }}</td>
+                                <td>
+                                    {{ reservation.rental_date }}<br>
+                                    <span class="muted">to {{ reservation.return_date }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-pill status-{{ reservation.status }}">
+                                        {{ reservation.status }}
+                                    </span>
+                                </td>
+                                <td>${{ reservation.total_price }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">No reservations yet.</div>
+                {% endif %}
+            </div>
+
+            <div style="display:grid; gap:1.25rem;">
+                <div class="panel">
+                    <h2>Quick Actions</h2>
+                    <div class="quick-links">
+                        <a class="quick-link" href="{% url 'admin_bikes' %}">
+                            Manage Bikes
+                            <small>Edit inventory and bike details</small>
+                        </a>
+                        <a class="quick-link" href="{% url 'admin_reservations' %}">
+                            Manage Reservations
+                            <small>Review and update bookings</small>
+                        </a>
+                        <a class="quick-link" href="{% url 'admin_payments' %}">
+                            View Payments
+                            <small>Check payment records</small>
+                        </a>
+                        <a class="quick-link" href="{% url 'admin_reviews' %}">
+                            Moderate Reviews
+                            <small>Approve or respond to reviews</small>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Latest Reviews</h2>
+                    {% if latest_reviews %}
+                    <div class="list-stack">
+                        {% for review in latest_reviews %}
+                        <div class="list-item">
+                            <strong>{{ review.title }}</strong><br>
+                            <span class="muted">
+                                {{ review.user.get_full_name|default:review.user.username }}
+                                · {{ review.rating }}/5
+                            </span><br>
+                            <span class="muted">
+                                {% if review.is_approved %}Approved{% else %}Pending approval{% endif %}
+                            </span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">No reviews yet.</div>
+                    {% endif %}
+                </div>
+
+                <div class="panel">
+                    <h2>System Snapshot</h2>
+                    <div class="list-stack">
+                        <div class="list-item">
+                            <strong>Waivers Signed</strong><br>
+                            <span class="muted">{{ signed_waivers }} reservation waivers on file</span>
+                        </div>
+                        <div class="list-item">
+                            <strong>Staff Accounts</strong><br>
+                            <span class="muted">{{ staff_count }} admin/staff users available</span>
+                        </div>
+                        <div class="list-item">
+                            <strong>Unapproved Reviews</strong><br>
+                            <span class="muted">{{ pending_reviews }} still need moderation</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
