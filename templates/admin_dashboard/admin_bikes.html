@@ -1,0 +1,62 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Manage Bikes{% endblock %}
+
+{% block content %}
+<div class="admin-wrap">
+    <a class="admin-back-link" href="{% url 'admin_dashboard' %}">← Back to Dashboard</a>
+
+    <div class="admin-page-header">
+        <div>
+            <h1>Manage Bikes</h1>
+            <p>Update availability and maintenance status.</p>
+        </div>
+    </div>
+
+    <div class="admin-card">
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Available</th>
+                        <th>Maintenance</th>
+                        <th>Qty</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bike in bikes %}
+                    <tr>
+                        <td>{{ bike.name }}</td>
+                        <td>{{ bike.category.name }}</td>
+                        <td>
+                            <span class="boolean-pill {% if bike.is_available %}boolean-yes{% else %}boolean-no{% endif %}">
+                                {% if bike.is_available %}Yes{% else %}No{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="boolean-pill {% if bike.is_maintenance %}boolean-yes{% else %}boolean-no{% endif %}">
+                                {% if bike.is_maintenance %}Yes{% else %}No{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ bike.quantity_total }}</td>
+                        <td>
+                            <div class="admin-actions">
+                                <a class="admin-btn" href="{% url 'toggle_bike_availability' bike.id %}">
+                                    {% if bike.is_available %}Mark Unavailable{% else %}Mark Available{% endif %}
+                                </a>
+                                <a class="admin-btn admin-btn-warning" href="{% url 'toggle_bike_maintenance' bike.id %}">
+                                    {% if bike.is_maintenance %}Remove Maintenance{% else %}Put in Maintenance{% endif %}
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

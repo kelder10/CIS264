@@ -1,5 +1,5 @@
 import requests
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
@@ -10,6 +10,16 @@ from reviews.models import Review
 from .models import Trail
 from .forms import ContactForm, WeatherZipForm
 
+##admin dashboard
+from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import get_user_model
+#from django.db.models import Count
+#from django.shortcuts import render
+
+#from bikes.models import Bike
+from reservations.models import Reservation
+from payments.models import Payment
+#from reviews.models import Review
 
 def home(request):
     """Homepage view with featured content."""
@@ -170,3 +180,168 @@ def handler404(request, exception):
 def handler500(request):
     """Custom 500 handler."""
     return render(request, 'core/500.html', status=500)
+
+
+######admin dashboard
+
+
+User = get_user_model()
+
+
+@staff_member_required
+def admin_dashboard(request):
+    recent_reservations = Reservation.objects.select_related("user", "bike").order_by("-created_at")[:8]
+    total_reservations = Reservation.objects.count()
+    active_reservations = Reservation.objects.filter(
+    status__in=["pending", "confirmed", "paid"]
+).count()
+
+    total_bikes = Bike.objects.count()
+    available_bikes = Bike.objects.filter(
+    is_available=True,
+    is_maintenance=False
+).count()
+    maintenance_bikes = Bike.objects.filter(
+    is_maintenance=True
+).count()
+    
+    total_payments = Payment.objects.count()
+    completed_payments = Payment.objects.filter(status__iexact="completed").count()
+
+    total_reviews = Review.objects.count()
+    pending_reviews = Review.objects.filter(is_approved=False).count()
+    latest_reviews = Review.objects.select_related("user").order_by("-created_at")[:5]
+
+    signed_waivers = Reservation.objects.filter(waiver_signed=True).count()
+    staff_count = User.objects.filter(is_staff=True).count()
+
+    context = {
+        "total_bikes": total_bikes,
+        "available_bikes": available_bikes,
+        "maintenance_bikes": maintenance_bikes,
+        "total_reservations": total_reservations,
+        "active_reservations": active_reservations,
+        "total_payments": total_payments,
+        "completed_payments": completed_payments,
+        "total_reviews": total_reviews,
+        "pending_reviews": pending_reviews,
+        "recent_reservations": recent_reservations,
+        "latest_reviews": latest_reviews,
+        "signed_waivers": signed_waivers,
+        "staff_count": staff_count,
+    }
+
+    return render(request, "admin_dashboard/admin.html", context)
+
+User = get_user_model()
+
+##added for ability to adjust in admin dashboard
+
+@staff_member_required
+def admin_bikes(request):
+    bikes = Bike.objects.select_related("category", "size").order_by("name")
+    return render(request, "admin_dashboard/admin_bikes.html", {"bikes": bikes})
+
+
+@staff_member_required
+def toggle_bike_availability(request, bike_id):
+    bike = get_object_or_404(Bike, id=bike_id)
+
+    bike.is_available = not bike.is_available
+    if not bike.is_available:
+        bike.is_maintenance = False
+    bike.save()
+
+    messages.success(request, f"{bike.name} availability updated.")
+    return redirect("admin_bikes")
+
+
+@staff_member_required
+def toggle_bike_maintenance(request, bike_id):
+    bike = get_object_or_404(Bike, id=bike_id)
+
+    bike.is_maintenance = not bike.is_maintenance
+    if bike.is_maintenance:
+        bike.is_available = False
+    bike.save()
+
+    messages.success(request, f"{bike.name} maintenance status updated.")
+    return redirect("admin_bikes")
+
+
+@staff_member_required
+def admin_reservations(request):
+    reservations = Reservation.objects.select_related("user", "bike").order_by("-created_at")
+    return render(request, "admin_dashboard/admin_reservations.html", {"reservations": reservations})
+
+
+@staff_member_required
+def update_reservation_status(request, reservation_id, new_status):
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+
+    allowed_statuses = ["pending", "confirmed", "paid", "completed", "cancelled"]
+    if new_status in allowed_statuses:
+        reservation.status = new_status
+        reservation.save()
+        messages.success(request, f"Reservation #{reservation.id} updated to {new_status}.")
+    else:
+        messages.error(request, "Invalid reservation status.")
+
+    return redirect("admin_reservations")
+
+
+@staff_member_required
+def admin_reviews(request):
+    reviews = Review.objects.select_related("user", "bike").order_by("-created_at")
+    return render(request, "admin_dashboard/admin_reviews.html", {"reviews": reviews})
+
+
+@staff_member_required
+def approve_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    review.is_approved = True
+    review.save()
+    messages.success(request, f"Review #{review.id} approved.")
+    return redirect("admin_reviews")
+
+
+@staff_member_required
+def unapprove_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    review.is_approved = False
+    review.save()
+    messages.success(request, f"Review #{review.id} marked unapproved.")
+    return redirect("admin_reviews")
+
+
+@staff_member_required
+def admin_payments(request):
+    payments = Payment.objects.select_related("reservation", "reservation__user", "reservation__bike").order_by("-created_at")
+    return render(request, "admin_dashboard/admin_payments.html", {"payments": payments})
+
+@staff_member_required
+def refund_payment(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    if payment.status == "completed":
+        payment.status = "refunded"
+        payment.save()
+        messages.success(request, f"Payment #{payment.id} marked as refunded.")
+    else:
+        messages.error(request, f"Only completed payments can be refunded. Current status: {payment.status}")
+
+    return redirect("admin_payments")
+
+
+@staff_member_required
+def void_payment(request, payment_id):
+    payment = get_object_or_404(Payment, id=payment_id)
+
+    if payment.status in ["pending", "processing"]:
+        payment.status = "failed"
+        payment.save()
+        messages.success(request, f"Payment #{payment.id} was voided.")
+    else:
+        messages.error(request, f"Only pending or processing payments can be voided. Current status: {payment.status}")
+
+    return redirect("admin_payments")

@@ -93,6 +93,13 @@ indian_creek_cycles/
 │   ├── reservations/      # Reservations app templates
 │   ├── payments/          # Payments app templates
 │   └── reviews/           # Reviews app templates
+|   └── admin_dashboard/    # Custom admin dashboard templates
+│       ├── base.html       # Admin dashboard base template
+│       ├── admin.html      # Dashboard overview
+│       ├── admin_bikes.html
+│       ├── admin_reservations.html
+│       ├── admin_reviews.html
+│       └── admin_payments.html
 ├── static/                 # Static files
 │   ├── css/               # Stylesheets
 │   ├── js/                # JavaScript files
@@ -220,6 +227,20 @@ Login with:
 - `/payments/process/<reservation_id>/` - Process payment
 - `/payments/confirmation/<payment_id>/` - Payment confirmation
 - `/payments/history/` - Payment history
+
+### Admin Dashboard Pages (Staff/Superuser Only)
+- `/admin-dashboard/` - Admin dashboard overview
+- `/admin-dashboard/bikes/` - Manage bikes
+- `/admin-dashboard/reservations/` - Manage reservations
+- `/admin-dashboard/reviews/` - Moderate reviews
+- `/admin-dashboard/payments/` - View/manage payments
+- `/admin-dashboard/bikes/<bike_id>/toggle-availability/` - Toggle bike availability
+- `/admin-dashboard/bikes/<bike_id>/toggle-maintenance/` - Toggle bike maintenance
+- `/admin-dashboard/reservations/<reservation_id>/status/<new_status>/` - Update reservation status
+- `/admin-dashboard/reviews/<review_id>/approve/` - Approve review
+- `/admin-dashboard/reviews/<review_id>/unapprove/`- Unapprove review
+- `/admin-dashboard/payments/<payment_id>/refund/` - Refund payment
+- `/admin-dashboard/payments/<payment_id>/void/` - Void payment
 
 ### API Endpoints
 - `/api/weather/?zip_code=<zip>` - Get weather data
