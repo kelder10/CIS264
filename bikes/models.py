@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-
 class BikeCategory(models.Model):
     """Model for bike categories."""
     name = models.CharField(max_length=100, unique=True)
@@ -24,7 +23,7 @@ class BikeCategory(models.Model):
 
 
 class BikeSize(models.Model):
-    """Model for bike sizes with descriptions."""
+    """Model for bike sizes with descriptions using numerical standards."""
     size_inches = models.PositiveIntegerField(unique=True)
     description = models.TextField(help_text="Description of who this size fits")
     recommended_height = models.CharField(max_length=100, help_text="Recommended rider height range")
@@ -44,7 +43,12 @@ class Bike(models.Model):
         ('kids', 'Kids Bike'),
         ('mountain', 'Mountain Bike'),
     ]
-    
+
+    STATUS_CHOICES = [
+    ('maintenance', 'At Dock'), 
+    ('in_use', 'On Trail'),     
+    ('available', 'In Shop')    
+]
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     category = models.ForeignKey(
@@ -65,10 +69,28 @@ class Bike(models.Model):
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
     price_per_hour = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='bikes/', blank=True, null=True)
+    
+    # Availability Flags
     is_available = models.BooleanField(default=True)
     is_maintenance = models.BooleanField(default=False, help_text="Bike is under maintenance")
     maintenance_note = models.TextField(blank=True, help_text="Reason for maintenance")
     quantity_total = models.PositiveIntegerField(default=1, help_text="Total bikes of this model")
+    
+    # Decentralized Tracking
+    location = models.ForeignKey(
+        'locations.Location', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='bikes'
+    )
+    
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES,
+        default='available'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -109,6 +131,16 @@ class Bike(models.Model):
     def display_price(self):
         """Return formatted price."""
         return f"${self.price_per_day}/day"
+    
+    @property
+    def display_status(self):
+        if self.location and "Hub" in self.location.name:
+            return "In Shop"
+            
+        if self.status == 'in_use':
+            return "On Trail"
+            
+        return "At Dock"
 
 
 class Accessory(models.Model):
@@ -121,10 +153,10 @@ class Accessory(models.Model):
         ('other', 'Other'),
     ]
     
+    
     name = models.CharField(max_length=200)
     description = models.TextField()
     category = models.CharField(max_length=20, choices=ACCESSORY_CATEGORIES, default='other')
-    price = models.DecimalField(max_digits=8, decimal_places=2)
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='accessories/', blank=True, null=True)
     is_available = models.BooleanField(default=True)

@@ -3,159 +3,147 @@
 {% block title %}Reservation #{{ reservation.id }} - Indian Creek Cycles{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<section class="page-header">
+<section class="page-header" style="padding: 8rem 0 3rem; background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%); color: var(--color-white);">
     <div class="container">
-        <h1 class="page-title">Reservation Details</h1>
-        <nav class="breadcrumb">
-            <a href="{% url 'home' %}">Home</a>
-            <span>/</span>
-            <a href="{% url 'my_reservations' %}">My Reservations</a>
-            <span>/</span>
-            <span>#{{ reservation.id }}</span>
-        </nav>
+        <h1 class="page-title" style="font-family: var(--font-heading); font-weight: 700; color: var(--color-white); margin-bottom: 0.5rem; font-size: 2rem;">Reservation Details</h1>
     </div>
 </section>
 
-<section class="section">
+<section class="section section-alt" style="padding: 4rem 0; background: var(--color-gray-100); min-height: 80vh;">
     <div class="container">
-        <div class="reservation-detail-grid">
-            <!-- Main Info -->
-            <div class="reservation-main">
-                <div class="detail-card">
-                    <div class="detail-header">
-                        <div>
-                            <h2 class="detail-title">Reservation #{{ reservation.id }}</h2>
-                            <p class="detail-date">Created on {{ reservation.created_at|date:"F d, Y" }}</p>
-                        </div>
-                        <span class="status-badge status-{{ reservation.status }}">{{ reservation.get_status_display }}</span>
+        <div class="reservation-detail-grid" style="display: flex; gap: 30px; align-items: flex-start; max-width: 1100px; margin: 0 auto; flex-wrap: wrap;">
+            
+            <div class="reservation-main" style="flex: 1.6; display: flex; flex-direction: column; gap: 25px; min-width: 320px;">
+                <div class="detail-card" style="background: var(--color-white); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--color-gray-200); flex: 1; box-shadow: var(--shadow-md);">
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h2 style="margin: 0; font-family: var(--font-heading); font-weight: 700; color: var(--color-black); font-size: 1.5rem;">Booking #{{ reservation.id }}</h2>
+                        <span class="bike-badge {% if reservation.status == 'confirmed' or reservation.status == 'active' or reservation.status == 'paid' %}badge-secondary{% endif %}" style="border-radius: var(--radius-sm);">
+                            {{ reservation.get_status_display }}
+                        </span>
                     </div>
                     
-                    <div class="detail-bike">
+                    <div class="detail-bike-hero" style="text-align: center; background: var(--color-gray-100); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--color-gray-200); margin-bottom: 25px;">
                         {% if reservation.bike.image %}
-                        <img src="{{ reservation.bike.image.url }}" alt="{{ reservation.bike.name }}">
-                        {% else %}
-                        <div class="detail-bike-placeholder">
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                <circle cx="5.5" cy="17.5" r="3.5"/>
-                                <circle cx="18.5" cy="17.5" r="3.5"/>
-                                <path d="M15 6a1 1 0 100-2 1 1 0 000 2zm-3 11.5V14l-3-3 4-3 2 3h2"/>
-                            </svg>
-                        </div>
+                        <img src="{{ reservation.bike.image.url }}" alt="{{ reservation.bike.name }}" style="width: 100%; max-width: 350px; height: auto; margin-bottom: 20px; transition: transform var(--transition-normal);">
                         {% endif %}
-                        <div class="detail-bike-info">
-                            <h3>{{ reservation.bike.name }}</h3>
-                            <p>{{ reservation.bike.category.name }}</p>
-                            <a href="{% url 'bike_detail' slug=reservation.bike.slug %}" class="btn btn-text btn-sm">View Bike</a>
-                        </div>
+                        
+                        <h3 style="margin: 0; font-family: var(--font-heading); font-size: 1.4rem; color: var(--color-black);">{{ reservation.bike.name }}</h3>
+                        <p style="color: var(--color-gray-500); margin: 5px 0 15px 0; font-size: 1rem;">{{ reservation.bike.category.name }}</p>
+                        
+                        <a href="{% url 'bike_detail' slug=reservation.bike.slug %}" class="btn btn-outline btn-sm">
+                            View Bike Specs
+                        </a>
                     </div>
-                    
-                    <div class="detail-dates">
-                        <div class="date-item">
-                            <span class="date-label">Pickup Date</span>
-                            <span class="date-value">{{ reservation.rental_date|date:"l, F d, Y" }}</span>
+
+                    {% if accessories %}
+                    <div style="margin-bottom: 25px; padding: 20px; background: var(--color-gray-50); border-radius: var(--radius-md); border: 1px dashed var(--color-gray-300);">
+                        <h4 style="margin: 0 0 12px 0; font-size: 0.85rem; font-weight: 700; color: var(--color-gray-600); text-transform: uppercase; letter-spacing: 0.05rem;">Included Equipment</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            {% for acc in accessories %}
+                            <span style="background: var(--color-white); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--color-gray-200); font-size: 0.9rem; color: var(--color-black); font-weight: 500;">
+                                <strong style="color: var(--color-primary);">{{ acc.quantity }}x</strong> {{ acc.accessory.name }}
+                            </span>
+                            {% endfor %}
                         </div>
-                        <div class="date-item">
-                            <span class="date-label">Return Date</span>
-                            <span class="date-value">{{ reservation.return_date|date:"l, F d, Y" }}</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-label">Duration</span>
-                            <span class="date-value">{{ reservation.duration_display }}</span>
-                        </div>
-                    </div>
-                    
-                    {% if reservation.special_requests %}
-                    <div class="detail-requests">
-                        <h4>Special Requests</h4>
-                        <p>{{ reservation.special_requests }}</p>
                     </div>
                     {% endif %}
-                </div>
-                
-                <!-- Accessories -->
-                {% if accessories %}
-                <div class="detail-card">
-                    <h3 class="card-title">Accessories</h3>
-                    <div class="accessory-list">
-                        {% for acc in accessories %}
-                        <div class="accessory-item">
-                            <span class="accessory-name">{{ acc.quantity }}x {{ acc.accessory.name }}</span>
-                            <span class="accessory-price">${{ acc.calculate_price }}</span>
+
+                    <div class="detail-dates" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; padding-top: 20px; border-top: 1px solid var(--color-gray-200);">
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; font-weight: 600; margin-bottom: 5px;">Pickup</span>
+                            <span style="font-weight: 700; color: var(--color-black); font-size: 1rem;">{{ reservation.rental_date|date:"M d, Y" }}</span>
                         </div>
-                        {% endfor %}
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; font-weight: 600; margin-bottom: 5px;">Return</span>
+                            <span style="font-weight: 700; color: var(--color-black); font-size: 1rem;">{{ reservation.return_date|date:"M d, Y" }}</span>
+                        </div>
+                        <div>
+                            <span style="display: block; font-size: 0.75rem; color: var(--color-gray-500); text-transform: uppercase; font-weight: 600; margin-bottom: 5px;">Duration</span>
+                            <span style="font-weight: 700; font-size: 1rem;">{{ reservation.duration_display }}</span>
+                        </div>
                     </div>
                 </div>
-                {% endif %}
             </div>
             
-            <!-- Sidebar -->
-            <div class="reservation-sidebar">
-                <!-- Price Breakdown -->
-                <div class="detail-card">
-                    <h3 class="card-title">Price Breakdown</h3>
-                    <div class="price-breakdown">
-                        <div class="price-row">
-                            <span>Bike Rental</span>
-                            <span>${{ reservation.bike_price }}</span>
-                        </div>
-                        {% if reservation.accessories_price > 0 %}
-                        <div class="price-row">
-                            <span>Accessories</span>
-                            <span>${{ reservation.accessories_price }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="price-row">
+            <div class="reservation-sidebar" style="flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 300px;">
+                
+                <div class="detail-card" style="background: var(--color-white); padding: 25px; border-radius: var(--radius-lg); border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-md);">
+                    <h3 style="margin: 0 0 10px 0; font-size: 0.9rem; font-weight: 700; color: var(--color-gray-700); text-transform: uppercase;">Pickup Location</h3>
+                    <p style="margin: 0; font-weight: 700; color: var(--color-black); font-size: 1rem;">{{ reservation.pickup_location.name }}</p>
+                    <p style="margin: 6px 0 12px 0; font-size: 0.9rem; color: var(--color-gray-600); line-height: 1.5;">{{ reservation.pickup_location.address }}</p>
+                    <a href="http://maps.google.com/?q={{ reservation.pickup_location.name|urlencode }}+{{ reservation.pickup_location.address|urlencode }}" target="_blank" class="btn-text" style="font-size: 0.85rem; font-weight: 600;">Get Directions →</a>
+
+                  <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--color-gray-100); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+                    
+                    <span style="font-size: 0.7rem; color: var(--color-gray-500); text-transform: uppercase; font-weight: 800; letter-spacing: 0.1rem;">
+                        Scan at Smart-Dock
+                    </span>
+
+                    <div style="background: white; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--color-gray-200); box-shadow: inset 0 0 10px rgba(0,0,0,0.02);">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=ICC-RES-{{ reservation.id }}" 
+                            alt="QR Code for Reservation {{ reservation.id }}" 
+                            style="display: block; width: 80px; height: 80px;">
+                    </div>
+
+                    <span style="font-size: 0.6rem; color: var(--color-gray-400); text-transform: uppercase; font-weight: 700; margin-top: 5px;">
+                        Manual Entry Below
+                    </span>
+
+                   <div style="background: #ffffff; width: fit-content; min-width: 140px; min-height: 45px; margin: 0 auto; padding: 6px 12px; border-radius: 8px; border: 2px solid var(--color-gray-900); font-family: 'Courier New', font-size: 24px; monospace; font-weight: 900; font-size: 1.2rem; color: #000000; letter-spacing: 4px; text-align: center; box-shadow: var(--shadow-sm);">
+                        {{ reservation.unlock_code|default:"509641" }}
+                    </div>
+                </div>
+                </div>
+
+                <div class="detail-card" style="background: var(--color-white); padding: 25px; border-radius: var(--radius-lg); border: 1px solid var(--color-gray-200); box-shadow: var(--shadow-sm);">
+                    <div style="font-size: 0.95rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px; color: var(--color-gray-600);">
                             <span>Subtotal</span>
                             <span>${{ reservation.subtotal }}</span>
                         </div>
-                        <div class="price-row">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 15px; color: var(--color-gray-600);">
                             <span>Tax (7%)</span>
                             <span>${{ reservation.tax_amount }}</span>
                         </div>
-                        <div class="price-row total">
-                            <span>Total</span>
-                            <span>${{ reservation.total_price }}</span>
+                        <div style="display: flex; justify-content: space-between; padding-top: 15px; border-top: 2px solid var(--color-gray-100); font-weight: 700; font-size: 1.4rem; color: var(--color-black);">
+                            <span>Total Paid</span>
+                            <span style="color: var(--color-primary);">${{ reservation.total_price }}</span>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Actions -->
-                <div class="detail-card">
-                    <h3 class="card-title">Actions</h3>
-                    <div class="action-buttons">
-                        {% if reservation.is_active %}
-                        <a href="{% url 'cancel_reservation' pk=reservation.id %}" class="btn btn-outline btn-block btn-danger">Cancel Reservation</a>
-                        {% endif %}
-                        <a href="{% url 'my_reservations' %}" class="btn btn-outline btn-block">View All Reservations</a>
-                    </div>
-                </div>
-                
-                <!-- Waiver Status -->
-                <div class="detail-card">
-                    <h3 class="card-title">Waiver Status</h3>
-                    <div class="waiver-status">
-                        {% if reservation.waiver_signed %}
-                        <div class="status-indicator success">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                                <polyline points="22 4 12 14.01 9 11.01"/>
-                            </svg>
-                            <span>Waiver Signed</span>
-                        </div>
-                        <p class="status-date">Signed on {{ reservation.waiver_signed_at|date:"F d, Y" }}</p>
-                        {% else %}
-                        <div class="status-indicator pending">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="12" y1="8" x2="12" y2="12"/>
-                                <line x1="12" y1="16" x2="12.01" y2="16"/>
-                            </svg>
-                            <span>Waiver Not Signed</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
+
+             <div style="background: var(--color-gray-50); padding: 20px; border-top: 1px solid var(--color-gray-200); border-radius: 0 0 var(--radius-lg) var(--radius-lg); margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">    
+                {% if reservation.status == 'active' %}
+                    {# If the ride has already started, show Return #}
+                    <a href="{% url 'unlock_bike' pk=reservation.id %}" 
+                    style="background: #124f31; color: white; padding: 16px; border-radius: var(--radius-lg); 
+                            text-align: center; font-weight: 700; font-size: 1.1rem; text-decoration: none; 
+                            display: block; box-shadow: var(--shadow-sm);">
+                        Return Bike
+                    </a>
+
+                {% elif reservation.status == 'confirmed' or reservation.status == 'paid' or reservation.status == 'pending' %}
+                    {# ADDED 'pending' HERE so the button stays visible for Booking #40 #}
+                    <a href="{% url 'unlock_bike' pk=reservation.id %}" 
+                    style="background: var(--color-primary); color: white; padding: 16px; border-radius: var(--radius-lg); 
+                            text-align: center; font-weight: 700; font-size: 1.1rem; text-decoration: none; 
+                            display: block; box-shadow: var(--shadow-sm); border: 1px solid var(--color-primary-dark);">
+                        🔓 Unlock My Bike
+                    </a>
+                {% endif %}
+
+                {% if reservation.status != 'cancelled' and reservation.status != 'completed' %}
+                    <a href="{% url 'cancel_reservation' pk=reservation.id %}" 
+                    onclick="return confirm('Cancel this rental?')" 
+                    style="background: #fee2e2; color: #0a3319; padding: 12px; border-radius: var(--radius-lg); 
+                            text-align: center; font-weight: 600; font-size: 0.9rem; text-decoration: none; 
+                            display: block; border: 1px solid #ca4242;">
+                        ✕ Cancel Rental
+                    </a>
+                {% endif %}
+            </div>
+            </div>
             </div>
         </div>
     </div>
