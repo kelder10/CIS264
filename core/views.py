@@ -10,16 +10,11 @@ from reviews.models import Review
 from .models import Trail
 from .forms import ContactForm, WeatherZipForm
 
-##admin dashboard
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-#from django.db.models import Count
-#from django.shortcuts import render
 
-#from bikes.models import Bike
 from reservations.models import Reservation
 from payments.models import Payment
-#from reviews.models import Review
 
 def home(request):
     """Homepage view with featured content."""

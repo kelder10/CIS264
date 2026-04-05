@@ -1,12 +1,10 @@
 from django.contrib import admin
 from .models import Reservation, ReservationAccessory, Waiver, PromoCode
 
-
 class ReservationAccessoryInline(admin.TabularInline):
     model = ReservationAccessory
     extra = 0
     readonly_fields = ['price_at_time']
-
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):
@@ -17,7 +15,7 @@ class ReservationAdmin(admin.ModelAdmin):
     list_filter = ['status', 'rental_type', 'waiver_signed', 'created_at']
     search_fields = ['user__username', 'user__email', 'bike__name']
     readonly_fields = ['created_at', 'updated_at', 'calculated_prices_display']
-    inlines = [ReservationAccessoryInline]
+    inlines = [ReservationAccessoryInline] # Kept this here once
     date_hierarchy = 'rental_date'
     
     fieldsets = (
@@ -44,7 +42,16 @@ class ReservationAdmin(admin.ModelAdmin):
     
     def calculated_prices_display(self, obj):
         return f"Bike: ${obj.bike_price} | Accessories: ${obj.accessories_price} | Subtotal: ${obj.subtotal} | Tax: ${obj.tax_amount} | Total: ${obj.total_price}"
+    
     calculated_prices_display.short_description = 'Price Breakdown'
+    
+    def save_formset(self, request, form, formset, change):
+        """
+        This is the magic fix: It saves the inline accessories FIRST, 
+        then tells the reservation to calculate the totals.
+        """
+        instances = formset.save()
+        form.instance.calculate_prices()
 
 
 @admin.register(Waiver)
