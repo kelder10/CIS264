@@ -125,14 +125,15 @@ python -m venv .venv
 .\.venv\Scripts\activate
 
 # macOS/Linux
-python3 -m venv .venv
+python3.12 -m venv .venv
+#python3 -m venv .venv
 source .venv/bin/activate
 ```
 
 ### Step 2: Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### Step 3: Configure Environment Variables
