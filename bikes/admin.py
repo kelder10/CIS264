@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import BikeCategory, BikeSize, Bike, Accessory, BikeAccessory
 
-
 class BikeAccessoryInline(admin.TabularInline):
     model = BikeAccessory
     extra = 1
@@ -26,18 +25,26 @@ class BikeSizeAdmin(admin.ModelAdmin):
 @admin.register(Bike)
 class BikeAdmin(admin.ModelAdmin):
     list_display = [
-        'name', 'category', 'bike_type', 'size',
-        'price_per_day', 'is_available', 'is_maintenance', 'quantity_total'
+        'name', 'category', 'location', 'display_status', # Keep this!
+        'price_per_day', 'is_available', 'is_maintenance'
     ]
-    list_filter = ['category', 'bike_type', 'is_available', 'is_maintenance']
+    
+    list_filter = ['category', 'location', 'status', 'is_available'] 
     search_fields = ['name', 'description', 'features']
     list_editable = ['is_available', 'is_maintenance', 'price_per_day']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [BikeAccessoryInline]
     
+    def display_status(self, obj):
+        return obj.display_status
+    display_status.short_description = 'Status'
+    
     fieldsets = (
         ('Basic Information', {
             'fields': ('name', 'slug', 'category', 'bike_type', 'size')
+        }),
+        ('Smart-Dock System', {
+            'fields': ('location', 'status')
         }),
         ('Description', {
             'fields': ('description', 'features')
@@ -56,11 +63,11 @@ class BikeAdmin(admin.ModelAdmin):
 
 @admin.register(Accessory)
 class AccessoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'price_per_day', 'is_available', 'quantity_in_stock']
+    list_display = ['name', 'category', 'price_per_day', 'is_available', 'quantity_in_stock']
     list_filter = ['category', 'is_available']
     search_fields = ['name', 'description']
-    list_editable = ['is_available', 'price']
-
+    list_editable = ['is_available', 'price_per_day'] 
+    
 
 @admin.register(BikeAccessory)
 class BikeAccessoryAdmin(admin.ModelAdmin):

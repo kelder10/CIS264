@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'reservations',
     'payments',
     'reviews',
+    'locations',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'America/New_York'
+TIME_ZONE = 'America/Chicago'
 USE_I18N = True
 USE_TZ = True
 

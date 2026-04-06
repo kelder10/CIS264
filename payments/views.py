@@ -19,6 +19,9 @@ def payment(request, reservation_id):
         user=request.user
     )
     
+    if hasattr(reservation, 'calculate_prices'):
+        reservation.calculate_prices()
+    
     # Check if already paid
     if reservation.status == 'paid':
         messages.info(request, 'This reservation has already been paid.')
@@ -29,13 +32,17 @@ def payment(request, reservation_id):
         messages.warning(request, 'Please sign the waiver before proceeding to payment.')
         return redirect('waiver', reservation_id=reservation.id)
     
-    # Get accessories
+    # Get accessories for the template
     accessories = reservation.reservation_accessories.select_related('accessory').all()
     
     if request.method == 'POST':
         form = SimulatedPaymentForm(request.POST)
         if form.is_valid():
             with transaction.atomic():
+                # Re-calculate inside the transaction to prevent any last-second changes
+                if hasattr(reservation, 'calculate_prices'):
+                    reservation.calculate_prices()
+
                 payment_method = form.cleaned_data['payment_method']
                 promo_code_str = form.cleaned_data.get('promo_code', '')
                 
@@ -43,10 +50,11 @@ def payment(request, reservation_id):
                 discount_amount = 0
                 if promo_code_str:
                     try:
-                        promo = PromoCode.objects.get(code=promo_code_str)
-                        discount_amount = promo.calculate_discount(reservation.subtotal)
-                        promo.current_uses += 1
-                        promo.save()
+                        promo = PromoCode.objects.get(code=promo_code_str.upper(), is_active=True)
+                        if promo.is_valid():
+                            discount_amount = promo.calculate_discount(reservation.subtotal)
+                            promo.current_uses += 1
+                            promo.save()
                     except PromoCode.DoesNotExist:
                         pass
                 
@@ -56,10 +64,10 @@ def payment(request, reservation_id):
                     subtotal=reservation.subtotal,
                     tax_amount=reservation.tax_amount,
                     discount_amount=discount_amount,
-                    total_amount=reservation.total_price - discount_amount,
+                    total_amount=max(0, reservation.total_price - discount_amount), 
                     payment_method=payment_method,
-                    status='completed',  # Simulate successful payment
-                    card_last_four='4242',  # Demo last four
+                    status='completed',
+                    card_last_four='4242',
                     card_brand='Visa',
                     promo_code=promo_code_str,
                     processed_at=timezone.now(),
@@ -72,7 +80,7 @@ def payment(request, reservation_id):
                 
                 messages.success(
                     request,
-                    f'Payment successful! Your reservation is confirmed. Transaction ID: {payment.transaction_id}'
+                    f'Payment successful! Your reservation is confirmed.'
                 )
                 return redirect('reservation_confirmation', pk=reservation.id)
     else:
@@ -85,7 +93,6 @@ def payment(request, reservation_id):
         'bike': reservation.bike,
     }
     return render(request, 'payments/payment.html', context)
-
 
 @login_required
 def payment_confirmation(request, payment_id):

@@ -3,31 +3,28 @@
 {% block title %}Reserve {{ bike.name }} - Indian Creek Cycles{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
 <section class="page-header">
     <div class="container">
         <h1 class="page-title">Reserve Your Bike</h1>
-        <nav class="breadcrumb">
-            <a href="{% url 'home' %}">Home</a>
-            <span>/</span>
-            <a href="{% url 'bike_list' %}">Bikes</a>
-            <span>/</span>
-            <a href="{% url 'bike_detail' slug=bike.slug %}">{{ bike.name }}</a>
-            <span>/</span>
-            <span>Reserve</span>
-        </nav>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
         <div class="reservation-grid">
-            <!-- Reservation Form -->
             <div class="reservation-form-section">
                 <h2 class="section-title-sm">Reservation Details</h2>
                 
                 <form method="post" class="reservation-form">
                     {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="form-error-banner" style="background: #fee2e2; color: #b91c1c; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #f87171;">
+                        {% for error in form.non_field_errors %}
+                            <p style="margin: 0; font-weight: 600;">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -49,6 +46,15 @@
                     <div class="form-group">
                         <label for="{{ form.rental_type.id_for_label }}">Rental Type</label>
                         {{ form.rental_type }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.pickup_location.id_for_label }}">Pickup Dock Location *</label>
+                        {{ form.pickup_location }}
+                        {% if form.pickup_location.errors %}
+                            <span class="form-error">{{ form.pickup_location.errors.0 }}</span>
+                        {% endif %}
+                        <p class="small text-muted" style="margin-top: 5px;">Select the dock where you will unlock your bike.</p>
                     </div>
                     
                     {% if form.accessories.field.queryset.exists %}
@@ -89,7 +95,6 @@
                 </form>
             </div>
             
-            <!-- Bike Summary -->
             <div class="reservation-summary">
                 <div class="summary-card">
                     <h3 class="summary-title">Bike Summary</h3>
@@ -139,16 +144,41 @@
 {% endblock %}
 
 {% block extra_js %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+    /* Red alert style for booked dates */
+    .flatpickr-day.flatpickr-disabled, 
+    .flatpickr-day.flatpickr-disabled:hover {
+        background: #fca5a5 !important; 
+        color: #7f1d1d !important;
+        opacity: 1 !important;
+        cursor: not-allowed !important;
+        text-decoration: line-through;
+    }
+</style>
+
 <script>
-    // Set minimum date to today
     document.addEventListener('DOMContentLoaded', function() {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('{{ form.rental_date.id_for_label }}').min = today;
-        document.getElementById('{{ form.return_date.id_for_label }}').min = today;
+        const disabledDates = {{ booked_dates_json|safe }};
         
-        // Update return date min when pickup date changes
-        document.getElementById('{{ form.rental_date.id_for_label }}').addEventListener('change', function() {
-            document.getElementById('{{ form.return_date.id_for_label }}').min = this.value;
+        // Setup for Pickup Date
+        const rentalPicker = flatpickr("#{{ form.rental_date.id_for_label }}", {
+            minDate: "today",
+            disable: disabledDates,
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                // Force the return date to be at least the pickup date
+                returnPicker.set('minDate', dateStr);
+            }
+        });
+
+        // Setup for Return Date - This is the part that was likely missing or not firing
+        const returnPicker = flatpickr("#{{ form.return_date.id_for_label }}", {
+            minDate: "today",
+            disable: disabledDates,
+            dateFormat: "Y-m-d",
         });
     });
 </script>

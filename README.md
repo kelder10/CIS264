@@ -281,4 +281,27 @@ For issues or questions, please refer to the Django documentation or contact the
 
 ---
 
+# Indian Creek Cycles: Smart-Dock Implementation
+
+# New Features
+Functional Smart-Dock System: Integrated the logic required to connect the web application to the physical docking hardware.
+
+Active Unlock/Return Flow: Users can now successfully "Unlock" a bike to begin a session and "Return" it to end the billing cycle.
+
+Access Credentials: Automated generation of dynamic QR Codes and 6-digit manual entry codes for every reservation.
+
+Responsive Interface: A redesigned Reservation Detail page that prioritizes the "Smart-Dock Access" card for easy trailhead use.
+
+# Setup & Installation
+Install Required Packages:
+
+pip install qrcode pillow
+
+Apply Database Migrations:
+
+python manage.py migrate
+
+---
+
+
 **Made with ❤️ for bike lovers**
