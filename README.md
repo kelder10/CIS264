@@ -117,60 +117,16 @@ indian_creek_cycles/
 - Python 3.8 or higher
 - pip (Python package manager)
 
-### Step 1: Create Virtual Environment
+### Setup
+Make script executable (only needed once):
+chmod +x setup.sh
 
-```bash
-# Windows
-python -m venv .venv
-.\.venv\Scripts\activate
+Run setup:
+./setup.sh
 
-# macOS/Linux
-python3 -m venv .venv
-source .venv/bin/activate
-```
+### Alternative Setup
 
-### Step 2: Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 3: Configure Environment Variables
-
-```bash
-# Copy the example environment file
-cp .env.example .env
-
-# Edit .env with your settings (optional for demo)
-# The default settings will work for local development
-```
-
-### Step 4: Run Database Migrations
-
-```bash
-python manage.py migrate
-```
-
-### Step 5: Seed Database with Sample Data
-
-```bash
-python manage.py seed
-```
-
-This creates:
-- Admin user (username: `admin`, password: `admin123`)
-- Sample users (password: `demo123`)
-- Bike categories and sizes
-- Sample bikes (11 bikes across categories)
-- Accessories (helmets, locks, baskets, etc.)
-- Sample trails (5 trails)
-- Promo codes (WELCOME20, FAMILY10, WEEKEND15)
-- Sample reviews (6 reviews)
-
-### Step 6: Run Development Server
-
-```bash
-python manage.py runserver
+bash setup.sh
 ```
 
 The application will be available at: **http://127.0.0.1:8000/**
