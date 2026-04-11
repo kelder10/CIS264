@@ -21,6 +21,7 @@ from .forms import ReservationForm, WaiverForm, PromoCodeForm, ReservationCancel
 from bikes.models import Bike
 from payments.models import Payment
 from locations.models import Location
+from datetime import time
 
 
 def check_availability(request):
@@ -323,26 +324,19 @@ def unlock_bike(request, pk):
         messages.error(request, "Access Denied.")
         return redirect('my_reservations')
 
-    if reservation.rental_date > today:
-        messages.warning(request, f"Scheduled for {reservation.rental_date}.")
-        return redirect('reservation_detail', pk=reservation.id)
-
+    opening_time = time(8, 0) 
     delivery_time = timezone.make_aware(
-        datetime.combine(reservation.rental_date, reservation.pickup_time)
+        datetime.combine(reservation.rental_date, opening_time)
     )
     
-    if now < delivery_time:
-        wait_time = reservation.pickup_time.strftime('%I:%M %p')
-        messages.info(request, f"Your bike is being delivered from the Hub. It will be ready at {wait_time}.")
-        return redirect('reservation_detail', pk=reservation.id)
+    is_early = now < delivery_time
 
-    # --- 1. Define variables for context ---
     location = reservation.pickup_location or Location.objects.all().first()
     all_stations = list(Location.objects.filter(is_active=True).exclude(name__icontains="Hub").order_by('station_number'))
 
     try:
         current_idx = all_stations.index(location)
-    except (ValueError, AttributeError): # Added AttributeError just in case location is None
+    except (ValueError, AttributeError):
         current_idx = 0
     
     sorted_locations = all_stations[current_idx:] + all_stations[:current_idx]
@@ -351,11 +345,11 @@ def unlock_bike(request, pk):
         'location': sorted_locations[0] if sorted_locations else None,
         'all_locations': sorted_locations[1:] if len(sorted_locations) > 1 else [],
         'reservation': reservation,
-        'now': timezone.now(), 
+        'now': now, 
+        'is_early': is_early, # Pass this to your HTML template
     }
     
     return render(request, 'reservations/unlock_interface.html', context)
-
 
 
 def process_return(request, reservation_id):
@@ -381,7 +375,6 @@ def process_return(request, reservation_id):
     
     messages.success(request, f"Return Successful! {bike.name} is locked at {return_location.name}.")
     
-    # Redirect back to dispatch UI
     return redirect('unlock_bike', pk=reservation.id)
 
 
