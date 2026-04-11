@@ -92,10 +92,12 @@
                         </div>
                     </div>
 
-                    <div style="padding-top: 25px; border-top: 1px solid #f0f4f1; display: flex; justify-content: space-between; align-items: center;">
+                   <div style="padding-top: 25px; border-top: 1px solid #f0f4f1; display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <label style="display: block; font-size: 0.65rem; font-weight: 800; color: #95a5a6; text-transform: uppercase;">Duration</label>
-                            <span style="font-weight: 700; color: #1b262c;">{{ reservation.rental_duration }} {{ reservation.rental_type }}</span>
+                            <span style="font-weight: 700; color: #1b262c;">
+                                {{ reservation.rental_duration }} Day{{ reservation.rental_duration|pluralize }}
+                            </span>
                         </div>
                         <div style="text-align: right;">
                             <label style="display: block; font-size: 0.65rem; font-weight: 800; color: #95a5a6; text-transform: uppercase;">Total Paid</label>

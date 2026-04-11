@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'payments',
     'reviews',
     'locations',
+    'anymail',  
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,15 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'error',
 }
+
+
+# --- MAILTRAP API CONFIGURATION (ANYMAIL) ---
+ANYMAIL = {
+    "MAILTRAP_API_TOKEN": "ecbe70581e6f77673abc4be068e54ea6",
+    "MAILTRAP_SANDBOX_ID": 4535131, 
+}
+
+EMAIL_BACKEND = "anymail.backends.mailtrap.EmailBackend"
+
+DEFAULT_FROM_EMAIL = "kate@demomailtrap.co"
+

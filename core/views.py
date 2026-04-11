@@ -1,20 +1,26 @@
 import requests
+from datetime import timedelta
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
-
-from bikes.models import Bike, BikeCategory
-from reviews.models import Review
-from .models import Trail
-from .forms import ContactForm, WeatherZipForm
-
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
+from django.db.models import Count, Q
+from django.utils import timezone
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 
+# Local app models and forms
+from bikes.models import Bike, BikeCategory
+from reviews.models import Review
 from reservations.models import Reservation
 from payments.models import Payment
+from .models import Trail
+from .forms import ContactForm, WeatherZipForm
 
 def home(request):
     """Homepage view with featured content."""
@@ -188,7 +194,7 @@ def admin_dashboard(request):
     recent_reservations = Reservation.objects.select_related("user", "bike").order_by("-created_at")[:8]
     total_reservations = Reservation.objects.count()
     active_reservations = Reservation.objects.filter(
-    status__in=["pending", "confirmed", "paid"]
+    status__in=["Pending", "Confirmed", "Paid"]
 ).count()
 
     total_bikes = Bike.objects.count()
@@ -230,13 +236,31 @@ def admin_dashboard(request):
 
 User = get_user_model()
 
-##added for ability to adjust in admin dashboard
-
 @staff_member_required
 def admin_bikes(request):
-    bikes = Bike.objects.select_related("category", "size").order_by("name")
-    return render(request, "admin_dashboard/admin_bikes.html", {"bikes": bikes})
+    # 1. Fetch every individual bike for the table rows
+    bikes = Bike.objects.select_related("category", "size").order_by(
+        "category__name", 
+        "name", 
+        "serial_number"
+    )
+    
+    # 2. Generate the summary data for the top "Stats Cards"
+    # This groups bikes by category and counts their status
+    category_counts = Bike.objects.values('category__name').annotate(
+        total=Count('id'),
+        available=Count('id', filter=Q(is_available=True, is_maintenance=False)),
+        maintenance=Count('id', filter=Q(is_maintenance=True))
+    )
 
+    # 3. Package both lists into the context dictionary
+    context = {
+        "bikes": bikes,
+        "category_counts": category_counts,
+    }
+    
+    # 4. Render the page
+    return render(request, "admin_dashboard/admin_bikes.html", context)
 
 @staff_member_required
 def toggle_bike_availability(request, bike_id):
@@ -340,3 +364,5 @@ def void_payment(request, payment_id):
         messages.error(request, f"Only pending or processing payments can be voided. Current status: {payment.status}")
 
     return redirect("admin_payments")
+
+

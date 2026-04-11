@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #f4f4f4;">
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" style="padding: 20px;">
+                
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="width: 600px; background-color: #ffffff; border: 2px solid #114823; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-collapse: separate;">
+                    
+                    <tr>
+                        <td align="center" style="padding: 30px 0; background-color: #020202; border-bottom: 1px solid #eeeeee; border-radius: 10px 10px 0 0;">
+                            <img src="cid:logo_image" alt="Indian Creek Cycle Rentals" width="220" style="display: block; width: 220px; height: auto;">
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 30px 40px 10px 40px; text-align: center;">
+                            <h2 style="font-size: 26px; color: #114823; margin: 0; font-style: italic;">See you tomorrow, {{ user.get_short_name|default:user.username }}!</h2>
+                            <p style="font-size: 14px; color: #888888; margin: 8px 0 0; text-transform: uppercase; letter-spacing: 1px;">Booking #{{ reservation.id }}</p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 20px 60px;">
+                            <div style="border-top: 1px solid #eeeeee; border-bottom: 1px solid #eeeeee; padding: 25px 0;">
+                                <p style="margin: 0; font-size: 18px; color: #111111;"><strong>{{ reservation.pickup_location.name }}</strong></p>
+                                <p style="margin: 5px 0 15px 0; font-size: 14px; color: #666666;">{{ reservation.pickup_location.address }}</p>
+                                
+                                <a href="https://www.google.com/maps/search/?api=1&query={{ reservation.pickup_location.address|urlencode }}"
+                                   style="display: inline-block; padding: 8px 18px; background-color: #114823; color: #ffffff; text-decoration: none; font-size: 12px; border-radius: 17px; font-weight: bold;">Get Directions</a>
+                                
+                                <p style="font-size: 15px; margin: 20px 0 0 0; color: #444444;">Pickup: <strong>{{ reservation.rental_date|date:"l, F j" }}</strong></p>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="padding: 20px 60px 40px 60px;">
+                            <h3 style="margin: 0 0 20px 0; color: #114823; font-size: 13px; text-transform: uppercase; letter-spacing: 2px;">
+                                Trail Ready Checklist
+                            </h3>    
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 400px;">
+                                <tr>
+                                    <td align="left" style="padding-bottom: 12px; font-size: 14px; color: #333333;">
+                                        <span style="font-size: 16px; margin-right: 8px;">🎒</span> <strong>Supplies:</strong> Bring water and a small snack for the journey.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="padding-bottom: 12px; font-size: 14px; color: #333333;">
+                                        <span style="font-size: 16px; margin-right: 8px;">📍</span> <strong>Navigate:</strong> Download our offline trail map before you arrive.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="left" style="font-size: 14px; color: #333333;">
+                                        <span style="font-size: 16px; margin-right: 8px;">🔐</span> <strong>Unlock:</strong> Code: <strong>{{ reservation.unlock_code }}</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="center" style="background-color: #eae8e8; padding: 30px 20px; color: #111111; font-size: 11px;">
+                            <p style="margin: 0 0 5px 0; font-weight: bold; font-size: 13px; color: #111010; letter-spacing: 1px;">INDIAN CREEK CYCLES</p>
+                            <p style="margin: 0; opacity: 0.8;">123 Creek Road, Nature Valley, NC</p>
+                            <p style="margin: 4px 0 0 0; opacity: 0.8;">(555) 123-BIKE</p>
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+
+</body>
+</html>

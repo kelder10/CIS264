@@ -82,7 +82,6 @@ class ReservationForm(forms.ModelForm):
         rental_date = cleaned_data.get('rental_date')
         return_date = cleaned_data.get('return_date')
         
-        # Get the date from the server
         today = timezone.now().date()
         
         if rental_date and return_date:

@@ -1,109 +1,215 @@
-{% extends 'base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispatch Portal | Indian Creek Cycles</title>
+    <style>
+        body, html { 
+            margin: 0; padding: 0; background-color: #f4f4f4; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #333;
+        }
+        .app-shell {
+            max-width: 900px; margin: 20px auto; background: #ffffff;
+            min-height: 90vh; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+        .app-header { background-color: #0b0d0c; padding: 15px; text-align: center; }
+        .logo-text { color: #d4af37; font-weight: 800; text-transform: uppercase; font-size: 1rem; letter-spacing: 1px; }
 
-{% block title %}Smart-Dock System - Indian Creek Cycles{% endblock %}
-
-{% block content %}
-<div style="height: 100px; background: #f8f9fa;"></div>
-<section style="padding: 40px 0; background: #f4f7f5; min-height: 80vh; font-family: sans-serif;">
-    <div id="unlock-container" style="max-width: 1000px; margin: 0 auto; border-radius: 30px; box-shadow: 0 20px 50px rgba(5, 60, 15, 0.15); background: #fff; border: 1px solid #eef2ef; overflow: hidden;">
+        .dispatch-card {
+            background: linear-gradient(135deg, #114823 0%, #032109 100%);
+            margin: 20px; padding: 30px; border-radius: 10px; color: white;
+            border-bottom: 4px solid #d4af37; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .rider-info-group { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .gold-bar { width: 4px; height: 50px; background-color: #d4af37; border-radius: 2px; }
         
-        <div style="padding: 30px 40px; border-bottom: 1px solid #f0f4f1; display: flex; justify-content: space-between; align-items: center; background: #fff;">
+        .switch-container { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+
+        .action-area { flex: 1; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .status-badge-container {
+            display: flex; align-items: center; gap: 8px;
+            padding: 4px 12px; border-radius: 4px; background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-text { text-transform: uppercase; font-size: 0.7rem; font-weight: 900; letter-spacing: 1px; }
+        .status-pulse { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Flashing Blue Animation */
+        .is-active-status { color: #00f2ff; border-color: rgba(0, 242, 255, 0.4); }
+        .pulse-blue { 
+            background: #00f2ff; box-shadow: 0 0 8px #00f2ff; 
+            animation: flash 2s infinite; 
+        }
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .action-btn {
+            min-width: 220px; padding: 14px; border-radius: 6px; font-weight: 800;
+            font-size: 1rem; text-transform: uppercase; border: none; cursor: pointer;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.2); transition: all 0.1s;
+        }
+        
+        .btn-booked, .btn-confirmed, .btn-paid, .btn- { background-color: #d4af37; color: #2d2005; }
+        .btn-active { background-color: #b31d1d; color: #fff; }
+        
+        /* Inactive/Future Date Style */
+        .action-btn:disabled { 
+            background-color: #555 !important; 
+            color: #aaa !important; 
+            cursor: not-allowed; 
+            box-shadow: none; 
+            transform: none; 
+        }
+
+        .station-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; padding: 0 20px 30px 20px; }
+        .station-item {
+            background-color: #f1f3f5; border: 1px solid #dee2e6; border-radius: 8px;
+            padding: 18px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .station-item.current-local { border: 2px solid #114823; background-color: #ffffff; }
+        .station-item.current-local .slot-badge { background: #114823; border-color: #114823; color: white; }
+        
+        .slot-badge {
+            text-align: center; background: #ffffff; border: 2px solid #ced4da;
+            padding: 8px 12px; border-radius: 6px; min-width: 45px;
+        }
+        
+        .switch-ui {
+            display: flex; background: rgba(255,255,255,0.1); border-radius: 4px;
+            padding: 4px; border: 1px solid rgba(255,255,255,0.2); width: 180px;
+        }
+        .switch-input { background: transparent; border: none; color: white; width: 100%; padding: 4px 8px; font-weight: bold; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <header class="app-header">
+        <div class="logo-text">Indian Creek <span style="color: #fff; font-weight: 300;">Cycles</span></div>
+    </header>
+
+    <div class="dispatch-card">
+        <div class="rider-info-group">
+            <div class="gold-bar"></div>
             <div>
-                <h2 style="margin: 0; font-weight: 800; color: #053c0f; font-size: 1.6rem; letter-spacing: -0.5px;">Smart-Dock Network</h2>
-                <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
-                    <span style="font-size: 0.7rem; font-weight: 700; color: #95a5a6; text-transform: uppercase; letter-spacing: 1.5px;">Active Session #{{ reservation.id }}</span>
+                <span style="color: #d4af37; text-transform: uppercase; font-size: 0.65rem; font-weight: 800;">Active Dispatch For:</span>
+                <h1 style="margin: 2px 0; font-size: 1.8rem;">{{ reservation.user.get_full_name|default:reservation.user.username }}</h1>
+                <div style="display: flex; gap: 10px;">
+                    <span style="font-family: monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">RES: #{{ reservation.id }}</span>
+                    <span style="font-family: monospace; font-size: 0.85rem; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">BIKE: {{ reservation.bike.name }}</span>
                 </div>
-            </div>
-            <div style="background: #f0fdf4; padding: 10px 18px; border-radius: 50px; border: 1px solid #dcfce7; display: flex; align-items: center; gap: 10px;">
-                <div style="width: 10px; height: 10px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 12px #2ecc71;"></div>
-                <span style="color: #166534; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;">System Active</span>
             </div>
         </div>
 
-        <div style="display: flex; gap: 0; align-items: stretch;">
+        <div class="switch-container">
+            <form onsubmit="loadReservation(event)" class="switch-ui">
+                <input type="text" id="res-id-input" placeholder="ID#" class="switch-input" style="text-align: center;">
+                <button type="submit" style="background: #d4af37; border: none; padding: 4px 10px; border-radius: 3px; font-weight: bold; font-size: 0.7rem; cursor: pointer;">SWITCH</button>
+            </form>
+            <span style="color: #d4af37; font-size: 0.6rem; font-weight: 700; text-transform: uppercase;">
+                {% if reservation.status == 'completed' %}Ready for Next Dispatch →{% else %}Load Other Rental{% endif %}
+            </span>
+        </div>
+
+        <div class="action-area">
+            <div class="status-badge-container {% if reservation.status == 'active' %}is-active-status{% endif %}">
+                <span class="status-pulse {% if reservation.status == 'active' %}pulse-blue{% endif %}" style="background-color: {% if reservation.status != 'active' %}#d4af37{% endif %};"></span>
+                <span class="status-text">
+                    {% if reservation.status == 'active' %}Rental Active{% elif reservation.status == 'completed' %}Session Archived{% else %}Bike Secured{% endif %}
+                </span>
+            </div>
             
-            <div style="flex: 1.3; padding: 40px; border-right: 1px solid #f0f4f1;">
-                <h4 style="margin: 0 0 25px 0; font-size: 0.75rem; font-weight: 800; color: #053c0f; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5;">Live Trail Capacity</h4>
-                <div style="display: flex; flex-direction: column; gap: 18px;">
-                    {% for loc in all_locations %}
-                    {% if "Hub" not in loc.name %}
-                    <div style="padding: 20px; border-radius: 20px; background: {% if loc == location %}#f0f7f1{% else %}#fff{% endif %}; border: 2px solid {% if loc == location %}#053c0f{% else %}#f1f1f1{% endif %};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                            <span style="font-size: 1.05rem; font-weight: 700; color: #053c0f;">{{ loc.name }}</span>
-                            <span style="font-size: 1.1rem; font-weight: 800; color: #053c0f;">{{ loc.percent }}%</span>
-                        </div>
-                        <div style="width: 100%; height: 8px; background: rgba(5, 60, 15, 0.05); border-radius: 10px; overflow: hidden;">
-                            <div style="width: {{ loc.percent }}%; height: 100%; background: #053c0f; border-radius: 10px;"></div>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div style="flex: 1; background: linear-gradient(145deg, #053c0f, #032a0b); padding: 40px; color: #fff; display: flex; flex-direction: column; justify-content: space-between;">
-                <div>
-                    <h4 style="margin: 0 0 30px 0; font-size: 0.75rem; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px;">Control Center</h4>
-                    
-                    <div style="background: rgba(255,255,255,0.05); padding: 30px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
-                        
-                        {% if reservation.status != 'active' and reservation.status != 'completed' %}
-                            <button id="action-btn" onclick="handleDockAction()" style="width: 100%; background: #27ae60; color: #fff; border: none; padding: 20px; border-radius: 16px; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);">
-                                Unlock My Bike
-                            </button>
-                            <p id="status-text" style="margin: 20px 0 0; font-size: 0.6rem; color: rgba(255,255,255,0.5); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Ready to ride?</p>
-                        
-                        {% elif reservation.status == 'active' %}
-                            <button id="action-btn" onclick="handleDockAction()" style="width: 100%; background: #fff; color: #053c0f; border: none; padding: 20px; border-radius: 16px; font-weight: 900; font-size: 1.2rem; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-                                End Ride & Lock
-                            </button>
-                            <div id="bt-status" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px;">
-                                <div style="width: 6px; height: 6px; background: #2ecc71; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                                <span style="font-size: 0.65rem; color: rgba(255,255,255,0.6); font-weight: 800; text-transform: uppercase;">Bluetooth Active</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                </div>
-
-                <div style="padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
-                    <p style="margin: 0 0 15px 0; font-size: 0.8rem; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px;">Switch Session</p>
-                    <form action="{% url 'find_next_reservation' %}" method="GET" style="display: flex; gap: 8px;">
-                        <input type="text" name="res_id" placeholder="ID #" style="flex: 1.5; padding: 12px 15px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); border-radius: 10px; font-size: 0.85rem; font-weight: 600; color: #fff; outline: none;">
-                        <button type="submit" style="flex: 1; background: rgba(255,255,255,0.1); color: #fff; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); padding: 12px; font-weight: 800; font-size: 0.8rem; cursor: pointer;">Load</button>
-                    </form>
-                </div>
-            </div>
+            <button id="action-btn" 
+                    onclick="handleDockAction()" 
+                    class="action-btn btn-{{ reservation.status }}"
+                    {% if reservation.status == 'completed' or reservation.rental_date > now.date %}disabled{% endif %}>
+                
+                {% if reservation.status == 'active' %}
+                    Return Bike
+                {% elif reservation.status == 'completed' %}
+                    Rental Complete
+                {% elif reservation.rental_date > now.date %}
+                    Locked until {{ reservation.rental_date|date:"M d" }}
+                {% else %}
+                    Unlock Bike
+                {% endif %}
+            </button>
         </div>
     </div>
-</section>
+
+    <div style="padding: 0 25px;">
+        <h3 style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; color: #888; margin-bottom: 15px;">Trailhead Dock Availability</h3>
+    </div>
+
+    <div class="station-grid">
+        <div class="station-item current-local">
+            <div>
+                <div style="color: #114823; font-weight: 800; font-size: 0.6rem; text-transform: uppercase;">Station #{{ location.station_number }}</div>
+                <div style="font-weight: 800; font-size: 1.1rem; color: #111;">{{ location.name }}</div>
+                <div style="font-size: 0.6rem; color: #114823; font-weight: 900; margin-top: 4px;">LOCAL DOCK</div>
+            </div>
+            <div class="slot-badge">
+                <span style="display: block; font-size: 1.3rem; font-weight: 900; line-height: 1;">{{ location.free_slots }}</span>
+                <span style="font-size: 0.55rem; text-transform: uppercase; font-weight: bold;">Open</span>
+            </div>
+        </div>
+
+        {% for loc in all_locations %}
+        <div class="station-item">
+            <div>
+                <div style="color: #adb5bd; font-weight: 800; font-size: 0.6rem; text-transform: uppercase;">Station #{{ loc.station_number }}</div>
+                <div style="font-weight: 700; font-size: 1rem; color: #495057;">{{ loc.name }}</div>
+            </div>
+            <div class="slot-badge">
+                <span style="display: block; font-size: 1.3rem; font-weight: 900; line-height: 1;">{{ loc.free_slots }}</span>
+                <span style="font-size: 0.55rem; text-transform: uppercase; font-weight: bold;">Open</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 
 <script>
-// Use Django status to set the initial JS state
-let rideStarted = {% if reservation.status == 'active' %}true{% else %}false{% endif %};
+    const status = "{{ reservation.status }}";
+    const rideStarted = (status === 'active');
 
-function handleDockAction() {
-    const btn = document.getElementById('action-btn');
-    const pickupLoc = "{{ location.name }}";
-
-    if (!rideStarted) {
-        // UNLOCK LOGIC (Green Button State)
-        btn.disabled = true;
-        btn.innerText = "Connecting...";
-        btn.style.opacity = "0.7";
-        setTimeout(() => { 
-            window.location.href = "{% url 'process_unlock' reservation.id %}"; 
-        }, 1000);
-    } else {
-        // RETURN LOGIC (White Button State)
-        if(confirm(`Confirm bike return at ${pickupLoc}?`)) {
-            btn.disabled = true;
-            btn.innerText = "Finalizing...";
-            btn.style.opacity = "0.7";
-            setTimeout(() => { 
-                window.location.href = "{% url 'process_return' reservation.id %}"; 
-            }, 1000);
+    function loadReservation(event) {
+        event.preventDefault();
+        const resId = document.getElementById('res-id-input').value;
+        if (resId) {
+            window.location.href = `/reservations/reservation/${resId}/unlock/`;
         }
     }
-}
+
+    function handleDockAction() {
+        const btn = document.getElementById('action-btn');
+        if (status === 'completed') return;
+
+        if (!rideStarted) {
+            btn.disabled = true;
+            btn.innerText = "Connecting...";
+            setTimeout(() => { 
+                window.location.href = "{% url 'process_unlock' reservation.id %}"; 
+            }, 800);
+        } else {
+            if(confirm(`Confirm bike return?`)) {
+                btn.disabled = true;
+                btn.innerText = "Finalizing...";
+                setTimeout(() => { 
+                    window.location.href = "{% url 'process_return' reservation.id %}"; 
+                }, 800);
+            }
+        }
+    }
 </script>
-{% endblock %}
+</body>
+</html>
