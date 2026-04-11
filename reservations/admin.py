@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import models  
 from .models import Reservation, ReservationAccessory, Waiver, PromoCode
 
 class ReservationAccessoryInline(admin.TabularInline):
@@ -39,6 +40,7 @@ class ReservationAdmin(admin.ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
     
     def calculated_prices_display(self, obj):
         return f"Bike: ${obj.bike_price} | Accessories: ${obj.accessories_price} | Subtotal: ${obj.subtotal} | Tax: ${obj.tax_amount} | Total: ${obj.total_price}"
@@ -52,6 +54,8 @@ class ReservationAdmin(admin.ModelAdmin):
         """
         instances = formset.save()
         form.instance.calculate_prices()
+        
+    
 
 
 @admin.register(Waiver)

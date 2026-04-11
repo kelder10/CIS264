@@ -112,6 +112,9 @@ class Reservation(models.Model):
         unit = "Hour" if self.rental_type == 'hourly' else "Day"
         plural = "s" if duration > 1 else ""
         return f"{duration} {unit}{plural}"
+    
+    special_requests = models.TextField(blank=True, null=True, help_text="Customer requests from checkout.")
+    admin_notes = models.TextField(blank=True, null=True, help_text="Internal notes for logistics/maintenance staff.")
 
     def calculate_prices(self):
         """Handles all the math for the reservation and its accessories."""
@@ -136,7 +139,8 @@ class Reservation(models.Model):
 
     def generate_qr_code(self):
         """Generates a QR code pointing to the specific unlock URL for this reservation."""
-        qr_url = f"http://127.0.0.1:8000/reservations/reservation/{self.id}/unlock/" 
+        # qr_url = f"http://127.0.0.1:8000/reservations/reservation/{self.id}/unlock/" 
+        qr_url = f"http://192.168.1.154:8000/reservations/reservation/{self.id}/unlock/"
         
         qr = qrcode.QRCode(version=1, box_size=10, border=5)
         qr.add_data(qr_url)

@@ -2,9 +2,12 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
-
+from django.db.models import Count
 from .models import Bike, BikeCategory, BikeSize, Accessory
-
+from locations.models import Location  
+    
+from django.shortcuts import redirect, get_object_or_404
+from .models import Bike
 
 def bike_list(request):
     """List all available bikes."""
@@ -193,3 +196,44 @@ def bike_sizes_guide(request):
         'sizes': sizes,
     }
     return render(request, 'bikes/size_guide.html', context)
+
+
+def admin_inventory_summary(request):
+    # This counts how many of EACH SPECIFIC NAME you have
+    inventory = Bike.objects.values('name', 'category__name', 'price_per_day').annotate(
+        count=Count('id'),
+        available=Count('id', filter=Q(is_available=True, is_maintenance=False)),
+        needs_repair=Count('id', filter=Q(is_maintenance=True))
+    ).order_by('category__name', 'name')
+
+    return render(request, "admin_dashboard/inventory.html", {"inventory": inventory})
+
+
+def fleet_dispatch(request):
+    from locations.models import Location
+    
+    # Get EVERY active location so the driver can see the whole system status
+    all_locations = Location.objects.filter(is_active=True).order_by('name')
+    
+    # Filter only those that physically have bikes for the task cards
+    tasks = [l for l in all_locations if l.needs_pickup_dispatch]
+    
+    return render(request, 'admin_dashboard/fleet_dispatch.html', {
+        'all_locations_list': all_locations,  # This fills the "Live Dock Status"
+        'locations_needing_pickup': tasks     # This fills the "Active Pickup Tasks"
+    })
+
+def confirm_pickup(request, location_id):
+    # Find the trailhead and the Hub
+    trailhead = get_object_or_404(Location, id=location_id)
+    hub = Location.objects.get(name__icontains="Hub") # Or "Main Shop"
+    
+    # Get all bikes currently at this trailhead
+    bikes_to_move = Bike.objects.filter(location=trailhead)
+    
+    # Move them back to the Hub
+    for bike in bikes_to_move:
+        bike.location = hub
+        bike.save()
+        
+    return redirect('fleet_dispatch')

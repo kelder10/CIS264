@@ -63,6 +63,9 @@
                                         <p style="margin: 0; color: #7f8c8d; font-size: 0.85rem;">
                                             {{ reservation.rental_date|date:"M d" }} - {{ reservation.return_date|date:"M d, Y" }}
                                         </p>
+                                       <p style="margin: 5px 0 0; color: #1b262c; font-size: 0.85rem; font-weight: 500;">
+                                            ${{ bike.price_per_day }} × {{ reservation.rental_duration }} day{{ reservation.rental_duration|pluralize }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

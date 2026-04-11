@@ -101,9 +101,9 @@
                         <div class="bike-price">
                             <span class="price-main">${{ bike.price_per_day }}</span>
                             <span class="price-unit">/day</span>
-                            {% if bike.price_per_hour %}
+                            {% comment %} {% if bike.price_per_hour %}
                             <span class="price-alt">or ${{ bike.price_per_hour }}/hr</span>
-                            {% endif %}
+                            {% endif %} {% endcomment %}
                         </div>
                         <a href="{% url 'bike_detail' slug=bike.slug %}" class="btn btn-primary btn-sm">View Details</a>
                     </div>
