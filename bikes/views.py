@@ -158,7 +158,7 @@ def kids_bikes(request):
 def mountain_bikes(request):
     """View mountain bikes."""
     bikes = Bike.objects.filter(
-        bike_type='kids',
+        bike_type='mountain',
         is_available=True,
         is_maintenance=False  
     ).select_related('category', 'size')
