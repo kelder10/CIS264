@@ -240,3 +240,19 @@ def confirm_pickup(request, location_id):
         bike.save()
         
     return redirect('fleet_dispatch')
+
+
+# Add this to your bikes/views.py
+def add_accessory(request, accessory_id):
+    """Add an accessory to the session cart before the reservation is created."""
+    # Ensure the accessory actually exists
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+    
+    # Simple session-based cart
+    cart = request.session.get('accessory_cart', [])
+    if accessory_id not in cart:
+        cart.append(accessory_id)
+        request.session['accessory_cart'] = cart
+        
+    # Redirect back to the accessories list page
+    return redirect('accessories')
