@@ -170,6 +170,9 @@ def mountain_bikes(request):
     }
     return render(request, 'bikes/bike_type_list.html', context)
 
+def add_accessory(request, accessory_id):
+    # basic placeholder for now
+    return HttpResponse(f"Accessory {accessory_id} added")
 
 def accessories_list(request):
     """List all accessories."""

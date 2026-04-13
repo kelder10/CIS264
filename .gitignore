@@ -10,7 +10,4 @@ venv/
 
 
 
-*.sqlite3
-__pycache__/
-*.pyc
-media/qr_codes/
+.DS_Store

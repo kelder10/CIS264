@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -ex
 
 if [ ! -d ".venv" ]; then
   echo "Creating virtual environment..."
@@ -26,7 +26,11 @@ fi
 
 echo "### Step 5: Configure Environment Variables"
 if [ -f ".env.example" ]; then
-  cp -n .env.example .env
+  if [ ! -f ".env" ]; then
+    cp .env.example .env
+  else
+    echo ".env already exists, skipping copy"
+  fi
 else
   touch .env
 fi
