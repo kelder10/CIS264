@@ -66,6 +66,9 @@
                 <li class="nav-item">
                     <a href="{% url 'contact' %}" class="nav-link {% if '/contact/' in request.path %}active{% endif %}">Contact</a>
                 </li>
+                <li class="nav-item">
+                     <a href="{% url 'accessories' %}" class="nav-link {% if '/bikes/accessories/' in request.path %}active{% endif %}">Accessories</a>
+                </li>
                 
                 {% if user.is_authenticated %}
                 <li class="nav-item has-dropdown">
