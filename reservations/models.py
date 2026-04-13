@@ -115,28 +115,30 @@ class Reservation(models.Model):
     
     special_requests = models.TextField(blank=True, null=True, help_text="Customer requests from checkout.")
     admin_notes = models.TextField(blank=True, null=True, help_text="Internal notes for logistics/maintenance staff.")
-
     def calculate_prices(self):
-        """Handles all the math for the reservation and its accessories."""
-        if self.rental_type == 'hourly':
-            rate = getattr(self.bike, 'price_per_hour', Decimal('0.00'))
-            self.bike_price = rate * Decimal(str(self.rental_duration))
-        else:
-            rate = getattr(self.bike, 'price_per_day', Decimal('0.00'))
-            days = (self.return_date - self.rental_date).days + 1
-            self.bike_price = rate * Decimal(str(max(1, days)))
+            """Handles all the math for the reservation and its accessories."""
+            if self.rental_type == 'hourly':
+                rate = getattr(self.bike, 'price_per_hour', Decimal('0.00'))
+                self.bike_price = rate * Decimal(str(self.rental_duration))
+            else:
+                # FIX IS HERE: Removing the +1 from the days calculation
+                rate = getattr(self.bike, 'price_per_day', Decimal('0.00'))
+                days = (self.return_date - self.rental_date).days 
+                self.bike_price = rate * Decimal(str(max(1, days)))
 
-        if self.pk:
-            self.accessories_price = sum(
-                ra.get_total() for ra in self.reservation_accessories.all()
-            )
-        else:
-            self.accessories_price = Decimal('0.00')
+            # Accessory math stays separate
+            if self.pk:
+                self.accessories_price = sum(
+                    ra.get_total() for ra in self.reservation_accessories.all()
+                )
+            else:
+                self.accessories_price = Decimal('0.00')
 
-        self.subtotal = self.bike_price + self.accessories_price
-        self.tax_amount = (self.subtotal * Decimal('0.07')).quantize(Decimal('0.01'))
-        self.total_price = self.subtotal + self.tax_amount
-
+            # Totals
+            self.subtotal = self.bike_price + self.accessories_price
+            self.tax_amount = (self.subtotal * Decimal('0.07')).quantize(Decimal('0.01'))
+            self.total_price = self.subtotal + self.tax_amount
+            
     def generate_qr_code(self):
         """Generates a QR code pointing to the specific unlock URL for this reservation."""
         # qr_url = f"http://127.0.0.1:8000/reservations/reservation/{self.id}/unlock/" 
