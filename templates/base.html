@@ -83,6 +83,9 @@
                         <li><a href="{% url 'profile' %}" class="dropdown-link">My Profile</a></li>
                         <li><a href="{% url 'my_reservations' %}" class="dropdown-link">My Reservations</a></li>
                         <li><a href="{% url 'payment_history' %}" class="dropdown-link">Payment History</a></li>
+                        {% if user.is_staff %}
+                        <li><a href="{% url 'admin_dashboard' %}" class="dropdown-link">Admin Dashboard</a></li>
+                        {% endif %}
                         <li class="dropdown-divider"></li>
                         <li><a href="{% url 'logout' %}" class="dropdown-link">Sign Out</a></li>
                     </ul>
