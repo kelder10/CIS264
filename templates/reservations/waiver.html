@@ -104,13 +104,6 @@
                         </div>
                     </div>
                     
-                    <div class="waiver-summary">
-                        <h4>Reservation Summary</h4>
-                        <p><strong>Bike:</strong> {{ reservation.bike.name }}</p>
-                        <p><strong>Dates:</strong> {{ reservation.rental_date|date:"M d, Y" }} - {{ reservation.return_date|date:"M d, Y" }}</p>
-                        <p><strong>Total:</strong> ${{ reservation.total_price }}</p>
-                    </div>
-                    
                     <button type="submit" class="btn btn-primary btn-lg btn-block">
                         Sign Waiver & Continue to Payment
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -2,30 +2,32 @@ from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
 from datetime import datetime, timedelta
-
+from django.db.models import Count
 from .models import Bike, BikeCategory, BikeSize, Accessory
-
+from locations.models import Location  
+    
+from django.shortcuts import redirect, get_object_or_404
+from .models import Bike
 
 def bike_list(request):
     """List all available bikes."""
-    bikes = Bike.objects.filter(is_available=True).select_related('category', 'size')
+    bikes = Bike.objects.filter(
+        is_available=True, 
+        is_maintenance=False
+    ).select_related('category', 'size')
     
-    # Filter by category
     category_slug = request.GET.get('category')
     if category_slug:
         bikes = bikes.filter(category__slug=category_slug)
     
-    # Filter by bike type
     bike_type = request.GET.get('type')
     if bike_type:
         bikes = bikes.filter(bike_type=bike_type)
     
-    # Filter by size
     size = request.GET.get('size')
     if size:
         bikes = bikes.filter(size__size_inches=size)
     
-    # Search
     search = request.GET.get('search')
     if search:
         bikes = bikes.filter(
@@ -34,12 +36,10 @@ def bike_list(request):
             Q(features__icontains=search)
         )
     
-    # Check availability for specific date
     date_str = request.GET.get('date')
     if date_str:
         try:
             check_date = datetime.strptime(date_str, '%Y-%m-%d').date()
-            # Filter out bikes not available on this date
             available_bikes = []
             for bike in bikes:
                 if bike.is_available_for_date(check_date):
@@ -72,19 +72,16 @@ def bike_detail(request, slug):
         slug=slug
     )
     
-    # Get compatible accessories
     accessories = Accessory.objects.filter(
         compatible_bikes__bike=bike,
         is_available=True
     )[:6]
     
-    # Get similar bikes
     similar_bikes = Bike.objects.filter(
         category=bike.category,
         is_available=True
     ).exclude(id=bike.id)[:4]
     
-    # Parse features
     features = [f.strip() for f in bike.features.split('\n') if f.strip()]
     
     context = {
@@ -95,13 +92,28 @@ def bike_detail(request, slug):
     }
     return render(request, 'bikes/bike_detail.html', context)
 
+def kids_bikes(request):
+    """View kids bikes."""
+    bikes = Bike.objects.filter(
+        bike_type='kids',
+        is_available=True,
+        is_maintenance=False
+    ).select_related('category', 'size')
+    
+    context = {
+        'bikes': bikes,
+        'title': 'Kids Bikes',
+        'description': 'Safe and fun bikes for young riders.',
+    }
+    return render(request, 'bikes/bike_type_list.html', context)
 
 def bike_category(request, slug):
     """View bikes by category."""
     category = get_object_or_404(BikeCategory, slug=slug, is_active=True)
     bikes = Bike.objects.filter(
         category=category,
-        is_available=True
+        is_available=True,
+        is_maintenance=False
     ).select_related('size')
     
     context = {
@@ -110,12 +122,13 @@ def bike_category(request, slug):
     }
     return render(request, 'bikes/bike_category.html', context)
 
-
-def adult_bikes(request):
+# In bikes/views.py
+def adult_bikes(request):  
     """View adult bikes."""
     bikes = Bike.objects.filter(
         bike_type='adult',
-        is_available=True
+        is_available=True,
+        is_maintenance=False
     ).select_related('category', 'size')
     
     context = {
@@ -130,7 +143,8 @@ def kids_bikes(request):
     """View kids bikes."""
     bikes = Bike.objects.filter(
         bike_type='kids',
-        is_available=True
+        is_available=True,
+        is_maintenance=False  
     ).select_related('category', 'size')
     
     context = {
@@ -144,8 +158,9 @@ def kids_bikes(request):
 def mountain_bikes(request):
     """View mountain bikes."""
     bikes = Bike.objects.filter(
-        bike_type='mountain',
-        is_available=True
+        bike_type='kids',
+        is_available=True,
+        is_maintenance=False  
     ).select_related('category', 'size')
     
     context = {
@@ -181,3 +196,44 @@ def bike_sizes_guide(request):
         'sizes': sizes,
     }
     return render(request, 'bikes/size_guide.html', context)
+
+
+def admin_inventory_summary(request):
+    # This counts how many of EACH SPECIFIC NAME you have
+    inventory = Bike.objects.values('name', 'category__name', 'price_per_day').annotate(
+        count=Count('id'),
+        available=Count('id', filter=Q(is_available=True, is_maintenance=False)),
+        needs_repair=Count('id', filter=Q(is_maintenance=True))
+    ).order_by('category__name', 'name')
+
+    return render(request, "admin_dashboard/inventory.html", {"inventory": inventory})
+
+
+def fleet_dispatch(request):
+    from locations.models import Location
+    
+    # Get EVERY active location so the driver can see the whole system status
+    all_locations = Location.objects.filter(is_active=True).order_by('name')
+    
+    # Filter only those that physically have bikes for the task cards
+    tasks = [l for l in all_locations if l.needs_pickup_dispatch]
+    
+    return render(request, 'admin_dashboard/fleet_dispatch.html', {
+        'all_locations_list': all_locations,  # This fills the "Live Dock Status"
+        'locations_needing_pickup': tasks     # This fills the "Active Pickup Tasks"
+    })
+
+def confirm_pickup(request, location_id):
+    # Find the trailhead and the Hub
+    trailhead = get_object_or_404(Location, id=location_id)
+    hub = Location.objects.get(name__icontains="Hub") # Or "Main Shop"
+    
+    # Get all bikes currently at this trailhead
+    bikes_to_move = Bike.objects.filter(location=trailhead)
+    
+    # Move them back to the Hub
+    for bike in bikes_to_move:
+        bike.location = hub
+        bike.save()
+        
+    return redirect('fleet_dispatch')

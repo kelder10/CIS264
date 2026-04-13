@@ -1,171 +1,170 @@
 {% extends 'base.html' %}
 
-{% block title %}Bike Trails - Indian Creek Cycles{% endblock %}
-{% block meta_description %}Explore scenic bike trails near Indian Creek. Find trails for all skill levels from easy family paths to challenging mountain routes.{% endblock %}
+{% block extra_css %}
+<style>
+    /* 1. FILTER BAR STYLING */
+    .filter-section {
+        background: #ffffff;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--color-gray-200);
+        position: sticky;
+        top: 92px; /* Height of your navbar */
+        z-index: 100;
+    }
+    .filter-bar { display: flex; align-items: center; gap: 15px; }
+    .filter-btn {
+        padding: 6px 16px;
+        border-radius: var(--radius-sm);
+        background: var(--color-gray-100);
+        color: var(--color-gray-700);
+        text-decoration: none;
+        border: 1px solid var(--color-gray-300);
+        font-size: 0.85rem;
+        transition: all var(--transition-fast);
+    }
+    .filter-btn.active, .filter-btn:hover { 
+        background: var(--color-primary); 
+        color: white; 
+        border-color: var(--color-primary); 
+    }
+
+    /* 2. HORIZONTAL CARD LAYOUT */
+    .trails-list-container {
+        padding: 40px 0;
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+    }
+
+    .trail-horizontal-card {
+        background: var(--color-white);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        display: flex; /* Side-by-side */
+        flex-direction: row;
+        border: 1px solid var(--color-gray-200);
+    }
+
+    .trail-img-side {
+        width: 35%;
+        min-height: 320px;
+    }
+    .trail-img-side img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .trail-info-side {
+        width: 65%;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .trail-stats-row {
+        display: flex;
+        gap: 30px;
+        margin-top: auto;
+        padding-top: 20px;
+        border-top: 1px solid var(--color-gray-100);
+    }
+
+    .stat-item span {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: var(--color-gray-400);
+        letter-spacing: 0.05em;
+    }
+
+    .stat-item strong {
+        font-size: 1.2rem;
+        color: var(--color-primary);
+    }
+
+    /* Responsive Mobile View */
+    @media (max-width: 850px) {
+        .trail-horizontal-card { flex-direction: column; }
+        .trail-img-side, .trail-info-side { width: 100%; }
+        .trail-img-side { min-height: 200px; height: 200px; }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Page Header -->
-<section class="page-header">
+<header class="page-header">
     <div class="container">
         <h1 class="page-title">Explore Our Trails</h1>
-        <nav class="breadcrumb">
-            <a href="{% url 'home' %}">Home</a>
-            <span>/</span>
-            <span>Trails</span>
-        </nav>
     </div>
-</section>
+</header>
 
-<!-- Trail Filters -->
-<section class="section-sm section-alt">
+<section class="filter-section">
     <div class="container">
         <div class="filter-bar">
-            <span class="filter-label">Filter by difficulty:</span>
+            <span style="font-weight: 600; font-size: 0.9rem;">Filter Difficulty:</span>
             <div class="filter-buttons">
                 <a href="{% url 'trails' %}" class="filter-btn {% if not selected_difficulty %}active{% endif %}">All</a>
                 {% for value, label in difficulty_choices %}
-                <a href="?difficulty={{ value }}" class="filter-btn difficulty-{{ value }} {% if selected_difficulty == value %}active{% endif %}">{{ label }}</a>
+                <a href="?difficulty={{ value }}" class="filter-btn {% if selected_difficulty == value %}active{% endif %}">{{ label }}</a>
                 {% endfor %}
             </div>
         </div>
     </div>
 </section>
 
-<!-- Trails Grid -->
-<section class="section">
-    <div class="container">
-        <div class="trails-list">
-            {% for trail in trails %}
-            <div class="trail-item">
-                <div class="trail-image">
-                    {% if trail.image %}
-                    <img src="{{ trail.image.url }}" alt="{{ trail.name }}">
-                    {% else %}
-                    <div class="trail-image-placeholder">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                            <circle cx="12" cy="10" r="3"/>
-                        </svg>
-                    </div>
-                    {% endif %}
-                    <span class="trail-difficulty difficulty-{{ trail.difficulty }}">{{ trail.get_difficulty_display }}</span>
-                </div>
-                <div class="trail-info">
-                    <h3 class="trail-name">{{ trail.name }}</h3>
-                    <p class="trail-description">{{ trail.description }}</p>
-                    
-                    <div class="trail-meta-grid">
-                        <div class="trail-meta-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 6v6l4 2"/>
-                            </svg>
-                            <span><strong>{{ trail.length_miles }}</strong> miles</span>
-                        </div>
-                        <div class="trail-meta-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <path d="M12 6v6l4 2"/>
-                            </svg>
-                            <span><strong>{{ trail.estimated_time }}</strong></span>
-                        </div>
-                        <div class="trail-meta-item">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
-                            </svg>
-                            <span>{{ trail.terrain }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="trail-highlights">
-                        <h4>Highlights:</h4>
-                        <p>{{ trail.highlights }}</p>
-                    </div>
-                    
-                    <div class="trail-actions">
-                        <a href="{% url 'bike_list' %}?date={{ request.GET.date|default:'' }}" class="btn btn-primary">Rent a Bike</a>
-                    </div>
-                </div>
+<div class="container">
+    <div class="trails-list-container">
+        {% for trail in trails %}
+        <article class="trail-horizontal-card">
+            <div class="trail-img-side">
+                {% if trail.image %}
+                <img src="{{ trail.image.url }}" alt="{{ trail.name }}">
+                {% else %}
+                <div style="background:var(--color-gray-100); height:100%; display:flex; align-items:center; justify-content:center; color:var(--color-gray-400);">No Photo</div>
+                {% endif %}
             </div>
-            {% empty %}
-            <div class="empty-state">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                    <circle cx="12" cy="10" r="3"/>
-                </svg>
-                <h3>No trails found</h3>
-                <p>Trail information will be added soon. Check back later!</p>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</section>
 
-<!-- Trail Tips Section -->
-<section class="section section-alt">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Trail Riding Tips</h2>
-        </div>
-        
-        <div class="tips-grid">
-            <div class="tip-card">
-                <div class="tip-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    </svg>
+            <div class="trail-info-side">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                    <h2 style="margin:0; font-size: 1.75rem;">{{ trail.name }}</h2>
+                    <span class="trail-difficulty difficulty-{{ trail.difficulty|lower }}">
+                        {{ trail.get_difficulty_display }}
+                    </span>
                 </div>
-                <h3 class="tip-title">Safety First</h3>
-                <p class="tip-text">Always wear a helmet and follow trail rules. Bring water, snacks, and a basic repair kit.</p>
-            </div>
-            
-            <div class="tip-card">
-                <div class="tip-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                    </svg>
-                </div>
-                <h3 class="tip-title">Know Your Limits</h3>
-                <p class="tip-text">Choose trails that match your skill level. Don't attempt advanced trails as a beginner.</p>
-            </div>
-            
-            <div class="tip-card">
-                <div class="tip-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                </div>
-                <h3 class="tip-title">Plan Ahead</h3>
-                <p class="tip-text">Check the weather, tell someone your route, and start early to avoid afternoon heat.</p>
-            </div>
-            
-            <div class="tip-card">
-                <div class="tip-icon">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                        <circle cx="9" cy="7" r="4"/>
-                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
-                    </svg>
-                </div>
-                <h3 class="tip-title">Trail Etiquette</h3>
-                <p class="tip-text">Yield to pedestrians, pass on the left, and stay on marked trails to protect nature.</p>
-            </div>
-        </div>
-    </div>
-</section>
 
-<!-- CTA Section -->
-<section class="cta-section">
-    <div class="container">
-        <div class="cta-content">
-            <h2 class="cta-title">Ready to Hit the Trails?</h2>
-            <p class="cta-text">Rent a quality bike and explore these beautiful trails today!</p>
-            <div class="cta-buttons">
-                <a href="{% url 'bike_list' %}" class="btn btn-primary btn-lg">Browse Bikes</a>
-                <a href="{% url 'contact' %}" class="btn btn-outline btn-lg">Ask a Question</a>
+                <p style="font-style: italic; color: var(--color-gray-600); margin-bottom: 15px;">"{{ trail.description }}"</p>
+
+                <div style="margin-bottom: 20px;">
+                    <small style="display:block; color:var(--color-gray-400); font-weight:700; text-transform:uppercase; font-size:0.65rem; margin-bottom:5px;">Trail Highlights</small>
+                    <p style="font-size: 0.95rem; line-height: 1.5; color: var(--color-gray-700);">{{ trail.highlights }}</p>
+                </div>
+
+                <div class="trail-stats-row">
+                    <div class="stat-item">
+                        <span>Distance</span>
+                        <strong>{{ trail.length_miles }} mi</strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Est. Time</span>
+                        <strong>{{ trail.estimated_time }}</strong>
+                    </div>
+                    <div style="margin-left: auto;">
+                        <a href="{% url 'bike_list' %}" class="btn btn-primary">Rent a Bike</a>
+                    </div>
+                </div>
             </div>
+        </article>
+        {% empty %}
+        <div class="text-center" style="padding: 60px;">
+            <h3>No trails found.</h3>
+            <p>Try clearing your filters to see more results.</p>
         </div>
+        {% endfor %}
     </div>
-</section>
+</div>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.urls import path
+from reservations import views as reservation_views
 from . import views
 
 urlpatterns = [
@@ -24,4 +25,6 @@ urlpatterns = [
     path("admin-dashboard/payments/", views.admin_payments, name="admin_payments"),
     path("admin-dashboard/payments/<int:payment_id>/refund/", views.refund_payment, name="refund_payment"),
     path("admin-dashboard/payments/<int:payment_id>/void/", views.void_payment, name="void_payment"),
-]
+    
+    path('admin-dashboard/send-reminders/', reservation_views.send_daily_reminders, name='send_reminders'),
+]                         

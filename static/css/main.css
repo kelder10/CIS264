@@ -111,18 +111,19 @@ img {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 72px;
-    padding-left: 0.75rem;
+    height: 92px;
+    padding-left: 0; /* Changed from 0.75rem to 0 to move it all the way left */
     padding-right: 1.5rem;
+    max-width: 100%; /* Ensures the container can use the full screen width */
 }
 
 .navbar-brand {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-left: 0;
+    margin-right: auto;
     padding: 0;
-    flex-shrink: 0;
+    margin-left: 0; /* Ensures no extra margin is pushing it */
+    overflow: visible;
 }
 
 .navbar-logo {
@@ -131,6 +132,7 @@ img {
     display: block;
     object-fit: contain;
     flex-shrink: 0;
+    margin-left: -5px; 
 }
 
 .navbar-brand:hover {
@@ -785,6 +787,7 @@ textarea.form-control {
     padding: 8rem 0 3rem;
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
     color: var(--color-white);
+    text-align: center;
 }
 
 .page-title {
@@ -1032,14 +1035,13 @@ textarea.form-control {
 }
 
 .trail-difficulty {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.25rem 0.75rem;
+    position: static; 
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    display: inline-block;
 }
 
 .difficulty-easy {

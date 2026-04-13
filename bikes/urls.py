@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 
+
 urlpatterns = [
     path('', views.bike_list, name='bike_list'),
     path('sizes/', views.bike_sizes_guide, name='bike_sizes'),
@@ -10,4 +11,6 @@ urlpatterns = [
     path('mountain/', views.mountain_bikes, name='mountain_bikes'),
     path('category/<slug:slug>/', views.bike_category, name='bike_category'),
     path('<slug:slug>/', views.bike_detail, name='bike_detail'),
+    path('admin-dashboard/fleet-dispatch/', views.fleet_dispatch, name='fleet_dispatch'),
+    path('admin-dashboard/pickup/<int:location_id>/', views.confirm_pickup, name='confirm_pickup'),
 ]

@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-
 class BikeCategory(models.Model):
     """Model for bike categories."""
     name = models.CharField(max_length=100, unique=True)
@@ -24,7 +23,7 @@ class BikeCategory(models.Model):
 
 
 class BikeSize(models.Model):
-    """Model for bike sizes with descriptions."""
+    """Model for bike sizes with descriptions using numerical standards."""
     size_inches = models.PositiveIntegerField(unique=True)
     description = models.TextField(help_text="Description of who this size fits")
     recommended_height = models.CharField(max_length=100, help_text="Recommended rider height range")
@@ -44,9 +43,26 @@ class Bike(models.Model):
         ('kids', 'Kids Bike'),
         ('mountain', 'Mountain Bike'),
     ]
-    
+
+    STATUS_CHOICES = [
+        ('maintenance', 'At Dock'), 
+        ('in_use', 'On Trail'),     
+        ('available', 'In Shop')    
+    ]
+
+    # Core identification
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
+    
+    # --- INDIVIDUAL IDENTIFIER ---
+    serial_number = models.CharField(
+        max_length=50, 
+        unique=True, 
+        null=True, 
+        blank=True, 
+        help_text="Unique ID for this physical unit (e.g., ICC-101)"
+    )
+
     category = models.ForeignKey(
         BikeCategory,
         on_delete=models.CASCADE,
@@ -65,10 +81,27 @@ class Bike(models.Model):
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2)
     price_per_hour = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='bikes/', blank=True, null=True)
+    
+    # Availability Flags
     is_available = models.BooleanField(default=True)
     is_maintenance = models.BooleanField(default=False, help_text="Bike is under maintenance")
     maintenance_note = models.TextField(blank=True, help_text="Reason for maintenance")
-    quantity_total = models.PositiveIntegerField(default=1, help_text="Total bikes of this model")
+    
+    # Decentralized Tracking
+    location = models.ForeignKey(
+        'locations.Location', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='bikes'
+    )
+    
+    status = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES,
+        default='available'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -76,41 +109,56 @@ class Bike(models.Model):
         ordering = ['category', 'name']
     
     def __str__(self):
+        if self.serial_number:
+            return f"{self.name} [{self.serial_number}] ({self.size})"
         return f"{self.name} ({self.size})"
     
     def get_absolute_url(self):
         return reverse('bike_detail', kwargs={'slug': self.slug})
     
+    # --- NEW: INDIVIDUAL AVAILABILITY LOGIC ---
     def get_available_quantity(self, date=None):
-        """Get available quantity for a specific date."""
+        """Returns 1 if this specific bike is available, 0 if not."""
         from reservations.models import Reservation
         
+        # If the bike itself is disabled or in the shop, it's not available
+        if not self.is_available or self.is_maintenance:
+            return 0
+        
+        # If a specific date is provided, check if this serial number is already booked
         if date:
-            reserved = Reservation.objects.filter(
+            is_reserved = Reservation.objects.filter(
                 bike=self,
                 status__in=['pending', 'confirmed', 'paid'],
-                rental_date=date
-            ).count()
-            return max(0, self.quantity_total - reserved)
-        return self.quantity_total if self.is_available and not self.is_maintenance else 0
+                rental_date=date # Ensure 'rental_date' matches your Reservation model field
+            ).exists()
+            
+            return 0 if is_reserved else 1
+            
+        # If no date is provided, we just assume it's available based on the flags above
+        return 1
     
     def is_available_for_date(self, date):
-        """Check if bike is available for a specific date."""
-        if not self.is_available or self.is_maintenance:
-            return False
+        """Check if this specific bike is free for a specific date."""
         return self.get_available_quantity(date) > 0
     
     @property
     def is_in_stock(self):
-        """Check if bike is in stock."""
+        """Check if the physical unit is currently rent-ready."""
         return self.is_available and not self.is_maintenance
     
     @property
     def display_price(self):
-        """Return formatted price."""
         return f"${self.price_per_day}/day"
-
-
+    
+    @property
+    def display_status(self):
+        if self.location and "Hub" in self.location.name:
+            return "In Shop"
+        if self.status == 'in_use':
+            return "On Trail"
+        return "At Dock"
+    
 class Accessory(models.Model):
     """Model for bike accessories."""
     ACCESSORY_CATEGORIES = [
@@ -122,9 +170,9 @@ class Accessory(models.Model):
     ]
     
     name = models.CharField(max_length=200)
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=0.00) 
     description = models.TextField()
     category = models.CharField(max_length=20, choices=ACCESSORY_CATEGORIES, default='other')
-    price = models.DecimalField(max_digits=8, decimal_places=2)
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='accessories/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
