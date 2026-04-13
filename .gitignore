@@ -10,4 +10,11 @@ venv/
 
 
 
+<<<<<<< HEAD
 .DS_Store
+=======
+
+__pycache__/
+*.pyc
+media/qr_codes/
+>>>>>>> 5f40f62866fd0967a2cf1d84858c7a4de59860ff
