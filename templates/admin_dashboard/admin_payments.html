@@ -1,15 +1,20 @@
 {% extends "admin_dashboard/base.html" %}
 
-{% block title %}Payments{% endblock %}
-
+{% block title %}Payments| Indian Creek Cycles{% endblock %}
+{% block meta_description %}Manage Payments for Indian Creek Cycles{% endblock %}
 {% block content %}
-<div class="admin-wrap">
-    <a class="admin-back-link" href="{% url 'admin_dashboard' %}">← Back to Dashboard</a>
-
-    <div class="admin-page-header">
-        <div>
-            <h1>Payments</h1>
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                <h1 class="admin-title-row">
+                    <span>Payments</span>
+            </h1>
             <p>View completed and pending payment activity.</p>
+            <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                            ← Back to Dashboard
+                        </a>
         </div>
     </div>
 

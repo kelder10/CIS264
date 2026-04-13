@@ -2,18 +2,55 @@
 
 {% block extra_css %}
 <style>
+    .admin-page {
+        padding: 5.5rem 0 4rem;
+        background: linear-gradient(180deg, #f6f8fb 0%, #eef3f7 100%);
+        min-height: 80vh;
+    }
+
+    .admin-shell {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+
     .admin-wrap {
         max-width: 1200px;
         margin: 2rem auto 4rem;
         padding: 0 1.25rem;
     }
 
-    .admin-card {
-        background: #ffffff;
-        border-radius: 18px;
-        box-shadow: 0 10px 30px rgba(19, 39, 64, 0.08);
-        border: 1px solid #e5ebf1;
-        overflow: hidden;
+    .admin-back {
+        position: relative;
+        z-index: 10;
+        margin-bottom: 20px;
+    }
+    .admin-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 0;
+    }
+
+    .admin-title-row span {
+    color: #16324f;
+    }   
+
+    .admin-back-link {
+        display: inline-block;
+        text-decoration: none;
+        color: #16324f;
+        font-weight: 600;
+        font-weight: 600;
+        font-size: 0.95rem;
+        white-space: nowrap;
+
+    }
+
+    .admin-back-link:hover {
+        text-decoration: underline;
     }
 
     .admin-page-header {
@@ -36,19 +73,122 @@
         color: #64748b;
     }
 
-    .admin-back-link {
-        display: inline-block;
-        text-decoration: none;
-        color: #16324f;
+    .admin-title-wrap h1 {
+        margin: 0 0 0.35rem;
+        font-size: 2rem;
+        line-height: 1.1;
+    }
+
+    .admin-title-wrap p {
+        margin: 0;
+        color: #5f6b7a;
+    }
+
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 2rem;
+    }
+
+    .admin-badge {
+        background: #16324f;
+        color: #fff;
+        padding: 0.7rem 1rem;
+        border-radius: 999px;
         font-weight: 600;
-        margin-bottom: 1rem;
+        font-size: 0.95rem;
     }
 
-    .admin-back-link:hover {
-        text-decoration: underline;
+    .admin-card,
+    .panel,
+    .stat-card {
+        background: #ffffff;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(19, 39, 64, 0.08);
+        border: 1px solid #e5ebf1;
     }
 
-    .admin-table-wrap {
+    .admin-card {
+        overflow: hidden;
+    }
+
+    .panel,
+    .stat-card {
+        padding: 1.25rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-label {
+        color: #5f6b7a;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #16324f;
+        margin-bottom: 0.35rem;
+    }
+
+    .stat-meta {
+        font-size: 0.9rem;
+        color: #7b8794;
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 1.3fr 0.9fr;
+        gap: 1.25rem;
+    }
+
+    .panel h2 {
+        margin: 0 0 1rem;
+        font-size: 1.2rem;
+        color: #16324f;
+    }
+
+    .quick-links {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.85rem;
+    }
+
+    .quick-link {
+        display: block;
+        text-decoration: none;
+        background: #f7fafc;
+        border: 1px solid #dbe5ee;
+        color: #16324f;
+        padding: 1rem;
+        border-radius: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+    }
+
+    .quick-link:hover {
+        transform: translateY(-2px);
+        background: #edf4fb;
+    }
+
+    .quick-link small {
+        display: block;
+        margin-top: 0.35rem;
+        color: #64748b;
+        font-weight: 400;
+    }
+
+    .admin-table-wrap,
+    .table-wrap {
         overflow-x: auto;
     }
 
@@ -70,16 +210,13 @@
         vertical-align: top;
         border-bottom: 1px solid #e8eef4;
         white-space: nowrap;
+        font-size: 0.96rem;
+        color: #1f2937;
     }
 
     .admin-table th {
         font-size: 0.95rem;
         font-weight: 700;
-    }
-
-    .admin-table td {
-        font-size: 0.96rem;
-        color: #1f2937;
     }
 
     .admin-table tbody tr:nth-child(even) {
@@ -132,12 +269,16 @@
         border-color: #fed7aa;
     }
 
-    .status-pill {
+    .status-pill,
+    .boolean-pill {
         display: inline-block;
         padding: 0.35rem 0.7rem;
         border-radius: 999px;
         font-size: 0.82rem;
         font-weight: 700;
+    }
+
+    .status-pill {
         text-transform: capitalize;
     }
 
@@ -146,14 +287,6 @@
     .status-paid { background: #dcfce7; color: #166534; }
     .status-completed { background: #ede9fe; color: #6b21a8; }
     .status-cancelled { background: #fee2e2; color: #b91c1c; }
-
-    .boolean-pill {
-        display: inline-block;
-        padding: 0.3rem 0.65rem;
-        border-radius: 999px;
-        font-size: 0.82rem;
-        font-weight: 700;
-    }
 
     .boolean-yes {
         background: #ecfdf3;
@@ -165,6 +298,41 @@
         color: #475569;
     }
 
+    .list-stack {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .list-item {
+        border: 1px solid #e5ebf1;
+        border-radius: 14px;
+        padding: 0.95rem 1rem;
+        background: #fbfdff;
+    }
+
+    .list-item strong {
+        color: #16324f;
+    }
+
+    .muted {
+        color: #64748b;
+        font-size: 0.92rem;
+    }
+
+    .empty-state {
+        color: #64748b;
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 14px;
+        padding: 1rem;
+    }
+
+    @media (max-width: 900px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
     @media (max-width: 768px) {
         .admin-page-header h1 {
             font-size: 1.6rem;
@@ -173,6 +341,28 @@
         .admin-table th,
         .admin-table td {
             padding: 0.8rem;
+        }
+         .admin-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        }
+
+    .admin-back-link {
+        margin-top: 4px;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .quick-links {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-title-wrap h1 {
+            font-size: 1.6rem;
+        }
+
+        .stat-value {
+            font-size: 1.7rem;
         }
     }
 </style>

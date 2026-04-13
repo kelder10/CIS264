@@ -16,6 +16,7 @@
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1rem;
+        margin-top: 2 rem; 
     }
 
     .admin-header {
@@ -36,6 +37,7 @@
     .admin-title-wrap p {
         margin: 0;
         color: #5f6b7a;
+        margin-top: 2rem; 
     }
 
     .admin-badge {
@@ -232,9 +234,7 @@
                 <h1>Admin Dashboard</h1>
                 <p>Manage bikes, reservations, payments, and customer activity.</p>
             </div>
-            <div class="admin-badge">
-                Signed in as {{ request.user.get_full_name|default:request.user.username }}
-            </div>
+           
         </div>
 
         <div class="stats-grid">
