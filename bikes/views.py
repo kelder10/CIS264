@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from django.db.models import Count
 from .models import Bike, BikeCategory, BikeSize, Accessory
 from locations.models import Location  
-    
+from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from .models import Bike
 
@@ -120,7 +120,7 @@ def bike_category(request, slug):
         'category': category,
         'bikes': bikes,
     }
-    return render(request, 'bikes/bike_category.html', context)
+    return render(request, 'bikes/bike_list.html', context) 
 
 # In bikes/views.py
 def adult_bikes(request):  

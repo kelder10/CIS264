@@ -42,6 +42,7 @@ class Bike(models.Model):
         ('adult', 'Adult Bike'),
         ('kids', 'Kids Bike'),
         ('mountain', 'Mountain Bike'),
+        ('tandem', 'Tandem Bike'),  
     ]
 
     STATUS_CHOICES = [
