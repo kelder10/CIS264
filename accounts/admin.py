@@ -18,7 +18,8 @@ class UserAdmin(BaseUserAdmin):
             'fields': (
                 'phone', 'address', 'city', 'state', 'zip_code',
                 'date_of_birth', 'emergency_contact_name',
-                'emergency_contact_phone', 'is_newsletter_subscribed'
+                'emergency_contact_phone', 'is_newsletter_subscribed',
+                'admin_notes',
             )
         }),
         ('Timestamps', {

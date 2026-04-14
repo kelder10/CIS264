@@ -1,0 +1,60 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}{{ page_title }} | Indian Creek Cycles{% endblock %}
+{% block meta_description %}{{ page_title }} for Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>{{ page_title }}</span>
+                    </h1>
+                    <p>Update the code, discount amount, purpose, dates, usage limit, and active status.</p>
+                    <a href="{% url 'admin_promos' %}" class="admin-back-link">
+                        ← Back to Promo Codes
+                    </a>
+                </div>
+            </div>
+
+            {% if promo %}
+            <div class="panel" style="margin-bottom: 1.25rem;">
+                <h2>Eligibility Rule</h2>
+                <p class="muted" style="margin: 0;">{{ promo.rule_summary }}</p>
+            </div>
+            {% endif %}
+
+            <div class="panel">
+                <form method="post" class="admin-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="empty-state">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="admin-form-grid">
+                        {% for field in form %}
+                        <div class="admin-form-field {% if field.name == 'description' %}admin-form-field-wide{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                            <span class="admin-form-error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="admin-actions" style="margin-top: 1.25rem;">
+                        <button class="admin-btn admin-btn-success" type="submit">{{ submit_label }}</button>
+                        <a class="admin-btn" href="{% url 'admin_promos' %}">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -71,17 +71,26 @@
                             </div>
                             
                             <div class="summary-accessories" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
-                                <h5 style="font-size: 0.75rem; color: #95a5a6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Accessories</h5>
+                                <h5 style="font-size: 0.75rem; color: #95a5a6; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Extras</h5>
                                 
                                 {% if accessories %}
                                     {% for acc in accessories %}
                                     <div class="accessory-line" style="display: flex; justify-content: space-between; font-size: 0.9rem; color: #5a676d; margin-bottom: 4px;">
-                                        <span>{{ acc.accessory.name }}</span>
-                                        <span style="font-weight: 600;">${{ acc.price_at_time }}</span>
+                                        <span>
+                                            {{ acc.quantity }}x {{ acc.accessory.name }}
+                                            <span style="color: #95a5a6;">({{ acc.get_fulfillment_type_display }})</span>
+                                        </span>
+                                        <span style="font-weight: 600;">
+                                            {% if acc.fulfillment_type == "rental" %}
+                                            ${{ acc.price_at_time }}/day
+                                            {% else %}
+                                            ${{ acc.get_total }}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                     {% endfor %}
                                 {% else %}
-                                    <p style="font-size: 0.85rem; color: #bdc3c7; font-style: italic; margin: 0;">No accessories added</p>
+                                    <p style="font-size: 0.85rem; color: #bdc3c7; font-style: italic; margin: 0;">No extras added</p>
                                 {% endif %}
                             </div>
                             

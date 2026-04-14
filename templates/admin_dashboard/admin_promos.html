@@ -1,0 +1,188 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Manage Promo Codes | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Manage promo codes for Indian Creek Cycles{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .promo-table .admin-actions {
+        flex-wrap: nowrap;
+        min-width: 230px;
+    }
+
+    .promo-table .admin-btn {
+        padding: 0.4rem 0.6rem;
+    }
+
+    .promo-table th,
+    .promo-table td {
+        white-space: normal;
+    }
+
+    .promo-table .promo-code-cell,
+    .promo-table .promo-discount-cell,
+    .promo-table .promo-minimum-cell,
+    .promo-table .promo-usage-cell,
+    .promo-table .promo-status-cell {
+        white-space: nowrap;
+    }
+
+    .promo-purpose-cell,
+    .promo-rule-cell {
+        min-width: 230px;
+        max-width: 320px;
+        line-height: 1.45;
+    }
+
+    .promo-date-cell {
+        min-width: 170px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Manage Promo Codes</span>
+                    </h1>
+                    <p>Review discount amounts, what each code is for, eligibility rules, active dates, and usage limits.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+                <a class="admin-btn admin-btn-success" href="{% url 'admin_add_promo' %}">
+                    Add Promo Code
+                </a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Promo Codes</div>
+                    <div class="stat-value">{{ total_promos }}</div>
+                    <div class="stat-meta">Total codes on file</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active</div>
+                    <div class="stat-value">{{ active_promos }}</div>
+                    <div class="stat-meta">Currently switched on</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Unavailable</div>
+                    <div class="stat-value">{{ expired_promos }}</div>
+                    <div class="stat-meta">Inactive, expired, future, or maxed out</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Uses</div>
+                    <div class="stat-value">{{ total_uses }}</div>
+                    <div class="stat-meta">Recorded redemptions</div>
+                </div>
+            </div>
+
+            <h2 style="margin: 0 0 1rem; color: #16324f;">Promo Code Directory</h2>
+            <div class="admin-card">
+                {% if promo_codes %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table promo-table">
+                        <thead>
+                            <tr>
+                                <th>Actions</th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=code&direction={% if sort == 'code' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Code{% if sort == 'code' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=status&direction={% if sort == 'status' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Status{% if sort == 'status' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=discount&direction={% if sort == 'discount' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Discount{% if sort == 'discount' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=minimum&direction={% if sort == 'minimum' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Minimum{% if sort == 'minimum' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=usage&direction={% if sort == 'usage' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Usage{% if sort == 'usage' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=description&direction={% if sort == 'description' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Description{% if sort == 'description' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=eligibility&direction={% if sort == 'eligibility' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Eligibility{% if sort == 'eligibility' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=valid_dates&direction={% if sort == 'valid_dates' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Valid Dates{% if sort == 'valid_dates' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            {% for promo in promo_codes %}
+            <tr>
+                                <td>
+                                    <div class="admin-actions">
+                                        <a class="admin-btn" href="{% url 'admin_edit_promo' promo.id %}">Edit</a>
+                                        <a class="admin-btn" href="{% url 'toggle_promo_status' promo.id %}">
+                                            {% if promo.is_active %}Deactivate{% else %}Activate{% endif %}
+                                        </a>
+                                        <form method="post" action="{% url 'delete_promo' promo.id %}" onsubmit="return confirm('Delete {{ promo.code }}? Codes with usage history will be deactivated instead.');">
+                                            {% csrf_token %}
+                                            <button class="admin-btn admin-btn-danger" type="submit">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                                <td class="promo-code-cell"><strong>{{ promo.code }}</strong></td>
+                                <td class="promo-status-cell">
+                                    <span class="boolean-pill {% if promo.is_valid %}boolean-yes{% else %}boolean-no{% endif %}">
+                                        {% if promo.is_valid %}Available{% else %}Unavailable{% endif %}
+                                    </span>
+                                </td>
+                                <td class="promo-discount-cell">{{ promo.discount_display }}</td>
+                                <td class="promo-minimum-cell">${{ promo.minimum_order }}</td>
+                                <td class="promo-usage-cell">
+                                    {{ promo.current_uses }}
+                                    {% if promo.max_uses %}
+                                    / {{ promo.max_uses }}
+                                    {% else %}
+                                    <span class="muted">/ unlimited</span>
+                                    {% endif %}
+                                </td>
+                                <td class="promo-purpose-cell">{{ promo.description }}</td>
+                                <td class="promo-rule-cell">{{ promo.rule_summary }}</td>
+                                <td class="promo-date-cell">
+                                    {{ promo.valid_from|date:"M j, Y g:i a" }}<br>
+                                    <span class="muted">to {{ promo.valid_until|date:"M j, Y g:i a" }}</span>
+                                </td>
+                            </tr>
+            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">No promo codes found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

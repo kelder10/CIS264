@@ -13,6 +13,7 @@ class User(AbstractUser):
     emergency_contact_name = models.CharField(max_length=100, blank=True)
     emergency_contact_phone = models.CharField(max_length=20, blank=True)
     is_newsletter_subscribed = models.BooleanField(default=False)
+    admin_notes = models.TextField(blank=True, help_text="Internal notes visible to staff only.")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

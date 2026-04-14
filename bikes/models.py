@@ -176,6 +176,10 @@ class Accessory(models.Model):
     price_per_day = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to='accessories/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
+    is_universal = models.BooleanField(
+        default=False,
+        help_text="Show this accessory for every bike reservation."
+    )
     quantity_in_stock = models.PositiveIntegerField(default=0)
     
     class Meta:

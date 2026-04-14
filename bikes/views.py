@@ -4,7 +4,8 @@ from django.utils import timezone
 from datetime import datetime, timedelta
 from django.db.models import Count
 from .models import Bike, BikeCategory, BikeSize, Accessory
-from locations.models import Location  
+from locations.models import Location 
+
     
 from django.shortcuts import redirect, get_object_or_404
 from .models import Bike
@@ -256,3 +257,5 @@ def add_accessory(request, accessory_id):
         
     # Redirect back to the accessories list page
     return redirect('accessories')
+
+

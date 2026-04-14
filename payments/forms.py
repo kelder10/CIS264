@@ -119,6 +119,10 @@ class PaymentForm(forms.ModelForm):
                     raise forms.ValidationError('This promo code has expired or reached its usage limit.')
                 if self.reservation and self.reservation.subtotal < promo.minimum_order:
                     raise forms.ValidationError(f'Minimum order of ${promo.minimum_order} required.')
+                if self.reservation:
+                    business_rule_error = promo.get_business_rule_error(self.reservation)
+                    if business_rule_error:
+                        raise forms.ValidationError(business_rule_error)
             except PromoCode.DoesNotExist:
                 raise forms.ValidationError('Invalid promo code.')
         
@@ -152,6 +156,10 @@ class SimulatedPaymentForm(forms.Form):
             'placeholder': 'Enter promo code (optional)'
         })
     )
+
+    def __init__(self, *args, reservation=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.reservation = reservation
     
     def clean_promo_code(self):
         code = self.cleaned_data.get('promo_code', '').upper()
@@ -162,6 +170,12 @@ class SimulatedPaymentForm(forms.Form):
                 promo = PromoCode.objects.get(code=code, is_active=True)
                 if not promo.is_valid():
                     raise forms.ValidationError('This promo code has expired or reached its usage limit.')
+                if self.reservation and self.reservation.subtotal < promo.minimum_order:
+                    raise forms.ValidationError(f'Minimum order of ${promo.minimum_order} required.')
+                if self.reservation:
+                    business_rule_error = promo.get_business_rule_error(self.reservation)
+                    if business_rule_error:
+                        raise forms.ValidationError(business_rule_error)
             except PromoCode.DoesNotExist:
                 raise forms.ValidationError('Invalid promo code.')
         

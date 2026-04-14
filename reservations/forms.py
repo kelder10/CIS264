@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from django.utils import timezone
 from .models import Reservation, Waiver, PromoCode
 from bikes.models import Bike, Accessory
@@ -41,11 +42,18 @@ class ReservationForm(forms.ModelForm):
         })
     )
 
-    accessories = forms.ModelMultipleChoiceField(
-        queryset=Accessory.objects.filter(is_available=True),
+    rental_accessories = forms.ModelMultipleChoiceField(
+        queryset=Accessory.objects.filter(is_available=True, quantity_in_stock__gt=0),
         required=False,
         widget=forms.CheckboxSelectMultiple,
-        label='Add Accessories (Optional)'
+        label='Rent Accessories (Optional)'
+    )
+
+    purchase_accessories = forms.ModelMultipleChoiceField(
+        queryset=Accessory.objects.filter(is_available=True, quantity_in_stock__gt=0, price__gt=0),
+        required=False,
+        widget=forms.CheckboxSelectMultiple,
+        label='Buy Accessories (Optional)'
     )
     
     class Meta:
@@ -56,7 +64,8 @@ class ReservationForm(forms.ModelForm):
             'end_time', 
             'return_date', 
             'rental_type', 
-            'accessories', 
+            'rental_accessories',
+            'purchase_accessories',
             'special_requests'
         ]
         widgets = {
@@ -72,10 +81,16 @@ class ReservationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.bike = bike
         if bike:
-            self.fields['accessories'].queryset = Accessory.objects.filter(
-                compatible_bikes__bike=bike,
-                is_available=True
-            )
+            self.fields['rental_accessories'].queryset = Accessory.objects.filter(
+                Q(is_universal=True) | Q(compatible_bikes__bike=bike),
+                is_available=True,
+                quantity_in_stock__gt=0
+            ).distinct()
+        self.fields['purchase_accessories'].queryset = Accessory.objects.filter(
+            is_available=True,
+            quantity_in_stock__gt=0,
+            price__gt=0
+        )
     
     def clean(self):
         cleaned_data = super().clean()

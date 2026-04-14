@@ -1,0 +1,125 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Signed Waivers | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Review signed rental waivers for Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Signed Waivers</span>
+                    </h1>
+                    <p>Review waiver records and watch for active reservations that still need signatures.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Waivers On File</div>
+                    <div class="stat-value">{{ signed_waiver_count }}</div>
+                    <div class="stat-meta">Completed digital waiver records</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Still Needed</div>
+                    <div class="stat-value">{{ unsigned_active_waiver_count }}</div>
+                    <div class="stat-meta">Pending, confirmed, paid, or active reservations</div>
+                </div>
+            </div>
+
+            {% if unsigned_active_reservations %}
+            <div class="panel" style="margin-bottom: 1.25rem;">
+                <h2>Needs Signature</h2>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Reservation</th>
+                                <th>Customer</th>
+                                <th>Bike</th>
+                                <th>Dates</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for reservation in unsigned_active_reservations %}
+                            <tr>
+                                <td>#{{ reservation.id }}</td>
+                                <td>{{ reservation.user.get_full_name|default:reservation.user.username }}</td>
+                                <td>{{ reservation.bike.name }}</td>
+                                <td>{{ reservation.rental_date|date:"M j, Y" }} → {{ reservation.return_date|date:"M j, Y" }}</td>
+                                <td>
+                                    <span class="status-pill status-{{ reservation.status }}">
+                                        {{ reservation.status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="admin-card">
+                {% if signed_waivers %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Waiver</th>
+                                <th>Reservation</th>
+                                <th>Customer</th>
+                                <th>Bike</th>
+                                <th>Signed</th>
+                                <th>Emergency Contact</th>
+                                <th>Acknowledgments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for waiver in signed_waivers %}
+                            <tr>
+                                <td>#{{ waiver.id }}</td>
+                                <td>#{{ waiver.reservation.id }}</td>
+                                <td>
+                                    {{ waiver.full_name }}<br>
+                                    <span class="muted">{{ waiver.user.email|default:waiver.user.username }}</span>
+                                </td>
+                                <td>{{ waiver.reservation.bike.name }}</td>
+                                <td>{{ waiver.date_signed|date:"M j, Y g:i a" }}</td>
+                                <td>
+                                    {% if waiver.emergency_contact_name or waiver.emergency_contact_phone %}
+                                        {{ waiver.emergency_contact_name|default:"No name" }}<br>
+                                        <span class="muted">{{ waiver.emergency_contact_phone|default:"No phone" }}</span>
+                                    {% else %}
+                                        <span class="muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="boolean-pill {% if waiver.acknowledged_risks and waiver.acknowledged_equipment and waiver.acknowledged_rules %}boolean-yes{% else %}boolean-no{% endif %}">
+                                        {% if waiver.acknowledged_risks and waiver.acknowledged_equipment and waiver.acknowledged_rules %}
+                                            Complete
+                                        {% else %}
+                                            Incomplete
+                                        {% endif %}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">No signed waivers yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

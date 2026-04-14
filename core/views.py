@@ -5,22 +5,22 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
-from django.db.models import Count, Q
+from django.db.models import Case, Count, F, IntegerField, Q, Value, When
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 # Local app models and forms
-from bikes.models import Bike, BikeCategory
+from bikes.models import Accessory, Bike, BikeCategory
 from reviews.models import Review
-from reservations.models import Reservation
+from reservations.models import PromoCode, Reservation, Waiver
 from payments.models import Payment
 from .models import Trail
-from .forms import ContactForm, WeatherZipForm
+from .forms import AccessoryForm, AdminPromoCodeForm, AdminUserForm, ContactForm, WeatherZipForm
 
 def home(request):
     """Homepage view with featured content."""
@@ -194,17 +194,17 @@ def admin_dashboard(request):
     recent_reservations = Reservation.objects.select_related("user", "bike").order_by("-created_at")[:8]
     total_reservations = Reservation.objects.count()
     active_reservations = Reservation.objects.filter(
-    status__in=["Pending", "Confirmed", "Paid"]
-).count()
+        status__in=["pending", "confirmed", "paid", "active"]
+    ).count()
 
     total_bikes = Bike.objects.count()
     available_bikes = Bike.objects.filter(
-    is_available=True,
-    is_maintenance=False
-).count()
+        is_available=True,
+        is_maintenance=False
+    ).count()
     maintenance_bikes = Bike.objects.filter(
-    is_maintenance=True
-).count()
+        is_maintenance=True
+    ).count()
     
     total_payments = Payment.objects.count()
     completed_payments = Payment.objects.filter(status__iexact="completed").count()
@@ -213,7 +213,11 @@ def admin_dashboard(request):
     pending_reviews = Review.objects.filter(is_approved=False).count()
     latest_reviews = Review.objects.select_related("user").order_by("-created_at")[:5]
 
-    signed_waivers = Reservation.objects.filter(waiver_signed=True).count()
+    signed_waivers = Waiver.objects.count()
+    unsigned_active_waivers = Reservation.objects.filter(
+        status__in=["pending", "confirmed", "paid", "active"],
+        waiver_signed=False,
+    ).count()
     staff_count = User.objects.filter(is_staff=True).count()
 
     context = {
@@ -229,12 +233,303 @@ def admin_dashboard(request):
         "recent_reservations": recent_reservations,
         "latest_reviews": latest_reviews,
         "signed_waivers": signed_waivers,
+        "unsigned_active_waivers": unsigned_active_waivers,
         "staff_count": staff_count,
     }
 
     return render(request, "admin_dashboard/admin.html", context)
 
 User = get_user_model()
+
+
+@staff_member_required
+def admin_staff(request):
+    staff_members = User.objects.filter(is_staff=True).order_by(
+        "-is_superuser",
+        "-is_active",
+        "last_name",
+        "first_name",
+        "username",
+    )
+    active_staff_count = staff_members.filter(is_active=True).count()
+    superuser_count = staff_members.filter(is_superuser=True).count()
+
+    return render(
+        request,
+        "admin_dashboard/admin_staff.html",
+        {
+            "staff_members": staff_members,
+            "staff_count": staff_members.count(),
+            "active_staff_count": active_staff_count,
+            "superuser_count": superuser_count,
+        },
+    )
+
+
+@staff_member_required
+def admin_users(request):
+    users = User.objects.annotate(
+        reservation_count=Count("reservations", distinct=True),
+        waiver_count=Count("waivers", distinct=True),
+        payment_count=Count("reservations__payment", distinct=True),
+        review_count=Count("reviews", distinct=True),
+        account_type_order=Case(
+            When(is_superuser=True, then=Value(1)),
+            When(is_staff=True, then=Value(2)),
+            default=Value(3),
+            output_field=IntegerField(),
+        ),
+    )
+
+    total_users = users.count()
+    customer_count = users.filter(is_staff=False).count()
+    active_user_count = users.filter(is_active=True).count()
+
+    sort = request.GET.get("sort", "joined")
+    direction = request.GET.get("direction", "desc")
+    if direction not in ["asc", "desc"]:
+        direction = "desc"
+    next_direction = "asc" if direction == "desc" else "desc"
+
+    sort_options = {
+        "name": ["last_name", "first_name", "username"],
+        "username": ["username"],
+        "account_type": ["account_type_order", "last_name", "first_name", "username"],
+        "reservations": ["reservation_count", "last_name", "first_name", "username"],
+        "waivers": ["waiver_count", "last_name", "first_name", "username"],
+        "payments": ["payment_count", "last_name", "first_name", "username"],
+        "reviews": ["review_count", "last_name", "first_name", "username"],
+        "email": ["email", "last_name", "first_name", "username"],
+        "phone": ["phone", "last_name", "first_name", "username"],
+        "address": ["address", "city", "state", "zip_code", "last_name", "first_name", "username"],
+        "emergency_contact": ["emergency_contact_name", "emergency_contact_phone", "last_name", "first_name", "username"],
+        "active": ["is_active", "last_name", "first_name", "username"],
+        "admin_notes": ["admin_notes", "last_name", "first_name", "username"],
+        "last_active": ["last_login", "last_name", "first_name", "username"],
+        "joined": ["date_joined"],
+    }
+    order_fields = sort_options.get(sort, sort_options["joined"])
+    if direction == "desc":
+        order_fields = [f"-{field}" for field in order_fields]
+    users = users.order_by(*order_fields)
+
+    return render(
+        request,
+        "admin_dashboard/admin_users.html",
+        {
+            "users": users,
+            "total_users": total_users,
+            "customer_count": customer_count,
+            "active_user_count": active_user_count,
+            "sort": sort,
+            "direction": direction,
+            "next_direction": next_direction,
+        },
+    )
+
+
+@staff_member_required
+def admin_edit_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == "POST":
+        form = AdminUserForm(request.POST, instance=user)
+        if form.is_valid():
+            updated_user = form.save()
+            messages.success(request, f"{updated_user.get_full_name()} was updated.")
+            return redirect("admin_users")
+    else:
+        form = AdminUserForm(instance=user)
+
+    return render(
+        request,
+        "admin_dashboard/admin_user_form.html",
+        {
+            "form": form,
+            "managed_user": user,
+        },
+    )
+
+
+@staff_member_required
+@require_POST
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    if user == request.user:
+        messages.error(request, "You cannot delete or deactivate your own account from here.")
+        return redirect("admin_users")
+
+    has_history = (
+        user.reservations.exists()
+        or user.waivers.exists()
+        or user.reviews.exists()
+        or user.review_votes.exists()
+        or user.is_staff
+        or user.is_superuser
+    )
+
+    if has_history:
+        user.is_active = False
+        user.save(update_fields=["is_active"])
+        messages.warning(
+            request,
+            f"{user.get_full_name()} has account history or staff access, so the account was deactivated instead of deleted.",
+        )
+        return redirect("admin_users")
+
+    display_name = user.get_full_name()
+    user.delete()
+    messages.success(request, f"{display_name} was deleted.")
+    return redirect("admin_users")
+
+
+@staff_member_required
+def admin_promos(request):
+    now = timezone.now()
+    promo_codes = PromoCode.objects.annotate(
+        status_order=Case(
+            When(
+                Q(is_active=True)
+                & Q(valid_from__lte=now)
+                & Q(valid_until__gte=now)
+                & (Q(max_uses__isnull=True) | Q(current_uses__lt=F("max_uses"))),
+                then=Value(1),
+            ),
+            default=Value(2),
+            output_field=IntegerField(),
+        ),
+        eligibility_order=Case(
+            When(code__iexact="WELCOME20", then=Value(1)),
+            When(code__iexact="WEEKEND15", then=Value(2)),
+            When(code__iexact="TANDEM25", then=Value(3)),
+            When(code__iexact="KIDSFREE", then=Value(4)),
+            When(code__iexact="HAPPYBIRTHDAY", then=Value(5)),
+            When(code__iexact="FAMILY10", then=Value(6)),
+            When(code__iexact="SPRINGRIDE", then=Value(7)),
+            When(code__iexact="SUNNYRIDE", then=Value(8)),
+            When(code__iexact="SEASONSTART", then=Value(9)),
+            When(code__iexact="EGGRIDE", then=Value(10)),
+            When(code__iexact="WEEKDAYRIDE", then=Value(11)),
+            When(code__iexact="RIDETOGETHER", then=Value(12)),
+            default=Value(13),
+            output_field=IntegerField(),
+        )
+    )
+    active_promos = promo_codes.filter(is_active=True).count()
+    expired_promos = sum(1 for promo in promo_codes if not promo.is_valid())
+    total_uses = sum(promo.current_uses for promo in promo_codes)
+
+    sort = request.GET.get("sort", "code")
+    direction = request.GET.get("direction", "asc")
+    if direction not in ["asc", "desc"]:
+        direction = "asc"
+    next_direction = "asc" if direction == "desc" else "desc"
+
+    sort_options = {
+        "code": ["code"],
+        "status": ["status_order", "code"],
+        "discount": ["discount_type", "discount_value", "code"],
+        "minimum": ["minimum_order", "code"],
+        "usage": ["current_uses", "code"],
+        "description": ["description", "code"],
+        "eligibility": ["eligibility_order", "code"],
+        "valid_dates": ["valid_from", "valid_until", "code"],
+    }
+    order_fields = sort_options.get(sort, sort_options["code"])
+    if direction == "desc":
+        order_fields = [f"-{field}" for field in order_fields]
+    promo_codes = promo_codes.order_by(*order_fields)
+
+    return render(
+        request,
+        "admin_dashboard/admin_promos.html",
+        {
+            "promo_codes": promo_codes,
+            "total_promos": promo_codes.count(),
+            "active_promos": active_promos,
+            "expired_promos": expired_promos,
+            "total_uses": total_uses,
+            "sort": sort,
+            "direction": direction,
+            "next_direction": next_direction,
+        },
+    )
+
+
+@staff_member_required
+def admin_add_promo(request):
+    if request.method == "POST":
+        form = AdminPromoCodeForm(request.POST)
+        if form.is_valid():
+            promo = form.save()
+            messages.success(request, f"{promo.code} was added.")
+            return redirect("admin_promos")
+    else:
+        form = AdminPromoCodeForm()
+
+    return render(
+        request,
+        "admin_dashboard/admin_promo_form.html",
+        {
+            "form": form,
+            "page_title": "Add Promo Code",
+            "submit_label": "Add Promo Code",
+        },
+    )
+
+
+@staff_member_required
+def admin_edit_promo(request, promo_id):
+    promo = get_object_or_404(PromoCode, id=promo_id)
+
+    if request.method == "POST":
+        form = AdminPromoCodeForm(request.POST, instance=promo)
+        if form.is_valid():
+            promo = form.save()
+            messages.success(request, f"{promo.code} was updated.")
+            return redirect("admin_promos")
+    else:
+        form = AdminPromoCodeForm(instance=promo)
+
+    return render(
+        request,
+        "admin_dashboard/admin_promo_form.html",
+        {
+            "form": form,
+            "promo": promo,
+            "page_title": "Edit Promo Code",
+            "submit_label": "Save Changes",
+        },
+    )
+
+
+@staff_member_required
+def toggle_promo_status(request, promo_id):
+    promo = get_object_or_404(PromoCode, id=promo_id)
+    promo.is_active = not promo.is_active
+    promo.save(update_fields=["is_active"])
+
+    messages.success(request, f"{promo.code} is now {'active' if promo.is_active else 'inactive'}.")
+    return redirect("admin_promos")
+
+
+@staff_member_required
+@require_POST
+def delete_promo(request, promo_id):
+    promo = get_object_or_404(PromoCode, id=promo_id)
+    code = promo.code
+
+    if promo.current_uses > 0:
+        promo.is_active = False
+        promo.save(update_fields=["is_active"])
+        messages.warning(request, f"{code} has usage history, so it was deactivated instead of deleted.")
+        return redirect("admin_promos")
+
+    promo.delete()
+    messages.success(request, f"{code} was deleted.")
+    return redirect("admin_promos")
+
 
 @staff_member_required
 def admin_bikes(request):
@@ -261,6 +556,121 @@ def admin_bikes(request):
     
     # 4. Render the page
     return render(request, "admin_dashboard/admin_bikes.html", context)
+
+
+@staff_member_required
+def admin_accessories(request):
+    accessories = Accessory.objects.order_by("category", "name")
+    total_accessories = accessories.count()
+    available_accessories = accessories.filter(is_available=True).count()
+    low_stock_accessories = accessories.filter(quantity_in_stock__lte=3).count()
+
+    context = {
+        "accessories": accessories,
+        "total_accessories": total_accessories,
+        "available_accessories": available_accessories,
+        "low_stock_accessories": low_stock_accessories,
+    }
+    return render(request, "admin_dashboard/admin_accessories.html", context)
+
+
+@staff_member_required
+def admin_add_accessory(request):
+    if request.method == "POST":
+        form = AccessoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            accessory = form.save()
+            messages.success(request, f"{accessory.name} was added.")
+            return redirect("admin_accessories")
+    else:
+        form = AccessoryForm()
+
+    return render(
+        request,
+        "admin_dashboard/admin_accessory_form.html",
+        {
+            "form": form,
+            "page_title": "Add Accessory",
+            "submit_label": "Add Accessory",
+        },
+    )
+
+
+@staff_member_required
+def admin_edit_accessory(request, accessory_id):
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+
+    if request.method == "POST":
+        form = AccessoryForm(request.POST, request.FILES, instance=accessory)
+        if form.is_valid():
+            accessory = form.save()
+            messages.success(request, f"{accessory.name} was updated.")
+            return redirect("admin_accessories")
+    else:
+        form = AccessoryForm(instance=accessory)
+
+    return render(
+        request,
+        "admin_dashboard/admin_accessory_form.html",
+        {
+            "form": form,
+            "accessory": accessory,
+            "page_title": "Edit Accessory",
+            "submit_label": "Save Changes",
+        },
+    )
+
+
+@staff_member_required
+@require_POST
+def update_accessory_stock(request, accessory_id):
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+
+    try:
+        quantity = int(request.POST.get("quantity_in_stock", accessory.quantity_in_stock))
+    except (TypeError, ValueError):
+        messages.error(request, "Stock quantity must be a whole number.")
+        return redirect("admin_accessories")
+
+    if quantity < 0:
+        messages.error(request, "Stock quantity cannot be negative.")
+        return redirect("admin_accessories")
+
+    accessory.quantity_in_stock = quantity
+    accessory.save(update_fields=["quantity_in_stock"])
+    messages.success(request, f"{accessory.name} stock updated to {quantity}.")
+    return redirect("admin_accessories")
+
+
+@staff_member_required
+@require_POST
+def delete_accessory(request, accessory_id):
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+    accessory_name = accessory.name
+
+    if accessory.reservation_accessories.exists():
+        accessory.is_available = False
+        accessory.save(update_fields=["is_available"])
+        messages.warning(
+            request,
+            f"{accessory_name} has reservation history, so it was hidden instead of deleted.",
+        )
+        return redirect("admin_accessories")
+
+    accessory.delete()
+    messages.success(request, f"{accessory_name} was deleted.")
+    return redirect("admin_accessories")
+
+
+@staff_member_required
+def toggle_accessory_availability(request, accessory_id):
+    accessory = get_object_or_404(Accessory, id=accessory_id)
+    accessory.is_available = not accessory.is_available
+    accessory.save(update_fields=["is_available"])
+
+    messages.success(request, f"{accessory.name} availability updated.")
+    return redirect("admin_accessories")
+
 
 @staff_member_required
 def toggle_bike_availability(request, bike_id):
@@ -365,4 +775,28 @@ def void_payment(request, payment_id):
 
     return redirect("admin_payments")
 
+@staff_member_required
+def admin_waivers(request):
+    signed_waivers = Waiver.objects.select_related(
+        "user",
+        "reservation",
+        "reservation__bike",
+    ).order_by("-date_signed")
+    unsigned_active_reservations = Reservation.objects.select_related(
+        "user",
+        "bike",
+    ).filter(
+        status__in=["pending", "confirmed", "paid", "active"],
+        waiver_signed=False,
+    ).order_by("rental_date", "created_at")
 
+    return render(
+        request,
+        "admin_dashboard/signed_waivers.html",
+        {
+            "signed_waivers": signed_waivers,
+            "unsigned_active_reservations": unsigned_active_reservations,
+            "signed_waiver_count": signed_waivers.count(),
+            "unsigned_active_waiver_count": unsigned_active_reservations.count(),
+        },
+    )
