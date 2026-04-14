@@ -1,18 +1,23 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Moderate Reviews{% endblock %}
+{% block title %}Moderate Reviews | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Manage Reviews for Indian Creek Cycles{% endblock %}
 
 {% block content %}
-<div class="admin-wrap">
-    <a class="admin-back-link" href="{% url 'admin_dashboard' %}">← Back to Dashboard</a>
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
 
-    <div class="admin-page-header">
-        <div>
-            <h1>Moderate Reviews</h1>
-            <p>Approve or unapprove customer reviews.</p>
-        </div>
-    </div>
-
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Moderate Reviews</span>
+                    </h1>
+                    <p>Approve or unapprove customer reviews.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                            ← Back to Dashboard
+                        </a>
+                </div>
+            </div>
     <div class="admin-card">
         <div class="admin-table-wrap">
             <table class="admin-table">

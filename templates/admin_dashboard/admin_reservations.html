@@ -1,17 +1,20 @@
 {% extends "admin_dashboard/base.html" %}
-
-{% block title %}Manage Reservations{% endblock %}
-
+{% block title %}Manage Reservations Indian Creek Cycles{% endblock %}
+{% block meta_description %}Manage Reservations for Indian Creek Cycles{% endblock %}
 {% block content %}
-<div class="admin-wrap" style="margin-top: 100px;"> 
-    <a class="admin-back-link" href="{% url 'admin_dashboard' %}">← Back to Dashboard</a>
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
 
-    <div class="admin-page-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 20px;">
-        <div>
-            <h1 style="margin: 0;">Manage Reservations</h1>
-            <p style="margin: 5px 0 0 0;">Review waivers, statuses, and reservation totals.</p>
-        </div>
-
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Manage Reservations</span>
+                    </h1>
+                    <p>Review waivers, statuses, and reservation totals.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                            ← Back to Dashboard
+                        </a>
         <div class="admin-header-actions">
             <a href="{% url 'send_reminders' %}" class="admin-btn" style="background-color: #182557; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block;">
                 ✉️ Send Tomorrow's Reminders
