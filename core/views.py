@@ -74,15 +74,46 @@ def trails(request):
     """Trails listing page."""
     all_trails = Trail.objects.all()
     
-    # Filter by difficulty if provided
     difficulty = request.GET.get('difficulty')
+    distance = request.GET.get('distance')
+    time = request.GET.get('time')
+    location = request.GET.get('location')
+
     if difficulty:
         all_trails = all_trails.filter(difficulty=difficulty)
+
+    if distance == 'short':
+        all_trails = all_trails.filter(length_miles__lt=5)
+    elif distance == 'medium':
+        all_trails = all_trails.filter(length_miles__gte=5, length_miles__lte=8)
+    elif distance == 'long':
+        all_trails = all_trails.filter(length_miles__gt=8)
+
+    if time == 'under_1':
+        all_trails = all_trails.filter(estimated_minutes__lte=60)
+    elif time == '1_2':
+        all_trails = all_trails.filter(estimated_minutes__gt=60, estimated_minutes__lte=120)
+    elif time == 'over_2':
+        all_trails = all_trails.filter(estimated_minutes__gt=120)
+
+    if location:
+        all_trails = all_trails.filter(location_name=location)
+
+    locations = (
+        Trail.objects.exclude(location_name='')
+        .order_by('location_name')
+        .values_list('location_name', flat=True)
+        .distinct()
+    )
     
     context = {
         'trails': all_trails,
         'difficulty_choices': Trail.DIFFICULTY_LEVELS,
         'selected_difficulty': difficulty,
+        'selected_distance': distance,
+        'selected_time': time,
+        'selected_location': location,
+        'locations': locations,
     }
     return render(request, 'core/trails.html', context)
 

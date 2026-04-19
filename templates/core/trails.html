@@ -7,13 +7,32 @@
         background: #ffffff;
         padding: 15px 0;
         border-bottom: 1px solid var(--color-gray-200);
-        position: sticky;
-        top: 92px; /* Height of your navbar */
+        position: relative;
         z-index: 100;
     }
-    .filter-bar { display: flex; align-items: center; gap: 15px; }
+    .filter-bar {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 15px;
+    }
+    .filter-group { min-width: 0; }
+    .filter-label {
+        display: block;
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    .filter-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
     .filter-btn {
-        padding: 6px 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 8px 16px;
         border-radius: var(--radius-sm);
         background: var(--color-gray-100);
         color: var(--color-gray-700);
@@ -26,6 +45,28 @@
         background: var(--color-primary); 
         color: white; 
         border-color: var(--color-primary); 
+    }
+    .filter-select {
+        width: 100%;
+        min-height: 40px;
+        padding: 8px 12px;
+        border: 1px solid var(--color-gray-300);
+        border-radius: var(--radius-sm);
+        background: var(--color-white);
+        color: var(--color-gray-700);
+        font-size: 0.9rem;
+    }
+
+    .trail-location {
+        color: var(--color-gray-600);
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .trail-address {
+        color: var(--color-gray-500);
+        font-weight: 500;
     }
 
     /* 2. HORIZONTAL CARD LAYOUT */
@@ -46,13 +87,18 @@
         display: flex; /* Side-by-side */
         flex-direction: row;
         border: 1px solid var(--color-gray-200);
+        min-height: 320px;
     }
 
     .trail-img-side {
+        flex: 0 0 35%;
+        position: relative;
         width: 35%;
         min-height: 320px;
     }
     .trail-img-side img {
+        position: absolute;
+        inset: 0;
         width: 100%;
         height: 100%;
         object-fit: cover;
@@ -88,10 +134,62 @@
     }
 
     /* Responsive Mobile View */
+    @media (max-width: 1024px) {
+        .filter-bar {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
     @media (max-width: 850px) {
         .trail-horizontal-card { flex-direction: column; }
         .trail-img-side, .trail-info-side { width: 100%; }
-        .trail-img-side { min-height: 200px; height: 200px; }
+        .trail-img-side { flex-basis: auto; min-height: 200px; height: 200px; }
+    }
+
+    @media (max-width: 640px) {
+        .filter-section { padding: 12px 0; }
+
+        .filter-bar {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        .filter-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            width: 100%;
+        }
+
+        .filter-btn {
+            min-height: 44px;
+            padding: 10px 12px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .trail-info-side {
+            padding: 22px;
+        }
+
+        .trail-info-side > div:first-child {
+            align-items: flex-start !important;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .trail-stats-row {
+            align-items: stretch;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .trail-stats-row > div:last-child {
+            margin-left: 0 !important;
+        }
+
+        .trail-stats-row .btn {
+            width: 100%;
+        }
     }
 </style>
 {% endblock %}
@@ -106,13 +204,51 @@
 <section class="filter-section">
     <div class="container">
         <div class="filter-bar">
-            <span style="font-weight: 600; font-size: 0.9rem;">Filter Difficulty:</span>
-            <div class="filter-buttons">
-                <a href="{% url 'trails' %}" class="filter-btn {% if not selected_difficulty %}active{% endif %}">All</a>
-                {% for value, label in difficulty_choices %}
-                <a href="?difficulty={{ value }}" class="filter-btn {% if selected_difficulty == value %}active{% endif %}">{{ label }}</a>
-                {% endfor %}
+            <div class="filter-group">
+                <span class="filter-label">Difficulty</span>
+                <div class="filter-buttons">
+                    <a href="{% url 'trails' %}" class="filter-btn {% if not selected_difficulty and not selected_distance and not selected_time and not selected_location %}active{% endif %}">All</a>
+                    {% for value, label in difficulty_choices %}
+                    <a href="?difficulty={{ value }}" class="filter-btn {% if selected_difficulty == value %}active{% endif %}">{{ label }}</a>
+                    {% endfor %}
+                </div>
             </div>
+            <form class="filter-group" method="get">
+                <label class="filter-label" for="distance-filter">Distance</label>
+                {% if selected_difficulty %}<input type="hidden" name="difficulty" value="{{ selected_difficulty }}">{% endif %}
+                {% if selected_time %}<input type="hidden" name="time" value="{{ selected_time }}">{% endif %}
+                {% if selected_location %}<input type="hidden" name="location" value="{{ selected_location }}">{% endif %}
+                <select id="distance-filter" class="filter-select" name="distance" onchange="this.form.submit()">
+                    <option value="">Any distance</option>
+                    <option value="short" {% if selected_distance == 'short' %}selected{% endif %}>Under 5 mi</option>
+                    <option value="medium" {% if selected_distance == 'medium' %}selected{% endif %}>5-8 mi</option>
+                    <option value="long" {% if selected_distance == 'long' %}selected{% endif %}>Over 8 mi</option>
+                </select>
+            </form>
+            <form class="filter-group" method="get">
+                <label class="filter-label" for="time-filter">Time</label>
+                {% if selected_difficulty %}<input type="hidden" name="difficulty" value="{{ selected_difficulty }}">{% endif %}
+                {% if selected_distance %}<input type="hidden" name="distance" value="{{ selected_distance }}">{% endif %}
+                {% if selected_location %}<input type="hidden" name="location" value="{{ selected_location }}">{% endif %}
+                <select id="time-filter" class="filter-select" name="time" onchange="this.form.submit()">
+                    <option value="">Any time</option>
+                    <option value="under_1" {% if selected_time == 'under_1' %}selected{% endif %}>1 hour or less</option>
+                    <option value="1_2" {% if selected_time == '1_2' %}selected{% endif %}>1-2 hours</option>
+                    <option value="over_2" {% if selected_time == 'over_2' %}selected{% endif %}>Over 2 hours</option>
+                </select>
+            </form>
+            <form class="filter-group" method="get">
+                <label class="filter-label" for="location-filter">Location</label>
+                {% if selected_difficulty %}<input type="hidden" name="difficulty" value="{{ selected_difficulty }}">{% endif %}
+                {% if selected_distance %}<input type="hidden" name="distance" value="{{ selected_distance }}">{% endif %}
+                {% if selected_time %}<input type="hidden" name="time" value="{{ selected_time }}">{% endif %}
+                <select id="location-filter" class="filter-select" name="location" onchange="this.form.submit()">
+                    <option value="">Any location</option>
+                    {% for location in locations %}
+                    <option value="{{ location }}" {% if selected_location == location %}selected{% endif %}>{{ location }}</option>
+                    {% endfor %}
+                </select>
+            </form>
         </div>
     </div>
 </section>
@@ -138,6 +274,15 @@
                 </div>
 
                 <p style="font-style: italic; color: var(--color-gray-600); margin-bottom: 15px;">"{{ trail.description }}"</p>
+
+                {% if trail.location_name or trail.address %}
+                <p class="trail-location">
+                    {{ trail.location_name }}
+                    {% if trail.address %}
+                    <span class="trail-address">- {{ trail.address }}</span>
+                    {% endif %}
+                </p>
+                {% endif %}
 
                 <div style="margin-bottom: 20px;">
                     <small style="display:block; color:var(--color-gray-400); font-weight:700; text-transform:uppercase; font-size:0.65rem; margin-bottom:5px;">Trail Highlights</small>
