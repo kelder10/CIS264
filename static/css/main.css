@@ -1531,3 +1531,583 @@ textarea.form-control {
 .mb-3 { margin-bottom: 1rem; }
 .mb-4 { margin-bottom: 1.5rem; }
 .mb-5 { margin-bottom: 2rem; }
+
+
+/* ============================================
+   Help Page
+============================================ */
+
+.help-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 120px 20px 40px;
+}
+
+/* HEADER */
+.help-header {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.help-header h1 {
+    font-size: 42px;
+    color: #0b3704;
+}
+
+.help-header p {
+    color: #555;
+    margin-top: 10px;
+}
+
+/* SECTIONS */
+.help-section {
+    margin-bottom: 80px;
+}
+
+/* Update the existing .help-section class */
+.help-section {
+    margin-bottom: 60px; /* Reduced slightly to account for padding */
+    padding-bottom: 60px; /* Space between content and the line */
+    border-bottom: 1px solid #e0e0e0; /* Light gray line */
+}
+
+/* Optional: Remove the border from the very last step */
+.help-section:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+/* ============================================
+   DEFAULT SPLIT (BASE LAYOUT)
+============================================ */
+
+.help-split {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: center;
+}
+
+.help-split.reverse {
+    flex-direction: row-reverse;
+}
+
+/* ============================================
+   STEP 1 (FIXED LAYOUT)
+============================================ */
+
+.help-section:nth-of-type(1) .help-split {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+/* remove flex behavior so grid works */
+.help-section:nth-of-type(1) .help-text,
+.help-section:nth-of-type(1) .help-card {
+    flex: unset;
+}
+
+/* text gets full space */
+.help-section:nth-of-type(1) .help-text {
+    max-width: none;
+}
+
+/* card becomes smaller like step 3 */
+.help-section:nth-of-type(1) .help-card {
+    width: 100%;
+    max-width: 320px;
+    min-width: unset;
+    margin-left: auto;
+}
+
+/* optional tighter padding */
+.help-section:nth-of-type(1) .help-card.primary {
+    padding: 25px;
+}
+
+/* ============================================
+   STEP 2 (MAP - KEEP AS YOU BUILT)
+============================================ */
+
+.help-split-map {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr !important;
+    gap: 40px;
+    align-items: center;
+}
+
+/* force correct sides */
+.help-split-map .help-image {
+    grid-column: 1;
+}
+
+.help-split-map .help-text {
+    grid-column: 2;
+    max-width: 500px;
+}
+
+/* image fully expands */
+.help-split-map .help-image img {
+    width: 100%;
+    max-width: none;
+}
+
+/* ============================================
+   TEXT
+============================================ */
+
+.help-text {
+    flex: 1;
+    min-width: 300px;
+}
+
+.help-text h2 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+/* STEP COLORS */
+.step-blue { color: #0a0a0a; }
+.step-green { color: #030303; }
+.step-brown { color: #060606; }
+
+/* ============================================
+   IMAGES
+============================================ */
+
+.help-image {
+    flex: 1;
+    min-width: 300px;
+    text-align: center;
+}
+
+.help-image img {
+    width: 100%;
+    max-width: 700px;
+    display: block;
+    margin: auto;
+    border-radius: 12px;
+}
+
+/* ============================================
+   CARD
+============================================ */
+
+.help-card {
+    flex: 1;
+    min-width: 300px;
+    max-width: 450px;
+    padding: 40px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.help-card.primary {
+    background: #114704;
+    color: white;
+}
+
+/* Ensure the "Ready to Ride?" heading is white */
+.help-card.primary h3 {
+    color: #ffffff;
+}
+
+/* Make sure the "Register Now" button keeps its black text */
+.help-card.primary .btn-main {
+    color: #000000;
+}
+
+/* Target specifically the link that follows the "Already a member?" text */
+.help-card.primary p a {
+    color: #d4af37; /* Yellow */
+    text-decoration: underline;
+}
+
+/* Optional: Keep hover state consistent */
+.help-card.primary p a:hover {
+    color: #f1c40f; 
+}
+
+/* ============================================
+   BUTTONS
+============================================ */
+
+.btn-main {
+    display: inline-block;
+    padding: 12px 24px;
+    background: white;
+    color: black;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.btn-outline {
+    display: inline-block;
+    padding: 12px 24px;
+    border: 2px solid #012b12;
+    color: #012b12;
+    text-decoration: none;
+    border-radius: 6px;
+    margin-top: 15px;
+}
+
+/* ============================================
+   INFO BOX
+============================================ */
+
+.info-box {
+    background: #f5f5f5;
+    padding: 15px;
+    border-left: 4px solid #114704;
+    margin-top: 15px;
+}
+
+.info-box.light {
+    border-color: #114704;
+}
+
+/* ============================================
+   STEP 3 LIST
+============================================ */
+
+.help-text ol {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 20px;
+}
+
+.help-text ol li {
+    background: #f5f5f5;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border-left: 4px solid #114704;
+}
+
+/* NOTE */
+.note {
+    color: gray;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+/* ============================================
+   SAFETY SECTION
+============================================ */
+
+.help-safety {
+    background: linear-gradient(135deg, #012b12, #023f1c);
+    color: #f5f5f5;
+    padding: 35px 30px;
+    border-radius: 14px;
+    margin: 60px auto 0;
+    max-width: 1100px;
+}
+
+.help-safety h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #d4af37;
+}
+
+.help-safety-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+}
+
+.help-safety ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.help-safety li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.4;
+    padding: 8px 0;
+}
+
+.help-safety li:not(:last-child) {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.help-safety li i {
+    color: #d4af37;
+    font-size: 14px;
+    min-width: 18px;
+    margin-top: 3px;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+
+@media (max-width: 900px) {
+
+    /* stack step 1 */
+    .help-section:nth-of-type(1) .help-split {
+        grid-template-columns: 1fr;
+    }
+
+    /* stack step 2 */
+    .help-split-map {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* stack safety */
+    .help-safety-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Clean Directory Styling */
+.hub-title {
+    font-weight: bold;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.loc-link {
+    text-decoration: none;
+    color: #0b3704;
+    font-size: 14px;
+    display: block;
+    padding: 3px 0;
+    transition: all 0.2s ease;
+}
+
+.loc-link:hover {
+    color: #d4af37; /* Gold hover from your logo */
+    transform: translateX(5px); /* Subtle slide effect */
+}
+
+/* Adjust the Step Title if it still looks off */
+.help-step-title {
+    font-family: 'Playfair Display', serif; 
+    font-size: 34px;
+    color: #0b3704;
+    margin-bottom: 15px;
+}
+
+/* Premium Location Link */
+.loc-link-premium {
+    text-decoration: none;
+    color: #0b3704;
+    font-size: 18px; /* Bigger font for name */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+/* The Number Badge */
+.loc-num {
+    background-color: #0b3704;
+    color: #ffffff;
+    font-size: 20px; /* Bigger font for number */
+    font-weight: bold;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px; /* Rounded square background */
+    margin-right: 12px;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover Effects */
+.loc-link-premium:hover {
+    color: #d4af37;
+    transform: translateX(8px);
+}
+
+.loc-link-premium:hover .loc-num {
+    background-color: #d4af37; /* Number turns gold on hover */
+}
+
+/* Adjust Step Title size if needed */
+.help-step-title {
+    font-family: 'Playfair Display', serif; 
+    font-size: 38px;
+    color: #0b3704;
+}
+
+/* Location Link Styling */
+.loc-link-premium {
+    text-decoration: none;
+    color: #0b3704;
+    font-size: 17px; /* Larger font for the location name */
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+/* Number Badge Styling */
+.loc-num {
+    background-color: #0b3704; /* Dark green background */
+    color: #ffffff;
+    font-size: 18px; /* Slightly larger number */
+    font-weight: bold;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px; /* Rounded corners for the number box */
+    margin-right: 10px;
+}
+
+/* Hover effect for better UX */
+.loc-link-premium:hover {
+    color: #d4af37;
+    transform: translateX(5px);
+}
+
+.loc-link-premium:hover .loc-num {
+    background-color: #d4af37; /* Number turns gold on hover */
+}
+
+/* --- New Directory Column Layout --- */
+.directory-flex {
+    display: flex;
+    gap: 20px;
+}
+
+.directory-flex ul {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure the premium links don't stretch or break lines */
+.loc-link-premium {
+    white-space: nowrap;
+    margin-bottom: 10px;
+}
+
+/* Mobile fix: Stack the columns on small screens */
+@media (max-width: 600px) {
+    .directory-flex {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* --- Adjust the Split Grid for Step 2 --- */
+.help-split-map {
+    display: grid !important;
+    grid-template-columns: 2fr 1fr !important; /* Forces a 2:1 split (Map is 66%, List is 33%) */
+    gap: 40px;
+    align-items: center;
+}
+
+/* Image behavior for larger map */
+.help-image-large img {
+    width: 100%;
+    height: 470px;
+    display: block;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Directory Column Layout */
+.directory-flex {
+    display: flex;
+    gap: 20px;
+}
+
+.directory-flex ul {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure the premium links keep their gold pin style */
+.loc-link-premium {
+    white-space: nowrap; /* Prevents text from breaking lines */
+    text-decoration: none !important;
+    color: #0b3704;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.loc-num {
+    background-color: #0b3704;
+    color: #ffffff;
+    font-weight: bold;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+/* Hover effect */
+.loc-link-premium:hover {
+    color: #d4af37;
+    transform: translateX(5px);
+}
+
+.loc-link-premium:hover .loc-num {
+    background-color: #d4af37;
+}
+
+/* Mobile fix: Stack the columns on small screens */
+@media (max-width: 600px) {
+    .directory-flex {
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+/* ============================================
+   Section 2 - Balanced Directory Scaling
+============================================ */
+
+/* Shrink the directory text and badge size */
+.loc-link-premium {
+    font-size: 14px !important; /* Smaller text to prevent wrapping */
+    margin-bottom: 6px !important; /* Tighter vertical spacing */
+}
+
+.loc-num {
+    width: 26px !important;  /* Smaller badge width */
+    height: 26px !important; /* Smaller badge height */
+    font-size: 13px !important; /* Smaller number */
+    margin-right: 8px !important;
+    border-radius: 4px !important;
+}
+
+/* Tighten the gap between columns */
+.directory-flex {
+    gap: 15px !important;
+}
+
+/* Ensure the directory title matches the new scale */
+.hub-title {
+    font-size: 0.95rem !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Optional: Subtle adjustment to the Energy Tip to save vertical space */
+.info-box {
+    padding: 10px 15px !important;
+    font-size: 14px !important;
+    margin-top: 10px !important;
+}

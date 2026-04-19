@@ -57,6 +57,12 @@
                 <li class="nav-item">
                     <a href="{% url 'trails' %}" class="nav-link {% if '/trails/' in request.path %}active{% endif %}">Trails</a>
                 </li>
+                 <li class="nav-item">
+                     <a href="{% url 'accessories' %}" class="nav-link {% if '/bikes/accessories/' in request.path %}active{% endif %}">Accessories</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'help' %}" class="nav-link {% if '/help/' in request.path %}active{% endif %}">Rental Guide</a>
+                </li>
                 <li class="nav-item">
                     <a href="{% url 'reviews' %}" class="nav-link {% if '/reviews/' in request.path %}active{% endif %}">Reviews</a>
                 </li>
@@ -65,9 +71,6 @@
                 </li>
                 <li class="nav-item">
                     <a href="{% url 'contact' %}" class="nav-link {% if '/contact/' in request.path %}active{% endif %}">Contact</a>
-                </li>
-                <li class="nav-item">
-                     <a href="{% url 'accessories' %}" class="nav-link {% if '/bikes/accessories/' in request.path %}active{% endif %}">Accessories</a>
                 </li>
                 
                 {% if user.is_authenticated %}

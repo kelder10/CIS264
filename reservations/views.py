@@ -481,3 +481,8 @@ def send_daily_reminders(request):
         messages.info(request, "No confirmed rentals found for tomorrow.")
 
     return redirect('admin_reservations')
+
+
+def help_page(request):
+
+    return render(request, 'reservations/help.html')
