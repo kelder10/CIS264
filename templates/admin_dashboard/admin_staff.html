@@ -1,0 +1,96 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Staff Accounts | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Review staff accounts for Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Staff Accounts</span>
+                    </h1>
+                    <p>Review who can access the admin tools and when they last signed in.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Staff Accounts</div>
+                    <div class="stat-value">{{ staff_count }}</div>
+                    <div class="stat-meta">Users with staff access</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Staff</div>
+                    <div class="stat-value">{{ active_staff_count }}</div>
+                    <div class="stat-meta">Accounts currently enabled</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Superusers</div>
+                    <div class="stat-value">{{ superuser_count }}</div>
+                    <div class="stat-meta">Full administrative access</div>
+                </div>
+            </div>
+
+            <h2 style="margin: 0 0 1rem; color: #16324f;">Staff Directory</h2>
+            <div class="admin-card">
+                {% if staff_members %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Staff Type</th>
+                                <th>Active</th>
+                                <th>Last Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for staff in staff_members %}
+                            <tr>
+                                <td>{{ staff.username }}</td>
+                                <td>{{ staff.get_full_name|default:staff.username }}</td>
+                                <td>{{ staff.email|default:"Not provided" }}</td>
+                                <td>{{ staff.phone|default:"Not provided" }}</td>
+                                <td>
+                                    {% if staff.is_superuser %}
+                                    <span class="boolean-pill boolean-yes">Superuser</span>
+                                    {% else %}
+                                    <span class="boolean-pill boolean-no">Staff</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="boolean-pill {% if staff.is_active %}boolean-yes{% else %}boolean-no{% endif %}">
+                                        {% if staff.is_active %}Active{% else %}Inactive{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if staff.last_login %}
+                                    {{ staff.last_login|date:"M j, Y g:i a" }}
+                                    {% else %}
+                                    <span class="muted">Never</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">No staff accounts found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

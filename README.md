@@ -94,12 +94,7 @@ indian_creek_cycles/
 │   ├── payments/          # Payments app templates
 │   └── reviews/           # Reviews app templates
 |   └── admin_dashboard/    # Custom admin dashboard templates
-│       ├── base.html       # Admin dashboard base template
-│       ├── admin.html      # Dashboard overview
-│       ├── admin_bikes.html
-│       ├── admin_reservations.html
-│       ├── admin_reviews.html
-│       └── admin_payments.html
+│  
 ├── static/                 # Static files
 │   ├── css/               # Stylesheets
 │   ├── js/                # JavaScript files

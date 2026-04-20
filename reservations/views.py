@@ -16,12 +16,63 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 # Local app models and forms
-from .models import Reservation, Waiver, PromoCode
+from .models import Reservation, ReservationAccessory, Waiver, PromoCode
 from .forms import ReservationForm, WaiverForm, PromoCodeForm, ReservationCancelForm
-from bikes.models import Bike
+from bikes.models import Accessory, Bike
 from payments.models import Payment
 from locations.models import Location
 from datetime import time
+
+
+def _collect_accessory_items(form, post_data):
+    """Build rental and purchase accessory line items from the reservation form."""
+    line_items = []
+    requested_quantities = {}
+    errors = []
+
+    field_map = [
+        ('rental_accessories', 'rental', 'rental_quantity'),
+        ('purchase_accessories', 'purchase', 'purchase_quantity'),
+    ]
+
+    for field_name, fulfillment_type, quantity_prefix in field_map:
+        for accessory in form.cleaned_data.get(field_name, []):
+            quantity_key = f'{quantity_prefix}_{accessory.id}'
+            raw_quantity = post_data.get(quantity_key, '1')
+
+            try:
+                quantity = int(raw_quantity)
+            except (TypeError, ValueError):
+                errors.append(f'Quantity for {accessory.name} must be a whole number.')
+                continue
+
+            if quantity < 1:
+                errors.append(f'Quantity for {accessory.name} must be at least 1.')
+                continue
+
+            unit_price = accessory.price if fulfillment_type == 'purchase' else (accessory.price_per_day or 0)
+            if unit_price is None:
+                errors.append(f'{accessory.name} does not have a valid {fulfillment_type} price.')
+                continue
+
+            requested_quantities[accessory.id] = requested_quantities.get(accessory.id, 0) + quantity
+            line_items.append({
+                'accessory': accessory,
+                'fulfillment_type': fulfillment_type,
+                'quantity': quantity,
+                'price_at_time': unit_price,
+            })
+
+    if requested_quantities:
+        stock_lookup = Accessory.objects.in_bulk(requested_quantities.keys())
+        for accessory_id, quantity in requested_quantities.items():
+            accessory = stock_lookup[accessory_id]
+            if quantity > accessory.quantity_in_stock:
+                errors.append(
+                    f'Only {accessory.quantity_in_stock} {accessory.name} available.'
+                )
+
+    return line_items, errors
 
 
 def check_availability(request):
@@ -99,6 +150,17 @@ def create_reservation(request, bike_slug):
         form = ReservationForm(post_data, bike=bike)
         
         if form.is_valid():
+            accessory_line_items, accessory_errors = _collect_accessory_items(form, post_data)
+            if accessory_errors:
+                for error in accessory_errors:
+                    form.add_error(None, error)
+                context = {
+                    'form': form,
+                    'bike': bike,
+                    'booked_dates_json': booked_dates_json,
+                }
+                return render(request, 'reservations/create_reservation.html', context)
+
             try:
                 with transaction.atomic():
                     reservation = form.save(commit=False)
@@ -117,14 +179,9 @@ def create_reservation(request, bike_slug):
 
                     reservation.save()
                     
-                    # --- ACCESSORY LOGIC ---
-                    selected_accessories = form.cleaned_data.get('accessories')
-                    if selected_accessories:
-                        for accessory in selected_accessories:
-                            reservation.reservation_accessories.create(
-                                accessory=accessory,
-                                price_at_time=accessory.price_per_day
-                            )
+                    # --- ACCESSORY RENTAL / PURCHASE LOGIC ---
+                    for item in accessory_line_items:
+                        reservation.reservation_accessories.create(**item)
                     
                     reservation.calculate_prices()
                     reservation.save()

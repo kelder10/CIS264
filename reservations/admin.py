@@ -6,6 +6,7 @@ class ReservationAccessoryInline(admin.TabularInline):
     model = ReservationAccessory
     extra = 0
     readonly_fields = ['price_at_time']
+    fields = ['accessory', 'fulfillment_type', 'quantity', 'price_at_time']
 
 @admin.register(Reservation)
 class ReservationAdmin(admin.ModelAdmin):

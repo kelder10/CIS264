@@ -70,13 +70,17 @@ class UserLoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Username or email'
+            'placeholder': 'Username or email',
+            'autocomplete': 'username',
+            'autocapitalize': 'none',
+            'spellcheck': 'false'
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Your password'
+            'placeholder': 'Your password',
+            'autocomplete': 'current-password'
         })
     )
 

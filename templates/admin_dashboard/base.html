@@ -219,6 +219,20 @@
         font-weight: 700;
     }
 
+    .admin-table thead th {
+        color: #ffffff;
+    }
+
+    .admin-sort-link {
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .admin-sort-link:hover {
+        text-decoration: underline;
+    }
+
     .admin-table tbody tr:nth-child(even) {
         background: #f8fbfd;
     }
@@ -244,6 +258,7 @@
         background: #f7fafc;
         color: #16324f;
         transition: 0.2s ease;
+        cursor: pointer;
     }
 
     .admin-btn:hover {
@@ -285,6 +300,7 @@
     .status-pending { background: #fff3cd; color: #8a6d1d; }
     .status-confirmed { background: #dbeafe; color: #1d4ed8; }
     .status-paid { background: #dcfce7; color: #166534; }
+    .status-active { background: #cffafe; color: #0e7490; }
     .status-completed { background: #ede9fe; color: #6b21a8; }
     .status-cancelled { background: #fee2e2; color: #b91c1c; }
 
@@ -312,6 +328,66 @@
 
     .list-item strong {
         color: #16324f;
+    }
+
+    .admin-inline-form {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .admin-small-input {
+        width: 5.5rem;
+        padding: 0.45rem 0.55rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        color: #1f2937;
+    }
+
+    .admin-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .admin-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+
+    .admin-form-field {
+        display: grid;
+        gap: 0.4rem;
+    }
+
+    .admin-form-field-wide {
+        grid-column: 1 / -1;
+    }
+
+    .admin-form-field label {
+        color: #16324f;
+        font-weight: 700;
+    }
+
+    .admin-form-field input,
+    .admin-form-field select,
+    .admin-form-field textarea {
+        width: 100%;
+        padding: 0.7rem 0.8rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        color: #1f2937;
+        background: #ffffff;
+    }
+
+    .admin-form-field input[type="checkbox"] {
+        width: auto;
+        justify-self: start;
+    }
+
+    .admin-form-error {
+        color: #b91c1c;
+        font-size: 0.9rem;
     }
 
     .muted {
@@ -354,6 +430,10 @@
 
     @media (max-width: 640px) {
         .quick-links {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-form-grid {
             grid-template-columns: 1fr;
         }
 

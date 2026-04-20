@@ -34,11 +34,11 @@
 
                     {% if accessories %}
                     <div style="margin-bottom: 25px; padding: 20px; background: var(--color-gray-50); border-radius: var(--radius-md); border: 1px dashed var(--color-gray-300);">
-                        <h4 style="margin: 0 0 12px 0; font-size: 0.85rem; font-weight: 700; color: var(--color-gray-600); text-transform: uppercase; letter-spacing: 0.05rem;">Included Equipment</h4>
+                        <h4 style="margin: 0 0 12px 0; font-size: 0.85rem; font-weight: 700; color: var(--color-gray-600); text-transform: uppercase; letter-spacing: 0.05rem;">Extras</h4>
                         <div style="display: flex; flex-wrap: wrap; gap: 10px;">
                             {% for acc in accessories %}
                             <span style="background: var(--color-white); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--color-gray-200); font-size: 0.9rem;">
-                                <strong style="color: var(--color-primary);">{{ acc.quantity }}x</strong> {{ acc.accessory.name }}
+                                <strong style="color: var(--color-primary);">{{ acc.quantity }}x</strong> {{ acc.accessory.name }} · {{ acc.get_fulfillment_type_display }}
                             </span>
                             {% endfor %}
                         </div>

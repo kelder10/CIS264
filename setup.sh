@@ -1,59 +1,81 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -ex
+echo "### Starting project setup"
 
-if [ ! -d ".venv" ]; then
-  echo "Creating virtual environment..."
-  python3.12 -m venv .venv
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$PROJECT_ROOT"
+
+# Pick a usable Python interpreter
+if command -v python3.12 >/dev/null 2>&1; then
+    PYTHON_BIN="python3.12"
+elif command -v python3.11 >/dev/null 2>&1; then
+    PYTHON_BIN="python3.11"
+elif command -v python3 >/dev/null 2>&1; then
+    PYTHON_BIN="python3"
+else
+    echo "Error: Python 3 is not installed or not on PATH."
+    echo "Please install Python 3.11+ and run this script again."
+    exit 1
 fi
 
-echo "### Step 1: Activate Virtual Environment"
+echo "### Using interpreter: $PYTHON_BIN"
+
+# Recreate broken venv if needed
+if [ -d ".venv" ]; then
+    if [ ! -x ".venv/bin/python" ]; then
+        echo "### Existing .venv looks broken. Recreating it."
+        rm -rf .venv
+    fi
+fi
+
+# Create venv if missing
+if [ ! -d ".venv" ]; then
+    echo "### Creating virtual environment"
+    "$PYTHON_BIN" -m venv .venv
+fi
+
+echo "### Activating virtual environment"
+# shellcheck disable=SC1091
 source .venv/bin/activate
 
-echo "### Step 2: Upgrade pip tools"
-python -m pip install --upgrade pip setuptools wheel
+VENV_PYTHON="$(pwd)/.venv/bin/python"
+VENV_PIP="$(pwd)/.venv/bin/pip"
 
-echo "### Step 3: Install Dependencies"
-python -m pip install -r requirements.txt
+echo "### Upgrading pip tools"
+"$VENV_PYTHON" -m pip install --upgrade pip setuptools wheel
 
-echo "### Step 4: Ensure django-anymail is installed"
-if ! python -c "import anymail" &> /dev/null; then
-  echo "Installing django-anymail..."
-  python -m pip install django-anymail
+if [ -f "requirements.txt" ]; then
+    echo "### Installing dependencies"
+    "$VENV_PIP" install -r requirements.txt
 else
-  echo "django-anymail already installed"
+    echo "Error: requirements.txt not found."
+    exit 1
 fi
 
-echo "### Step 5: Configure Environment Variables"
-if [ -f ".env.example" ]; then
-  if [ ! -f ".env" ]; then
+# Create .env if needed
+if [ -f ".env.example" ] && [ ! -f ".env" ]; then
+    echo "### Creating .env from .env.example"
     cp .env.example .env
-  else
-    echo ".env already exists, skipping copy"
-  fi
-else
-  touch .env
+elif [ ! -f ".env" ]; then
+    echo "### Creating empty .env"
+    touch .env
 fi
 
-echo "### Step 6: Run Database Migrations"
-python manage.py makemigrations
-echo "Running migrations..."
-python manage.py migrate
+echo "### Running migrations"
+"$VENV_PYTHON" manage.py migrate
 
-echo "### Step 7: Seed Database with Sample Data"
-cat <<'EOF'
-This creates:
-- Admin user (username: admin, password: admin123)
-- Sample users (password: demo123)
-- Bike categories and sizes
-- Sample bikes (11 bikes across categories)
-- Accessories (helmets, locks, baskets, etc.)
-- Sample trails (5 trails)
-- Promo codes (WELCOME20, FAMILY10, WEEKEND15)
-- Sample reviews (6 reviews)
-EOF
+# Optional: collect static if Django project uses it
+echo "### Collecting static files"
+"$VENV_PYTHON" manage.py collectstatic --noinput || true
 
-python manage.py seed
+# Optional: seed data if your project has this command
+if "$VENV_PYTHON" manage.py help | grep -q "seed"; then
+    echo "### Running seed command"
+    "$VENV_PYTHON" manage.py seed || true
+fi
 
-echo "### Step 8: Run Development Server"
+echo "### Setup complete"
+echo "### To activate later, run: source .venv/bin/activate"
+echo "### Run Development Server"
 python manage.py runserver
