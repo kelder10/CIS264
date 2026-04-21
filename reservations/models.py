@@ -4,6 +4,7 @@ import qrcode
 
 from io import BytesIO
 from decimal import Decimal
+from datetime import timedelta
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
@@ -11,10 +12,14 @@ from django.core.files import File
 from bikes.models import Bike, Accessory
 from locations.models import Location  
 from django.utils import timezone
-from datetime import timedelta
 
 class ReservationAccessory(models.Model):
-    """Through model for reservation accessories with quantity."""
+    """Through model for reservation accessories with rental or purchase intent."""
+    FULFILLMENT_CHOICES = [
+        ('rental', 'Rental'),
+        ('purchase', 'Purchase'),
+    ]
+
     reservation = models.ForeignKey(
         'Reservation', 
         on_delete=models.CASCADE, 
@@ -25,25 +30,32 @@ class ReservationAccessory(models.Model):
         on_delete=models.CASCADE, 
         related_name='reservation_accessories'
     )
+    fulfillment_type = models.CharField(max_length=20, choices=FULFILLMENT_CHOICES, default='rental')
     quantity = models.PositiveIntegerField(default=1)
     price_at_time = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Reservation Accessory'
         verbose_name_plural = 'Reservation Accessories'
-        unique_together = ['reservation', 'accessory']
+        unique_together = ['reservation', 'accessory', 'fulfillment_type']
 
     def __str__(self):
-        return f"{self.quantity}x {self.accessory.name} for Reservation #{self.reservation.id}"
+        return f"{self.quantity}x {self.accessory.name} ({self.get_fulfillment_type_display()}) for Reservation #{self.reservation.id}"
 
     def get_total(self):
         """Helper to get the cost of this line item."""
         price = self.price_at_time or Decimal('0.00')
+        if self.fulfillment_type == 'rental' and self.reservation_id:
+            duration = self.reservation.rental_duration or 1
+            return price * self.quantity * duration
         return price * self.quantity
 
     def save(self, *args, **kwargs):
         if not self.price_at_time:
-            self.price_at_time = getattr(self.accessory, 'price_per_day', Decimal('0.00'))
+            if self.fulfillment_type == 'purchase':
+                self.price_at_time = getattr(self.accessory, 'price', Decimal('0.00'))
+            else:
+                self.price_at_time = getattr(self.accessory, 'price_per_day', None) or Decimal('0.00')
         
         super().save(*args, **kwargs)
         
@@ -224,6 +236,32 @@ class PromoCode(models.Model):
     def __str__(self):
         return self.code
 
+    @property
+    def discount_display(self):
+        if self.code.upper() == 'HAPPYBIRTHDAY':
+            return 'Free bike rental'
+        if self.discount_type == 'percentage':
+            return f'{self.discount_value}% off'
+        return f'${self.discount_value} off'
+
+    @property
+    def rule_summary(self):
+        rules = {
+            'WELCOME20': 'First rental only.',
+            'WEEKEND15': 'Rental must start or end on Saturday or Sunday.',
+            'TANDEM25': 'Tandem bike rentals only.',
+            'KIDSFREE': 'Kids bike rental with a child or youth helmet rental.',
+            'HAPPYBIRTHDAY': 'Birthday month only. Discounts the bike rental, not accessories.',
+            'SPRINGRIDE': 'Spring seasonal promo, valid March through May.',
+            'SUNNYRIDE': 'Nice-weather campaign promo.',
+            'SEASONSTART': 'Early season promo with limited redemptions.',
+            'EGGRIDE': 'Short-term Easter spring event promo.',
+            'WEEKDAYRIDE': 'Monday through Thursday rentals only.',
+            'RIDETOGETHER': 'Requires at least 2 bikes.',
+            'FAMILY10': 'Minimum order only.',
+        }
+        return rules.get(self.code.upper(), 'Standard minimum order, date, active status, and usage limit rules.')
+
     def is_valid(self):
         """Check if promo code is currently valid."""
         from django.utils import timezone
@@ -237,11 +275,81 @@ class PromoCode(models.Model):
             return False
         return True
 
-    def calculate_discount(self, subtotal):
+    def get_business_rule_error(self, reservation):
+        """Return a customer-facing message when a code-specific rule is not met."""
+        if not reservation:
+            return None
+
+        code = self.code.upper()
+        bike = reservation.bike
+        user = reservation.user
+
+        if code == 'WELCOME20':
+            previous_paid_rentals = user.reservations.exclude(id=reservation.id).filter(
+                status__in=['paid', 'active', 'completed']
+            ).exists()
+            if previous_paid_rentals:
+                return 'WELCOME20 is only available for your first rental.'
+
+        if code == 'WEEKEND15':
+            if reservation.rental_date.weekday() not in [5, 6] and reservation.return_date.weekday() not in [5, 6]:
+                return 'WEEKEND15 is only available for rentals that start or end on Saturday or Sunday.'
+
+        if code == 'TANDEM25':
+            category_slug = getattr(getattr(bike, 'category', None), 'slug', '')
+            if category_slug != 'tandem-bikes' and 'tandem' not in bike.name.lower():
+                return 'TANDEM25 is only available for tandem bike rentals.'
+
+        if code == 'KIDSFREE':
+            category_slug = getattr(getattr(bike, 'category', None), 'slug', '')
+            if category_slug != 'kids-bikes' and bike.bike_type != 'kids':
+                return 'KIDSFREE is only available with a kids bike rental.'
+
+            has_child_helmet = reservation.reservation_accessories.filter(
+                accessory__name__in=['Helmet - Child', 'Helmet - Youth'],
+                fulfillment_type='rental',
+            ).exists()
+            if not has_child_helmet:
+                return 'KIDSFREE requires a child or youth helmet rental.'
+
+        if code == 'HAPPYBIRTHDAY':
+            birthday = getattr(user, 'date_of_birth', None)
+            if not birthday:
+                return 'Add your date of birth to use HAPPYBIRTHDAY.'
+
+            if birthday.month != reservation.rental_date.month:
+                return 'HAPPYBIRTHDAY is available during your birthday month.'
+
+        if code == 'WEEKDAYRIDE':
+            current_date = reservation.rental_date
+            while current_date <= reservation.return_date:
+                if current_date.weekday() > 3:
+                    return 'WEEKDAYRIDE is only available for Monday through Thursday rentals.'
+                current_date += timedelta(days=1)
+
+        if code == 'RIDETOGETHER':
+            bike_count = getattr(reservation, 'bike_count', 1)
+            if bike_count < 2:
+                return 'RIDETOGETHER requires at least 2 bikes.'
+
+        return None
+
+    def calculate_discount(self, subtotal, reservation=None):
         """Calculate discount amount."""
+        subtotal = Decimal(subtotal)
+
         if subtotal < self.minimum_order:
-            return 0
+            return Decimal('0.00')
+
+        if reservation and self.get_business_rule_error(reservation):
+            return Decimal('0.00')
+
+        if self.code.upper() == 'HAPPYBIRTHDAY' and reservation:
+            return min(reservation.bike_price, reservation.total_price).quantize(Decimal('0.01'))
 
         if self.discount_type == 'percentage':
-            return subtotal * (self.discount_value / 100)
-        return min(self.discount_value, subtotal)
+            discount = subtotal * (self.discount_value / Decimal('100'))
+        else:
+            discount = min(self.discount_value, subtotal)
+
+        return discount.quantize(Decimal('0.01'))

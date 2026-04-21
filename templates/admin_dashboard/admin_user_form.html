@@ -1,0 +1,79 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Edit User | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Edit user contact information for Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Edit User</span>
+                    </h1>
+                    <p>Update profile and contact information for {{ managed_user.get_full_name|default:managed_user.username }}.</p>
+                    <a href="{% url 'admin_users' %}" class="admin-back-link">
+                        ← Back to Users
+                    </a>
+                </div>
+            </div>
+
+            <div class="panel" style="margin-bottom: 1.25rem;">
+                <h2>Account Details</h2>
+                <div class="list-stack">
+                    <div class="list-item">
+                        <strong>Username</strong><br>
+                        <span class="muted">{{ managed_user.username }}</span>
+                    </div>
+                    <div class="list-item">
+                        <strong>Account Type</strong><br>
+                        <span class="muted">
+                            {% if managed_user.is_superuser %}
+                            Superuser
+                            {% elif managed_user.is_staff %}
+                            Staff
+                            {% else %}
+                            Customer
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="list-item">
+                        <strong>Account Status</strong><br>
+                        <span class="muted">{% if managed_user.is_active %}Active{% else %}Inactive{% endif %}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <form method="post" class="admin-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="empty-state">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    <div class="admin-form-grid">
+                        {% for field in form %}
+                        <div class="admin-form-field {% if field.name == 'address' or field.name == 'admin_notes' %}admin-form-field-wide{% endif %}">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {% for error in field.errors %}
+                            <span class="admin-form-error">{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="admin-actions" style="margin-top: 1.25rem;">
+                        <button class="admin-btn admin-btn-success" type="submit">Save Changes</button>
+                        <a class="admin-btn" href="{% url 'admin_users' %}">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

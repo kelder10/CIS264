@@ -42,7 +42,7 @@
                         <div class="accessory-list">
                             {% for acc in accessories %}
                             <span class="accessory-pill">
-                                <strong>{{ acc.quantity }}x</strong> {{ acc.accessory.name }}
+                                <strong>{{ acc.quantity }}x</strong> {{ acc.accessory.name }} · {{ acc.get_fulfillment_type_display }}
                             </span>
                             {% endfor %}
                         </div>

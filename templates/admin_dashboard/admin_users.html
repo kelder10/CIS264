@@ -1,0 +1,208 @@
+{% extends "admin_dashboard/base.html" %}
+
+{% block title %}Manage Users | Indian Creek Cycles{% endblock %}
+{% block meta_description %}Review user accounts for Indian Creek Cycles{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-wrap">
+            <div class="admin-page-header">
+                <div>
+                    <h1 class="admin-title-row">
+                        <span>Manage Users</span>
+                    </h1>
+                    <p>Review customer profiles, contact details, emergency contacts, and account activity.</p>
+                    <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+                        ← Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-meta">All customer and staff accounts</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Customers</div>
+                    <div class="stat-value">{{ customer_count }}</div>
+                    <div class="stat-meta">Non-staff user accounts</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Accounts</div>
+                    <div class="stat-value">{{ active_user_count }}</div>
+                    <div class="stat-meta">Accounts currently enabled</div>
+                </div>
+            </div>
+
+            <h2 style="margin: 0 0 1rem; color: #16324f;">User Directory</h2>
+            <div class="admin-card">
+                {% if users %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Actions</th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=name&direction={% if sort == 'name' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Name{% if sort == 'name' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=username&direction={% if sort == 'username' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Username{% if sort == 'username' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=account_type&direction={% if sort == 'account_type' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Account Type{% if sort == 'account_type' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=reservations&direction={% if sort == 'reservations' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Reservations{% if sort == 'reservations' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=waivers&direction={% if sort == 'waivers' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Waivers{% if sort == 'waivers' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=payments&direction={% if sort == 'payments' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Payments{% if sort == 'payments' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=reviews&direction={% if sort == 'reviews' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Reviews{% if sort == 'reviews' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=email&direction={% if sort == 'email' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Email{% if sort == 'email' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=phone&direction={% if sort == 'phone' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Phone Number{% if sort == 'phone' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=address&direction={% if sort == 'address' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Address{% if sort == 'address' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=emergency_contact&direction={% if sort == 'emergency_contact' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Emergency Contact{% if sort == 'emergency_contact' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=active&direction={% if sort == 'active' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Active{% if sort == 'active' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=admin_notes&direction={% if sort == 'admin_notes' %}{{ next_direction }}{% else %}asc{% endif %}">
+                                        Admin Notes{% if sort == 'admin_notes' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=last_active&direction={% if sort == 'last_active' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Last Active{% if sort == 'last_active' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                                <th>
+                                    <a class="admin-sort-link" href="?sort=joined&direction={% if sort == 'joined' %}{{ next_direction }}{% else %}desc{% endif %}">
+                                        Joined{% if sort == 'joined' %} {% if direction == 'asc' %}↑{% else %}↓{% endif %}{% endif %}
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <div class="admin-actions">
+                                        <a class="admin-btn" href="{% url 'admin_edit_user' user.id %}">Edit</a>
+                                        {% if user != request.user %}
+                                        <form method="post" action="{% url 'delete_user' user.id %}" onsubmit="return confirm('Delete {{ user.get_full_name|default:user.username }}? Accounts with history or staff access will be deactivated instead.');">
+                                            {% csrf_token %}
+                                            <button class="admin-btn admin-btn-danger" type="submit">Delete</button>
+                                        </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ user.get_full_name|default:user.username }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                    {% if user.is_superuser %}
+                                    <span class="boolean-pill boolean-yes">Superuser</span>
+                                    {% elif user.is_staff %}
+                                    <span class="boolean-pill boolean-no">Staff</span>
+                                    {% else %}
+                                    <span class="boolean-pill boolean-no">Customer</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.reservation_count }}</td>
+                                <td>{{ user.waiver_count }}</td>
+                                <td>{{ user.payment_count }}</td>
+                                <td>{{ user.review_count }}</td>
+                                <td>{{ user.email|default:"Not provided" }}</td>
+                                <td>{{ user.phone|default:"Not provided" }}</td>
+                                <td>
+                                    {% if user.address or user.city or user.state or user.zip_code %}
+                                        {% if user.address %}{{ user.address }}<br>{% endif %}
+                                        <span class="muted">
+                                            {{ user.city }}{% if user.city and user.state %}, {% endif %}{{ user.state }} {{ user.zip_code }}
+                                        </span>
+                                    {% else %}
+                                        <span class="muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.emergency_contact_name or user.emergency_contact_phone %}
+                                        {{ user.emergency_contact_name|default:"No name" }}<br>
+                                        <span class="muted">{{ user.emergency_contact_phone|default:"No phone" }}</span>
+                                    {% else %}
+                                        <span class="muted">Not provided</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="boolean-pill {% if user.is_active %}boolean-yes{% else %}boolean-no{% endif %}">
+                                        {% if user.is_active %}Yes{% else %}No{% endif %}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if user.admin_notes %}
+                                    {{ user.admin_notes|truncatechars:80 }}
+                                    {% else %}
+                                    <span class="muted">None</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.last_login %}
+                                    {{ user.last_login|date:"M j, Y g:i a" }}
+                                    {% else %}
+                                    <span class="muted">Never</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M j, Y" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">No users found.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

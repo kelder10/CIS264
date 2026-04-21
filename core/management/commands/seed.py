@@ -650,15 +650,15 @@ class Command(BaseCommand):
                 'image_path': 'trails/riverside-park-path.jpg'
             },
             {
-                'name': 'Pine Forest Trail',
-                'description': 'A beautiful trail through pine forests with moderate elevation changes.',
+                'name': 'Maple Grove Trail',
+                'description': 'A shaded woodland path with a smooth packed surface and colorful seasonal tree cover.',
                 'difficulty': 'moderate',
-                'length_miles': 6.8,
-                'estimated_time': '2-3 hours',
-                'terrain': 'Dirt path, some rocky sections',
-                'highlights': 'Pine forest scenery, deer sightings, peaceful atmosphere',
+                'length_miles': 4.7,
+                'estimated_time': '1-2 hours',
+                'terrain': 'Packed gravel and dirt, gentle curves',
+                'highlights': 'Maple canopy, fall color, shaded turns, quiet woodland views',
                 'is_featured': False,
-                'image_path': 'trails/pine-forest-trail.jpg'
+                'image_path': 'trails/nallPark.png'
             },
             {
                 'name': 'Lakeside Loop',
@@ -672,15 +672,15 @@ class Command(BaseCommand):
                 'image_path': 'trails/lakeside-loop.jpg'
             },
             {
-                'name': 'Meadow Brook Trail',
-                'description': 'Peaceful trail through open meadows and along a gentle brook. Great for nature lovers.',
+                'name': 'Heritage Park Loops',
+                'description': 'Open natural-surface loops through meadow edges, grasses, and shaded tree lines.',
                 'difficulty': 'easy',
-                'length_miles': 4.0,
-                'estimated_time': '1-1.5 hours',
-                'terrain': 'Gravel and dirt, mostly flat',
-                'highlights': 'Wildflower meadows, brook crossings, butterfly watching',
+                'length_miles': 5.2,
+                'estimated_time': '1.5-2 hours',
+                'terrain': 'Packed dirt and gravel, mostly flat',
+                'highlights': 'Meadow edges, shade trees, open views, easy loop options',
                 'is_featured': False,
-                'image_path': None
+                'image_path': 'trails/Heritage_Park_Loops.jpg'
             },
             {
                 'name': 'Ridge Runner Trail',

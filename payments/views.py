@@ -36,7 +36,7 @@ def payment(request, reservation_id):
     accessories = reservation.reservation_accessories.select_related('accessory').all()
     
     if request.method == 'POST':
-        form = SimulatedPaymentForm(request.POST)
+        form = SimulatedPaymentForm(request.POST, reservation=reservation)
         if form.is_valid():
             with transaction.atomic():
                 # Re-calculate inside the transaction to prevent any last-second changes
@@ -45,6 +45,18 @@ def payment(request, reservation_id):
 
                 payment_method = form.cleaned_data['payment_method']
                 promo_code_str = form.cleaned_data.get('promo_code', '')
+                purchase_items = reservation.reservation_accessories.select_related('accessory').filter(
+                    fulfillment_type='purchase'
+                )
+
+                for item in purchase_items:
+                    accessory = item.accessory
+                    if item.quantity > accessory.quantity_in_stock:
+                        messages.error(
+                            request,
+                            f'Only {accessory.quantity_in_stock} {accessory.name} available to purchase.'
+                        )
+                        return redirect('payment', reservation_id=reservation.id)
                 
                 # Calculate discount
                 discount_amount = 0
@@ -52,9 +64,10 @@ def payment(request, reservation_id):
                     try:
                         promo = PromoCode.objects.get(code=promo_code_str.upper(), is_active=True)
                         if promo.is_valid():
-                            discount_amount = promo.calculate_discount(reservation.subtotal)
-                            promo.current_uses += 1
-                            promo.save()
+                            discount_amount = promo.calculate_discount(reservation.subtotal, reservation=reservation)
+                            if discount_amount > 0:
+                                promo.current_uses += 1
+                                promo.save(update_fields=['current_uses'])
                     except PromoCode.DoesNotExist:
                         pass
                 
@@ -73,6 +86,14 @@ def payment(request, reservation_id):
                     processed_at=timezone.now(),
                     notes='Simulated payment for demonstration purposes.'
                 )
+
+                for item in purchase_items:
+                    accessory = item.accessory
+                    accessory.quantity_in_stock -= item.quantity
+                    if accessory.quantity_in_stock <= 0:
+                        accessory.quantity_in_stock = 0
+                        accessory.is_available = False
+                    accessory.save(update_fields=['quantity_in_stock', 'is_available'])
                 
                 # Update reservation status
                 reservation.status = 'paid'
@@ -84,7 +105,7 @@ def payment(request, reservation_id):
                 )
                 return redirect('reservation_confirmation', pk=reservation.id)
     else:
-        form = SimulatedPaymentForm()
+        form = SimulatedPaymentForm(reservation=reservation)
     
     context = {
         'form': form,

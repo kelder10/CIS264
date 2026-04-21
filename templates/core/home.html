@@ -6,7 +6,10 @@
 
 {% block content %}
 <!-- Hero Section with Background Image -->
-<section class="hero" style="background-image: url('{% static "images/hero/family-biking-hero.jpg" %}');">
+<section class="hero" style="background-color: black;">
+    <video id="hero-video" class="hero-video" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
+        <source id="hero-video-source" src="" type="video/mp4">
+    </video>
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <div class="container">
@@ -26,6 +29,46 @@
         </svg>
     </div>
 </section>
+
+<script>
+    (function () {
+        var heroVideo = document.getElementById('hero-video');
+
+        if (!heroVideo) {
+            return;
+        }
+
+        heroVideo.autoplay = true;
+        heroVideo.controls = false;
+        heroVideo.defaultMuted = true;
+        heroVideo.loop = true;
+        heroVideo.muted = true;
+        heroVideo.playsInline = true;
+        heroVideo.removeAttribute('controls');
+        heroVideo.setAttribute('muted', '');
+        heroVideo.setAttribute('playsinline', '');
+        heroVideo.setAttribute('webkit-playsinline', '');
+
+        function playHeroVideo() {
+            var playAttempt = heroVideo.play();
+
+            if (playAttempt && typeof playAttempt.catch === 'function') {
+                playAttempt.catch(function () {
+                    heroVideo.classList.remove('hero-video-ready');
+                });
+            }
+        }
+
+        heroVideo.addEventListener('playing', function () {
+            heroVideo.classList.add('hero-video-ready');
+        });
+        heroVideo.addEventListener('loadeddata', playHeroVideo);
+        heroVideo.addEventListener('canplay', playHeroVideo);
+        window.addEventListener('pageshow', playHeroVideo);
+
+        playHeroVideo();
+    }());
+</script>
 
 <!-- Weather Section - Check Before You Ride -->
 <section class="weather-section">
@@ -69,6 +112,62 @@
                     </svg>
                     Weather.gov
                 </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Ride Reel Section -->
+<section class="ride-reel-section section">
+    <div class="container">
+        <div class="ride-reel-layout">
+            <div class="ride-reel-copy">
+                <span class="eyebrow">Trail Reel</span>
+                <h2 class="section-title">See the Trail in Motion</h2>
+                <p class="section-subtitle">A quick look at local rides, scenic paths, and family-friendly routes.</p>
+                <div class="reel-highlights">
+                    <span>Family-friendly routes</span>
+                    <span>Scenic paths</span>
+                    <span>Easy day rentals</span>
+                </div>
+            </div>
+            <div class="ride-reel-grid">
+                <article class="ride-reel-card">
+                    <div class="ride-reel-video-wrap">
+                        <video class="ride-reel-video" controls preload="metadata" poster="{% static 'images/hero/family-biking-hero.jpg' %}">
+                            <source src="{% static 'videos/ride-reel.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <h3>Indian Creek Greenway</h3>
+                    <p>A scenic paved trail following Indian Creek with creek views, wildlife, picnic areas, and rest stops.</p>
+                </article>
+                <article class="ride-reel-card">
+                    <div class="ride-reel-video-wrap">
+                        <video class="ride-reel-video" controls preload="metadata" poster="{% static 'images/hero/family-biking-hero.jpg' %}">
+                            <source src="{% static 'videos/scenic-forest-ride.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <h3>Black Diamond Run</h3>
+                    <p>An expert-only downhill trail with jumps, drops, berms, and technical features.</p>
+                </article>
+                <article class="ride-reel-card">
+                    <div class="ride-reel-video-wrap">
+                        <video class="ride-reel-video" controls preload="metadata" poster="{% static 'images/hero/family-biking-hero.jpg' %}">
+                            <source src="{% static 'videos/summit-challenge-trail-reel.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <h3>Summit Challenge Trail</h3>
+                    <p>A challenging mountain bike trail with steep climbs, technical descents, rocky sections, and summit views.</p>
+                </article>
+                <article class="ride-reel-card">
+                    <div class="ride-reel-video-wrap">
+                        <video class="ride-reel-video" controls preload="metadata" poster="{% static 'images/hero/family-biking-hero.jpg' %}">
+                            <source src="{% static 'videos/hero-bike-riders.mp4' %}" type="video/mp4">
+                        </video>
+                    </div>
+                    <h3>Indian Creek Trail</h3>
+                    <p>Creek views, wildlife spotting, picnic areas, and rest stops along a scenic Indian Creek route.</p>
+                </article>
             </div>
         </div>
     </div>
@@ -443,5 +542,31 @@
         
         return false;
     }
+    // 🎥 VIDEO ROTATION
+const videos = [
+    "{% static 'videos/hero-bike-riders.mp4' %}",
+    "{% static 'videos/pine-forest-trail-reel.mp4' %}",
+    "{% static 'videos/ride-reel.mp4' %}",
+    "{% static 'videos/scenic-forest-ride.mp4' %}",
+    "{% static 'videos/summit-challenge-trail-reel.mp4' %}"
+];
+
+let index = parseInt(localStorage.getItem("videoIndex"));
+
+if (isNaN(index) || index >= videos.length) {
+    index = 0;
+}
+
+const video = document.getElementById("hero-video");
+const source = document.getElementById("hero-video-source");
+
+if (video && source) {
+    source.src = videos[index];
+    video.load();
+    video.play();
+
+    const nextIndex = (index + 1) % videos.length;
+    localStorage.setItem("videoIndex", nextIndex);
+}
 </script>
 {% endblock %}

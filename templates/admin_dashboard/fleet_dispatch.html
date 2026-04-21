@@ -58,16 +58,18 @@
 </style>
 
 <div class="dispatch-container">
-    <a class="admin-back-link" href="{% url 'admin_bikes' %}">
-        <span style="margin-right: 8px;">←</span> Back to Manage Bikes
-    </a>
-
     <div class="admin-page-header" style="margin-bottom: 40px;">
         <h1 style="font-size: 2.2rem; color: #16324f; margin: 0;">Fleet Dispatch Terminal</h1>
     </div>
 
     <div class="full-width-panel">
         <h3 class="column-header">Live System Saturation</h3>
+        <a class="admin-back-link" href="{% url 'admin_bikes' %}">
+            <span style="margin-right: 8px;">← Back to Manage Bikes </span>
+        </a>
+        <a href="{% url 'admin_dashboard' %}" class="admin-back-link">
+              ← Back to Dashboard
+            </a>
         <div class="admin-card dock-grid" style="padding: 1.5rem; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
             {% for loc in all_locations_list %}
                 {% if "Hub" not in loc.name and "Main Shop" not in loc.name %}

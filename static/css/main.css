@@ -449,15 +449,23 @@ label {
 }
 
 .form-control {
+    position: relative;
+    z-index: 1;
+    display: block;
     width: 100%;
+    min-height: 48px;
     padding: 0.75rem 1rem;
     font-family: var(--font-body);
     font-size: 0.9375rem;
+    line-height: 1.5;
     color: var(--color-gray-800);
     background: var(--color-white);
     border: 1px solid var(--color-gray-300);
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
+    appearance: none;
+    -webkit-appearance: none;
+    touch-action: manipulation;
 }
 
 .form-control:focus {
@@ -514,6 +522,105 @@ textarea.form-control {
 }
 
 /* ============================================
+   Authentication Pages
+   ============================================ */
+.auth-section {
+    min-height: 100vh;
+    padding: 8.5rem 0 4rem;
+    background: linear-gradient(135deg, var(--color-gray-100) 0%, var(--color-white) 100%);
+}
+
+.auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 2.25rem;
+    background: var(--color-white);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--color-gray-500);
+}
+
+.auth-form {
+    position: relative;
+    z-index: 2;
+}
+
+.auth-form .form-group {
+    position: relative;
+}
+
+.auth-form label {
+    cursor: text;
+}
+
+.auth-form .form-control {
+    cursor: text;
+}
+
+.form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.forgot-password,
+.auth-footer a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--color-gray-600);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.75rem 0;
+    color: var(--color-gray-400);
+    font-size: 0.875rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--color-gray-200);
+}
+
+.auth-guest {
+    text-align: center;
+}
+
+.auth-guest p {
+    margin-bottom: 1rem;
+    color: var(--color-gray-500);
+}
+
+/* ============================================
    Hero Section
    ============================================ */
 .hero {
@@ -532,6 +639,7 @@ textarea.form-control {
 .hero-overlay {
     position: absolute;
     inset: 0;
+    z-index: 1;
     background: linear-gradient(
         to bottom,
         rgba(10, 10, 10, 0.4) 0%,
@@ -540,9 +648,36 @@ textarea.form-control {
     );
 }
 
+.hero-video {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    background: var(--color-black);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 400ms ease;
+}
+
+.hero-video-ready {
+    opacity: 1;
+}
+
+.hero-video::-webkit-media-controls,
+.hero-video::-webkit-media-controls-panel,
+.hero-video::-webkit-media-controls-play-button,
+.hero-video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
 .hero-content {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     text-align: center;
     color: var(--color-white);
     padding: 2rem;
@@ -610,6 +745,7 @@ textarea.form-control {
     color: var(--color-gray-300);
     font-size: 0.875rem;
     animation: bounce 2s infinite;
+    z-index: 2;
 }
 
 @keyframes bounce {
@@ -729,6 +865,94 @@ textarea.form-control {
 .weather-link:hover {
     background: rgba(255, 255, 255, 0.2);
     color: var(--color-white);
+}
+
+/* ============================================
+   Ride Reel Section
+   ============================================ */
+.ride-reel-section {
+    background: var(--color-white);
+}
+
+.ride-reel-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 2rem;
+    align-items: center;
+}
+
+.ride-reel-copy {
+    max-width: 460px;
+}
+
+.eyebrow {
+    display: inline-block;
+    margin-bottom: 0.75rem;
+    color: var(--color-primary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.ride-reel-copy .section-title,
+.ride-reel-copy .section-subtitle {
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.reel-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.reel-highlights span {
+    padding: 0.45rem 0.75rem;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.ride-reel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.ride-reel-card {
+    min-width: 0;
+}
+
+.ride-reel-video-wrap {
+    overflow: hidden;
+    background: var(--color-black);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+}
+
+.ride-reel-video {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 560px;
+    object-fit: cover;
+    background: var(--color-black);
+}
+
+.ride-reel-card h3 {
+    margin-top: 0.9rem;
+    font-size: 1.125rem;
+}
+
+.ride-reel-card p {
+    color: var(--color-gray-500);
+    font-size: 0.9375rem;
+    margin-top: 0.35rem;
 }
 
 /* ============================================
@@ -1467,7 +1691,7 @@ textarea.form-control {
         width: 100%;
         max-width: 280px;
     }
-    
+
     .about-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
@@ -1477,9 +1701,47 @@ textarea.form-control {
         flex-direction: column;
         text-align: center;
     }
+
+    .auth-section {
+        padding-top: 7.5rem;
+    }
+
+    .ride-reel-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .ride-reel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ride-reel-copy {
+        max-width: 640px;
+    }
 }
 
 @media (max-width: 768px) {
+    .auth-section {
+        padding: 7rem 0 3rem;
+    }
+
+    .auth-card {
+        padding: 1.5rem;
+    }
+
+    .auth-form .form-control {
+        min-height: 52px;
+        font-size: 16px;
+    }
+
+    .form-options {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .reel-highlights {
+        gap: 0.5rem;
+    }
+
     .section {
         padding: 3rem 0;
     }
