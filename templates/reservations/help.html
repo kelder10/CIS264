@@ -35,7 +35,7 @@
             <div class="help-card primary">
                 <h3>Ready to Ride?</h3>
                 <a href="{% url 'register' %}" class="btn-main">Register Now</a>
-                <p>Already a member? <a href="{% url 'register' %}">Log In</a></p>
+                <p>Already a member? <a href="{% url 'login' %}">Log In</a></p>
             </div>
 
         </div>
@@ -46,7 +46,7 @@
         <div class="help-split-map">
 
             <div class="help-image-large">
-                <img src="{% static 'images/help/lgmapnew.png' %}" alt="Trail Map" class="img-fluid rounded">
+                <img src="{% static 'images/help/lgmap.png' %}" alt="Trail Map" class="img-fluid rounded">
             </div>
 
             <div class="help-text">
@@ -88,15 +88,29 @@
         <div class="help-split">
 
             <div class="help-text">
-                <h2 class="step-brown">03. One-Touch Unlock</h2>
-
-                <ol>
-                    <li><strong>Locate:</strong> Find your bike</li>
-                    <li><strong>Scan:</strong> Tap unlock</li>
-                    <li><strong>Go:</strong> Ride</li>
+                <h2 class="step-brown">03. One-Touch Unlock & Return</h2>
+                
+                <ol class="help-step-list">
+                    <li>
+                        <strong>Locate & Scan:</strong> 
+                        Find your reserved bike and scan the QR code on the Smart-Dock for an instant release.
+                    </li>
+                    <li>
+                        <strong>Digital Dashboard:</strong> 
+                        Alternatively, use our app interface to remotely unlock gear, check real-time dock availability, or manage multiple reservations.
+                    </li>
+                    <li>
+                        <strong>Go & Return:</strong> 
+                        Once your ride is complete, you can return your bike to <strong>any available Smart-Dock</strong> on the trail or bring it back to the <strong>ICC Hub</strong>.
+                    </li>
                 </ol>
 
-                <p class="note">Look for flashing green lights on the dock!</p>
+                <div class="info-box mt-3">
+                    <strong><i class="fas fa-map-location-dot"></i> Flexible Returns:</strong> 
+                    Check the app to see which stations have open docks before you arrive to ensure a smooth drop-off.
+                </div>
+
+                <p class="note">Hardware Tip: Look for flashing green lights on the dock!</p>
             </div>
 
             <div class="help-image">
