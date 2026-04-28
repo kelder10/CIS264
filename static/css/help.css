@@ -55,6 +55,14 @@
     align-items: center;
 }
 
+.map-note {
+    padding-top: 12px;
+    padding-left: 10px;
+    font-size: 14px;
+    font-style: italic;
+}
+
+
 .help-text {
     flex: 1;
     min-width: 300px;
@@ -256,4 +264,34 @@
         gap: 15px 20px;
         padding: 10px 0;
     }
+}
+
+
+/* Responsive Map Container */
+.map-container {
+    position: relative;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+}
+
+.map-container iframe {
+    display: block;
+}
+
+/* Legend styling below the map */
+.map-legend-box {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f0f7ff;
+    border-left: 5px solid #1a73e8;
+    border-radius: 4px;
+}
+
+.map-note {
+    font-size: 0.95rem;
+    color: #333;
+    margin: 0;
 }

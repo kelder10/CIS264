@@ -11,9 +11,13 @@
 <div class="help-container">
 
     <!-- HEADER -->
-    <div class="help-header">
+   <div class="help-header">
         <h1>Getting Started</h1>
         <p>From account setup to the open trail—here is your roadmap.</p>
+
+        <p class="help-rule">
+            All rides must begin and end at an Indian Creek Cycles Dock Location (trail docks and the ICC Hub).
+        </p>
     </div>
 
     <!-- STEP 1 -->
@@ -48,13 +52,26 @@
         <div class="help-split-map">
 
             <div class="help-image-large">
-                <img src="{% static 'images/help/lgmap.png' %}" alt="Trail Map" class="img-fluid rounded">
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/d/u/0/embed?mid=19EvCrXARE227MeP8XjE-1VH8x8FGejM&ehbc=2E312F" width="640" height="480"></iframe>
+                </div>
+                
+                <div class="map-legend-box">
+                    <p class="map-note">
+                        <i class="fas fa-location-dot" style="color: #1a73e8;"></i> 
+                        <strong>Blue Pins:</strong> ICC Smart-Dock Hubs. 
+                        <em>Note: Rentals must begin and end at these specific locations to ensure bike charging.</em>
+                    </p>
+                </div>
             </div>
 
             <div class="help-text">
                 <h2 class="step-green">02. Pick Your Station</h2>
-                <p>Locate your preferred starting point on the map. Each blue pin corresponds to a Smart-Dock station waiting for you at the trailhead.</p>
                 
+                <p>
+                Locate your preferred starting point on the map. Each blue pin represents an 
+                <strong>ICC Smart Dock Hub</strong>—these are the only locations where bikes can be picked up and returned.
+                </p>                
                 <div class="info-box mb-4">
                     <strong>⚡ Energy Tip:</strong> Choosing a closer dock saves bike battery and effort.
                 </div>
@@ -103,9 +120,9 @@
                     </li>
                     <li>
                         <strong>Go & Return:</strong> 
-                        Once your ride is complete, you can return your bike to <strong>any available Smart-Dock</strong> on the trail or bring it back to the <strong>ICC Hub</strong>.
-                    </li>
-                </ol>
+                        Once your ride is complete, return your bike to <strong>any ICC Smart Dock Hub</strong>. 
+                        Bikes cannot be left on the trail and must be returned to a designated hub.                    </li>
+                                        </ol>
 
                 <div class="info-box mt-3">
                     <strong><i class="fas fa-map-location-dot"></i> Flexible Returns:</strong> 
@@ -121,7 +138,19 @@
 
         </div>
     </div>
+    <div class="help-section">
+        <h2>Common Questions</h2>
 
+        <div class="faq-item">
+            <h3>Can I start a ride anywhere on the trail?</h3>
+            <p>No. Bikes can only be picked up and returned at ICC Smart Dock Hubs.</p>
+        </div>
+
+        <div class="faq-item">
+            <h3>What if my trail doesn’t have a dock?</h3>
+            <p>Choose the nearest hub on the map and start your ride there. You can still access nearby trails once unlocked.</p>
+        </div>
+    </div>
     <!-- SAFETY -->
     <div class="help-safety">
         <h2>Trail Safety & Etiquette</h2>

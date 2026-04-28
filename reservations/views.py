@@ -295,7 +295,8 @@ def reservation_detail(request, pk):
 def my_reservations(request):
     """List all user reservations."""
     reservations = Reservation.objects.filter(
-        user=request.user
+        user=request.user,
+        status__in=['pending', 'confirmed', 'active']
     ).select_related('bike').order_by('-created_at')
 
     context = {
